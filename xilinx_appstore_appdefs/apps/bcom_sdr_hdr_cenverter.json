@@ -41,7 +41,7 @@
         }
     ],
     "DockerCmds": {
-        "pull": "docker pull hubxilinx /bcom_sdr2hdr_alveo_u200",
+        "pull": "docker pull hubxilinx/bcom_sdr2hdr_alveo_u200",
         "run": "docker run -v /home/$USER/cred.json:/home/appuser/cred.json -v /dev/shm:/data $XILINX_FPGA_DEV_IDS hubxilinx /bcom_sdr2hdr_alveo_u200 /samples/in.raw /data/out.raw"
     }
 }
