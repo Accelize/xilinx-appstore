@@ -159,14 +159,13 @@ def check_board_shell(boardIdx):
 
 
 def check_host_pkg_installed(host_os, pkg):
-    print(f"check_host_pkg_installed pkg={pkg}")
     if 'ubuntu' in host_os:
         cmd = 'sudo apt list --installed | grep '+ pkg
     elif 'centos' in host_os:
         cmd = 'sudo yum list installed | grep '+ pkg
     ret, out, err = exec_cmd_with_ret_output(cmd)
     if ret:
-        False
+        return False
     return True
 
 
@@ -214,7 +213,7 @@ def install_DockerCE():
     if ret:
         raise
         
-def update_kernel(host_os):
+def update_os_kernel(host_os):
     if 'ubuntu' in host_os:
         cmd = 'sudo apt-get update -y kernel'
     elif 'centos' in host_os:
@@ -271,7 +270,7 @@ def update_host_env(host_os, update_kernel, dependencies, install_docker=False):
             print_status('Updating Dependencies', 'Done')
         if update_kernel:
             print_status('Updating Kernel', '')
-            host_pkg_install(host_os)     
+            update_os_kernel(host_os)     
             print_status('Updating Kernel', 'Done')
         if install_docker:
             print_status('Updating DockerCE', '')
@@ -285,7 +284,7 @@ def update_host_env(host_os, update_kernel, dependencies, install_docker=False):
 
 
 
-def update_host_env(host_os, board_idx, update_xrt=None, update_dsa=None, update_boardshell=False):
+def update_fpga_env(host_os, board_idx, update_xrt=None, update_dsa=None, update_boardshell=False):
     print(f"")
     print(f" > Packages install/update:")
     if update_xrt: print(f" > \tXRT ({update_xrt})")
@@ -437,7 +436,8 @@ if __name__ == '__main__':
     print(f"  -------------------------------------------")
     print(f" | Xilinx Host Setup Script for Alveo Boards |")
     print(f"  -------------------------------------------")
-    print(f"Welcome to the Xilinx Host Setup Script for Alveo Boards.\nThis script will guide to setup your host for running one of the Xilinx AppStore FPGA application\n")
+    print(f" Welcome to the Xilinx Host Setup Script for Alveo Boards.\n")
+    print(f" This script will guide to setup your host for running one of the Xilinx AppStore FPGA application\n")
     
     # Parse the arguments
     option = argparse.ArgumentParser()
