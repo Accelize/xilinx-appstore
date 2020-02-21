@@ -3,7 +3,7 @@
 
 """
 import os, sys, shutil, json, argparse, getpass
-from subprocess import Popen, PIPE, STDOUT
+from subprocess import Popen, PIPE, STDOUT, run
 
 GIT_REPO_XX_APPSTORE="https://github.com/Accelize/xilinx_appstore_appdefs.git"
 APPDEFS_FOLDER="xilinx_appstore_appdefs"
@@ -415,7 +415,7 @@ def run_setup(skip, vendor, appname):
 
     print(f"\n > Your host is configured correctly, you can start to use the aplication:")
     print(f" > A. By using convenient script: {run_app_path}")
-    print(f" > B. By urunning this script with'-r' argument")
+    print(f" > B. By running this script with '-r' argument")
     print(f" > C. By using the following commands:")
     print(f"\tsource /opt/xilinx/appstore/set_env.sh")
     print(f"\t{pullCmd}")
@@ -423,13 +423,14 @@ def run_setup(skip, vendor, appname):
 
 
 def run_app(appvendor, appname):
+    print(f" > Running Application [{appvendor} - {appname}]")
     run_app_fname=f"runapp_{appvendor.lower()}_{appname.lower()}.sh"
     run_app_path=os.path.join('/opt', 'xilinx', 'appstore', run_app_fname)
     if not os.path.exists(run_app_path):
         print(f" [ERROR] Unable to find run app script [{run_app_path}]")
         sys.exit(1)
-        
-    exec_cmd_with_ret_output(run_app_path)
+    run(run_app_path)
+    #exec_cmd_with_ret_output(run_app_path)
     
 
 if __name__ == '__main__':
