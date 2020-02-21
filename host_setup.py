@@ -9,6 +9,7 @@ SCRIPT_PATH=os.path.dirname(os.path.realpath(__file__))
 GIT_REPO_XX_APPSTORE="https://github.com/Accelize/xilinx_appstore_appdefs.git"
 APPDEFS_FOLDER=os.path.join(SCRIPT_PATH, "xilinx_appstore_appdefs")
 APPLIST_FNAME="applist.json"
+SETENV_SCRIPT=os.path.join(SCRIPT_PATH, 'xilinx_appstore_env.sh')
 host_dependencies_ubuntu = 'curl linux-headers'
 host_dependencies_centos = 'curl epel-release kernel-headers kernel-devel'
 
@@ -451,7 +452,7 @@ def run_setup(skip, vendor, appname):
     if not os.path.exists('/opt/xilinx/appstore'):
         run('sudo mkdir /opt/xilinx/appstore', shell=True)
     run('sudo chmod -R 777 /opt/xilinx/appstore', shell=True)
-    shutil.copyfile('xilinx_appstore_env.sh', '/opt/xilinx/appstore/set_env.sh')
+    shutil.copyfile(SETENV_SCRIPT, '/opt/xilinx/appstore/set_env.sh')
     print_status('FPGA Device Identification Script', 'Created')
     
     # Update Docker Commands
