@@ -386,7 +386,7 @@ def run_setup(skip, vendor, appname):
     print_status('Run App Script', 'Created')
 
     print(f"\n > Your host is configured correctly, you can start to use the aplication:")
-    print(f" > A. By using convienient script: {run_app_path}")
+    print(f" > A. By using convenient script: {run_app_path}")
     print(f" > B. By using the following commands:")
     print(f"\tsource /opt/xilinx/appstore/set_env.sh")
     print(f"\t{pullCmd}")
