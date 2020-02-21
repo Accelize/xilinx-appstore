@@ -47,7 +47,7 @@ def get_xrt_version(host_os):
     return xrt
 
 
-def  get_host_env():
+def get_host_env():
     # Get OS
     import platform
     host_os=None
@@ -57,7 +57,7 @@ def  get_host_env():
     print_status('Detected OS', f'{host_os}')
     return host_os
     
-def  get_fpga_env(host_os):
+def get_fpga_env(host_os):
     
     # Get XRT version
     xrt_version = get_xrt_version(host_os).split('-')[0]
@@ -415,7 +415,8 @@ def run_setup(skip, vendor, appname):
 
     print(f"\n > Your host is configured correctly, you can start to use the aplication:")
     print(f" > A. By using convenient script: {run_app_path}")
-    print(f" > B. By using the following commands:")
+    print(f" > B. By urunning this script with'-r' argument")
+    print(f" > C. By using the following commands:")
     print(f"\tsource /opt/xilinx/appstore/set_env.sh")
     print(f"\t{pullCmd}")
     print(f"\t{runCmd}\n\n")
