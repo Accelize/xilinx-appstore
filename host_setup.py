@@ -130,7 +130,9 @@ def check_dependencies(host_os):
     deps= host_dependencies_ubuntu if 'ubuntu' in host_os else host_dependencies_centos
     for dep in deps.split(' '):
         if not check_host_pkg_installed(host_os, dep):
+            print_status('OS  Dependency Package(s)', 'OK')
             return True
+     print_status('OS  Dependency Package(s)', 'Failed')
     return False
 
 
@@ -277,6 +279,8 @@ def update_host_env(host_os, update_kernel, dependencies, install_docker=False):
         
         print(f" > Packages install/update completed, please reboot your server")
         host_reboot(cold=False)
+    else:
+        sys.exit(0)
 
 
 
@@ -314,6 +318,8 @@ def update_host_env(host_os, board_idx, update_xrt=None, update_dsa=None, update
         else:
             print(f" > Packages install/update completed, please reboot your server")
             host_reboot(cold=False)
+    else:
+        sys.exit(0)
 
 
 def run_setup(skip, vendor, appname):
