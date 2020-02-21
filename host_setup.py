@@ -55,6 +55,9 @@ def  get_host_env():
     if 'ubuntu-16.04' in platform.platform(): host_os='ubuntu-16.04'
     if 'centos' in platform.platform(): host_os='centos'
     print_status('Detected OS', f'{host_os}')
+    return host_os
+    
+def  get_fpga_env(host_os):
     
     # Get XRT version
     xrt_version = get_xrt_version(host_os).split('-')[0]
@@ -89,7 +92,7 @@ def  get_host_env():
     print_status('Detected Boards', f'{boards}')
     print_status('Detected Shells', f'{shells}')
     
-    return host_os, boards, shells, xrt_version
+    return boards, shells, xrt_version
 
 
 def dsa_format(dsa):
@@ -248,15 +251,12 @@ def board_shell_flash(boardIdx):
         raise
 
 
-def update_host_env(host_os, board_idx, update_kernel, dependencies, update_xrt=None, update_dsa=None, install_docker=False, update_boardshell=False):
+def update_host_env(host_os, update_kernel, dependencies, install_docker=False):
     print(f"")
     print(f" > Packages install/update:")
     if dependencies: print(f" > \tDependencies (curl, ...)")
     if update_kernel: print(f" > \tKernel Update")
     if install_docker: print(f" > \tDocker CE")
-    if update_xrt: print(f" > \tXRT ({update_xrt})")
-    if update_dsa: print(f" > \tBoard Shell [HOST] ({update_dsa})")
-    if update_boardshell: print(f" > \tBoard Shell [FPGA])")
     
     answer = None
     while answer not in ['y', 'n']:
@@ -274,6 +274,23 @@ def update_host_env(host_os, board_idx, update_kernel, dependencies, update_xrt=
             print_status('Updating DockerCE', '')
             install_DockerCE()        
             print_status('Updating DockerCE', 'Done')        
+        
+        print(f" > Packages install/update completed, please reboot your server")
+        host_reboot(cold=False)
+
+
+
+def update_host_env(host_os, board_idx, update_xrt=None, update_dsa=None, update_boardshell=False):
+    print(f"")
+    print(f" > Packages install/update:")
+    if update_xrt: print(f" > \tXRT ({update_xrt})")
+    if update_dsa: print(f" > \tBoard Shell [HOST] ({update_dsa})")
+    if update_boardshell: print(f" > \tBoard Shell [FPGA])")
+    
+    answer = None
+    while answer not in ['y', 'n']:
+        answer = input(f" > Start update process (y/n)? ").lower()
+    if answer == 'y':
         if update_xrt:
             print_status('Updating XRT', '')
             host_pkg_remove(host_os, 'xrt')
@@ -320,7 +337,15 @@ def run_setup(skip, vendor, appname):
     appdef=jsonfile_to_dict(os.path.join(APPDEFS_FOLDER, appdef_path))
     
     # Detect host environement
-    host_os, boards, shells, xrt_version = get_host_env()
+    host_os = get_host_env()
+    dep_updt=check_dependencies(host_os)
+    krn_updt=check_kernel()
+    dkr_updt=check_docker(host_os)
+    if dkr_updt or krn_updt or dep_updt:
+        update_host_env(host_os, krn_updt, dep_updt, dkr_updt)
+    
+    # Detect FPGA environement
+    boards, shells, xrt_version = get_fpga_env(host_os)
     
     # Check Host Compatibility (OS, FPGA Boards)
     if not host_os in appdef['Supported']['os']:
@@ -340,19 +365,16 @@ def run_setup(skip, vendor, appname):
             print(f"\t[{i}]: {boards[i]} ({shells[i]})")
         board_idx = int(input(" > Please select the one to use: "))
     print(f" > Selected board {board_idx}: {boards[board_idx]} {shells[board_idx]}\n")
-    
+
     # Find suitable configuration
     for conf in appdef['HostSetupConfiguration']:
         if host_os == conf['os'] and boards[board_idx] in conf['board']:
             xrt_updt=check_xrt(xrt_version, conf['xrt_package'])
             dsa_updt=check_dsa(shells[board_idx], dsa_format(conf['dsa_package']))
-            dkr_updt=check_docker(host_os)
-            krn_updt=check_kernel()
-            dep_updt=check_dependencies(host_os)
             brd_updt=check_board_shell(board_idx)
             
-            if xrt_updt or dsa_updt or dkr_updt or krn_updt or dep_updt or brd_updt:
-                update_host_env(host_os, board_idx, krn_updt, dep_updt, xrt_updt, dsa_updt, dkr_updt, brd_updt)
+            if xrt_updt or dsa_updt or brd_updt:
+                update_fpga_env(host_os, board_idx, xrt_updt, dsa_updt, brd_updt)
                 
     # Check Access Key
     homedir = os.environ['HOME']
