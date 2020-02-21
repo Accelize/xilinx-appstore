@@ -5,8 +5,9 @@
 import os, sys, shutil, json, argparse, getpass
 from subprocess import Popen, PIPE, STDOUT, run
 
+SCRIPT_PATH=os.path.dirname(os.path.realpath(__file__))
 GIT_REPO_XX_APPSTORE="https://github.com/Accelize/xilinx_appstore_appdefs.git"
-APPDEFS_FOLDER="xilinx_appstore_appdefs"
+APPDEFS_FOLDER=os.path.join(SCRIPT_PATH, "xilinx_appstore_appdefs")
 APPLIST_FNAME="applist.json"
 host_dependencies_ubuntu = 'curl linux-headers'
 host_dependencies_centos = 'curl epel-release kernel-headers kernel-devel'
@@ -78,14 +79,14 @@ def get_fpga_env(host_os):
     print_status('Board(s) Found', f'{nbBoardsFound}')
     if nbBoardsFound == '0': 
         print(f" [ERROR] No FPGA Board Detected. you need at least one FPGA board to use this application.")
-        sys.exit(0)
+        sys.exit(1)
         
     ret, out, err = exec_cmd_with_ret_output("/opt/xilinx/xrt/bin/xbutil list | grep Found | cut -d' ' -f6")
     nbBoardsUsable = out.strip()
     print_status('Board(s) Usable', f'{nbBoardsUsable}')
     if nbBoardsUsable == '0': 
         print(f" [ERROR] Deployment Target Platform Not Installed")
-        sys.exit(0)
+        sys.exit(1)
     
     boards=[]
     shells=[]
@@ -301,7 +302,7 @@ def update_host_env(host_os, update_kernel, dependencies, install_docker=False):
 
 
 def update_fpga_env(host_os, selected_conf, xrt_outdated, host_dsa_outdated):
-        print(f"")
+    print(f"")
     print(f" > Packages install/update:")
     if xrt_outdated: print(f" > \tXRT ({selected_conf['xrt_package']})")
     if host_dsa_outdated: print(f" > \tBoard Shell [HOST] ({selected_conf['dsa_package']})")
@@ -380,6 +381,9 @@ def run_setup(skip, vendor, appname):
         
     # List FPGA Boards using lspci (XRT not needed)
     lspci_boards=fpga_board_list()
+    if not lspci_boards:
+        print(f" [ERROR] No FPGA Board Detected. you need at least one FPGA board to use this application.")
+        sys.exit(1)
     
     # Check Host Compatibility (OS, FPGA Boards)
     if not host_os in appdef['Supported']['os']:
@@ -387,6 +391,7 @@ def run_setup(skip, vendor, appname):
         sys.exit(1)
     print_status('OS Compatibility', 'OK')
     if not any(item in lspci_boards for item in appdef['Supported']['boards']):
+        print_status('FPGA Board Compatibility', 'Failed')
         print(f" [ERROR] Boards {lspci_boards} not supported by this application")
         sys.exit(1)
     print_status('FPGA Board Compatibility', 'OK')
