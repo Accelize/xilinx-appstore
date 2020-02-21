@@ -13,6 +13,18 @@
             "appname": "sdr_hdr_converter",
             "short_desc": "SDR-HDR Converter",
             "appdef_path": "apps/bcom_sdr_hdr_cenverter.json"
+        },
+        {
+            "appvendor": "v-nova",
+            "appname": "p+",
+            "short_desc": "P+ (previously PERSEUS Plus)",
+            "appdef_path": "apps/vnova_perseus_plus.json"
+        },
+        {
+            "appvendor": "secure-ic",
+            "appname": "trng",
+            "short_desc": "True Random Number Generator",
+            "appdef_path": "apps/secureic_trng.json"
         }
     ]
 }
