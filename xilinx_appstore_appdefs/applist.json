@@ -9,7 +9,7 @@
             "appdef_path": "apps/ngcodec_hevc_encoder_dual_density.json"
         },
         {
-            "appvendor": "b<>com",
+            "appvendor": "b-com",
             "appname": "sdr_hdr_converter",
             "short_desc": "SDR-HDR Converter",
             "appdef_path": "apps/bcom_sdr_hdr_cenverter.json"
