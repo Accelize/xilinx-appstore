@@ -12,7 +12,7 @@
             "appvendor": "b<>com",
             "appname": "sdr_hdr_converter",
             "short_desc": "SDR-HDR Converter",
-            "appdef_path": "apps/bcom_sdr_hdr_converter.json"
+            "appdef_path": "apps/bcom_sdr_hdr_cenverter.json"
         }
     ]
 }

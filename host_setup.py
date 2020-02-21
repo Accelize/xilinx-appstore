@@ -229,9 +229,7 @@ def host_reboot(cold=False):
     while answer not in ['y', 'n']:
         answer = input(f" > Do you want to {cmd} now (y/n)? ").lower()
     if answer == 'y':
-        ret, out, err = exec_cmd_with_ret_output('sudo '+cmd)
-        if ret:
-            raise
+        run('sudo '+cmd)
 
 
 def board_shell_flash(boardIdx):
@@ -248,9 +246,7 @@ def board_shell_flash(boardIdx):
     prog_dsa=host_dsa_conf.split(',')[0]
     prog_tstamp=int(host_dsa_conf.split(',')[1][4:-1], 0)
     cmd=f'sudo /opt/xilinx/xrt/bin/xbutil flash -d {boardIdx} -a {prog_dsa} -t {prog_tstamp}'
-    ret, out, err = exec_cmd_with_ret_output(cmd)
-    if ret:
-        raise
+    run(cmd)
 
 
 def update_host_env(host_os, update_kernel, dependencies, install_docker=False):
@@ -393,8 +389,8 @@ def run_setup(skip, vendor, appname):
         
     # FPGA Device Identification script
     if not os.path.exists('/opt/xilinx/appstore'):
-        exec_cmd_with_ret_output('sudo mkdir /opt/xilinx/appstore ')
-    exec_cmd_with_ret_output('sudo chmod -R 777 /opt/xilinx/appstore')
+        run('sudo mkdir /opt/xilinx/appstore ')
+    run('sudo chmod -R 777 /opt/xilinx/appstore')
     shutil.copyfile('xilinx_appstore_env.sh', '/opt/xilinx/appstore/set_env.sh')
     print_status('FPGA Device Identification Script', 'Created')
     
@@ -430,8 +426,7 @@ def run_app(appvendor, appname):
         print(f" [ERROR] Unable to find run app script [{run_app_path}]")
         sys.exit(1)
     run(run_app_path)
-    #exec_cmd_with_ret_output(run_app_path)
-    
+
 
 if __name__ == '__main__':
 
