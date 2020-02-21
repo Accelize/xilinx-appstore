@@ -12,8 +12,8 @@ host_dependencies_ubuntu = 'curl linux-headers'
 host_dependencies_centos = 'curl epel-release kernel-headers kernel-devel'
 
 
-def print_status(text, status):
-    padding_size = 40 - len(text)
+def print_status(text, status, fulllength=40):
+    padding_size = fulllength - len(text)
     print(f" > {text} {'.'*padding_size} {status}")
 
 
@@ -439,9 +439,9 @@ if __name__ == '__main__':
     
     # Parse the arguments
     option = argparse.ArgumentParser()
-    option.add_argument('--vendor', '-v', dest="vendor", type=str, default="UNKNOWN",
+    option.add_argument('--vendor', '-v', dest="vendor", type=str, default=None,
                         required=False, help="App Vendor")
-    option.add_argument('--appname', '-a', dest="appname", type=str, default="UNKNOWN",
+    option.add_argument('--appname', '-a', dest="appname", type=str, default=None,
                         required=False, help="App Name")
     option.add_argument('--run', '-r', dest="run", action="store_true", 
                         help="Run the AppStore Application")
@@ -451,5 +451,12 @@ if __name__ == '__main__':
     
     if args.run:
         sys.exit(run_app(args.vendor, args.appname))
+        
+    if not args.vendor or not args.appname:
+        print(f" > You must provide application vendor and name from following list:")
+        appcatalog=jsonfile_to_dict(os.path.join(APPDEFS_FOLDER, APPLIST_FNAME))
+        for app in appcatalog['apps']:
+            print_status(f"\t{app['appvendor']}", f"{app['appname']}", 20)
+        sys.exit(1)
     
     sys.exit(run_setup(skip=args.skip, vendor=args.vendor, appname=args.appname))
