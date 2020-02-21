@@ -2,15 +2,12 @@
 """
 
 """
-import os, sys, json, argparse, getpass
-#import git
+import os, sys, shutil, json, argparse, getpass
 from subprocess import Popen, PIPE, STDOUT
 
 GIT_REPO_XX_APPSTORE="https://github.com/Accelize/xilinx_appstore_appdefs.git"
-#APPDEFS_FOLDER="/tmp/xilinx_appstore"
 APPDEFS_FOLDER="xilinx_appstore_appdefs"
 APPLIST_FNAME="applist.json"
-#HOSTSETUP_CONF_FNAME="host_setup_conf.json"
 host_dependencies_ubuntu = 'curl linux-headers'
 host_dependencies_centos = 'curl epel-release kernel-headers kernel-devel'
 
@@ -19,28 +16,12 @@ def print_status(text, status):
     padding_size = 40 - len(text)
     print(f" > {text} {'.'*padding_size} {status}")
 
-def dict_to_json(in_dict):
-    return json.dumps(in_dict)
-    
-def json_to_dict(obj):
-    return json.loads(obj)
-    
-def dict_to_jsonfile(in_dict, filename):
-    with open(filename, 'w') as json_file:
-        json.dump(in_dict, json_file)
-    
-def json_to_file(obj, filename):
-    with open(filename, 'w') as json_file:
-        json_file.write(obj)
-        
+
 def jsonfile_to_dict(filename):
     with open(filename, 'r') as json_file:
         return json.load(json_file)
-        
-def jsonfile_to_json(filename):
-    with open(filename, 'r') as json_file:
-        return dict_to_json(json.load(json_file))
-    
+
+
 def dict_pretty_print(in_dict):
     print(json.dumps(in_dict, sort_keys=True, indent=4))
     
@@ -54,7 +35,7 @@ def exec_cmd_with_ret_output(cmd, path='.'):
     except KeyboardInterrupt as e:
         raise(e)     
 
-        
+
 def get_xrt_version(host_os):
     xrt=None
     if 'centos' in host_os.lower():
@@ -64,8 +45,8 @@ def get_xrt_version(host_os):
     if 'ubuntu' in host_os.lower():
         ret, out, err = exec_cmd_with_ret_output("sudo apt list --installed | grep xrt | tail -n1 | cut -d' ' -f2")
     return xrt
-        
-        
+
+
 def  get_host_env():
     # Get OS
     import platform
@@ -85,6 +66,7 @@ def  get_host_env():
     # Get FPGA Boards & Shells
     ret, out, err = exec_cmd_with_ret_output("/opt/xilinx/xrt/bin/xbutil list | grep Found | cut -d' ' -f4")
     nbBoardsFound = out.strip()
+    if nbBoardsFound == '': nbBoardsFound='0'
     print_status('Board(s) Found', f'{nbBoardsFound}')
     if nbBoardsFound == '0': 
         print(f" [ERROR] No FPGA Board Detected. you need at least one FPGA board to use this application.")
@@ -108,48 +90,55 @@ def  get_host_env():
     print_status('Detected Shells', f'{shells}')
     
     return host_os, boards, shells, xrt_version
-  
+
+
 def dsa_format(dsa):
     char_list=['-', ' ', '.']
     for c in char_list:
         dsa=dsa.replace(c,'_')
     return dsa
-    
+
+
 def check_xrt(current_ver, target_version):
     if current_ver in target_version :
         print_status('XRT Version Check', f'OK ({current_ver})')
         return None
     print_status('XRT Version Check', 'Failed')
     return target_version
-        
+
+ 
 def check_dsa(current_ver, target_version):
     if current_ver in target_version :
         print_status('Board Shell [HOST] Version Check', f'OK ({current_ver})')
         return None
     print_status('Board Shell [HOST] Version Check', 'Failed')
     return target_version
-    
+
+
 def check_docker(host_os):
     if check_host_pkg_installed(host_os, 'docker-ce'):
         print_status('DockerCE  Check', 'OK')
         return False
     print_status('DockerCE  Check', 'Failed')
     return True
-    
+
+
 def check_dependencies(host_os):
     deps= host_dependencies_ubuntu if 'ubuntu' in host_os else host_dependencies_centos
     for dep in deps.split(' '):
         if not check_host_pkg_installed(host_os, dep):
             return True
     return False
-    
+
+
 def check_kernel():
     if os.path.exists(os.path.join('/lib','modules', os.uname()[2], 'build')):
         print_status('Kernel Version Check', 'OK')
         return False
     print_status('Kernel Version Check', 'Failed')
     return True
-    
+
+
 def check_board_shell(boardIdx):
     cmd='sudo /opt/xilinx/xrt/bin/xbutil flash scan'
     ret, out, err = exec_cmd_with_ret_output(cmd)
@@ -162,7 +151,8 @@ def check_board_shell(boardIdx):
         cnt+=1     
     print_status('Board Shell Host vs. FPGA', 'Failed')
     return True
-    
+
+
 def check_host_pkg_installed(host_os, pkg):
     if 'ubuntu' in host_os:
         cmd = 'sudo apt list --installed | grep '+ pkg
@@ -172,7 +162,8 @@ def check_host_pkg_installed(host_os, pkg):
     if ret:
         False
     return True
-    
+
+
 def host_pkg_install(host_os, packages):
     if 'ubuntu' in host_os:
         cmd = 'sudo apt-get install -y '+ packages
@@ -181,7 +172,8 @@ def host_pkg_install(host_os, packages):
     ret, out, err = exec_cmd_with_ret_output(cmd)
     if ret:
         raise
-        
+
+ 
 def host_pkg_remove(host_os, packages):
     if 'ubuntu' in host_os:
         cmd = 'sudo apt-get remove -y '+ packages
@@ -190,6 +182,7 @@ def host_pkg_remove(host_os, packages):
     ret, out, err = exec_cmd_with_ret_output(cmd)
     if ret:
         raise
+
 
 def host_pkg_download(pkg):
     print_status(f'Downloading {pkg}', '')
@@ -200,13 +193,15 @@ def host_pkg_download(pkg):
         raise
     print_status(f'Downloading {pkg}', 'OK')
     return f'/tmp/{pkg}'
-        
+
+
 def install_dependencies(host_os):
     if 'ubuntu' in host_os:
         host_pkg_install(host_os, host_dependencies_ubuntu)
     elif 'centos' in host_os:
         host_pkg_install(host_os, host_dependencies_centos)
-        
+
+
 def install_DockerCE():
     cmd = 'curl -fsSL https://get.docker.com | sudo sh && sudo systemctl start docker && sudo systemctl enable docker && sudo usermod -aG docker $USER'
     ret, out, err = exec_cmd_with_ret_output(cmd)
@@ -221,7 +216,8 @@ def update_kernel(host_os):
     ret, out, err = exec_cmd_with_ret_output(cmd)
     if ret:
         raise
-        
+
+
 def host_reboot(cold=False):
     cmd = 'halt' if cold else 'reboot'
     answer = None
@@ -231,7 +227,8 @@ def host_reboot(cold=False):
         ret, out, err = exec_cmd_with_ret_output('sudo '+cmd)
         if ret:
             raise
-        
+
+
 def board_shell_flash(boardIdx):
     cmd='sudo /opt/xilinx/xrt/bin/xbutil flash scan'
     ret, out, err = exec_cmd_with_ret_output(cmd)
@@ -249,7 +246,8 @@ def board_shell_flash(boardIdx):
     ret, out, err = exec_cmd_with_ret_output(cmd)
     if ret:
         raise
-    
+
+
 def update_host_env(host_os, board_idx, update_kernel, dependencies, update_xrt=None, update_dsa=None, install_docker=False, update_boardshell=False):
     print(f"")
     print(f" > Packages install/update:")
@@ -299,59 +297,51 @@ def update_host_env(host_os, board_idx, update_kernel, dependencies, update_xrt=
         else:
             print(f" > Packages install/update completed, please reboot your server")
             host_reboot(cold=False)
-        
- 
-def run(skip, tag, vendor, appname):
-    # Clone Git Repo with App definitions (JSON)
-    print(f" > Cloning Xilinx AppStore repository in {APPDEFS_FOLDER}...")
-    ##git.Git(APPDEFS_FOLDER).clone(GIT_REPO_XX_APPSTORE)
-    
+
+
+def run_setup(skip, vendor, appname):
     # Loading App Catalog file
     print(f" > Loading App Catalog...")
     appcatalog=jsonfile_to_dict(os.path.join(APPDEFS_FOLDER, APPLIST_FNAME))
-    #dict_pretty_print(appcatalog)
     
-    # [TODO] if vendor==UNKNOWN or appname==UNKNOWN
-    # [TODO]   ==> INTERACTIVE SELECTION
     appdef_path=''
     for app in appcatalog['apps']:
-        if app['vendor'].lower()==vendor.lower() and app['short_desc'].lower()==appname.lower():
+        if app['appvendor'].lower()==vendor.lower() and app['appname'].lower()==appname.lower():
             appdef_path=app['appdef_path']
+            break
             
     if not appdef_path:
         print(f" [ERROR] Unable to find application named [{appname}] from vendor [{vendor}]")
-        sys.exit(0)
+        sys.exit(1)
+    print_status('Selected App', f"{vendor} - {appname}")
        
     # Loading App Definition file
     print(f" > Loading App Definition file...")
     appdef=jsonfile_to_dict(os.path.join(APPDEFS_FOLDER, appdef_path))
-    #dict_pretty_print(appdef)
     
     # Detect host environement
     host_os, boards, shells, xrt_version = get_host_env()
-    #host_os, boards, shells, xrt_version = ('centos', ['u200'],['xilinx_u200_xdma_201830_2'], '2.2.2250')
     
     # Check Host Compatibility (OS, FPGA Boards)
     if not host_os in appdef['Supported']['os']:
         print(f" [ERROR] Operating System {host_os}] not supported")
-        sys.exit(0)
+        sys.exit(1)
     print_status('OS Compatibility', 'OK')
     if not any(item in boards for item in appdef['Supported']['boards']):
         print(f" [ERROR] Boards {boards} not supported by this application")
-        sys.exit(0)
+        sys.exit(1)
     print_status('FPGA Board Compatibility', 'OK')
     
     # Board Selection
-    if len(boards) > 0: ## TODO set to 1
+    board_idx=0
+    if len(boards) > 1:
         print(f"\n > Found {len(boards)} boards")
         for i in range(0,len(boards)):
             print(f"\t[{i}]: {boards[i]} ({shells[i]})")
         board_idx = int(input(" > Please select the one to use: "))
-        print(f" > Selected board {board_idx}: {boards[board_idx]} {shells[board_idx]}\n")
+    print(f" > Selected board {board_idx}: {boards[board_idx]} {shells[board_idx]}\n")
     
     # Find suitable configuration
-    #xxtoolsconf=jsonfile_to_dict(os.path.join(APPDEFS_FOLDER, HOSTSETUP_CONF_FNAME))
-    #dict_pretty_print(xxtoolsconf)
     for conf in appdef['HostSetupConfiguration']:
         if host_os == conf['os'] and boards[board_idx] in conf['board']:
             xrt_updt=check_xrt(xrt_version, conf['xrt_package'])
@@ -363,7 +353,7 @@ def run(skip, tag, vendor, appname):
             
             if xrt_updt or dsa_updt or dkr_updt or krn_updt or dep_updt or brd_updt:
                 update_host_env(host_os, board_idx, krn_updt, dep_updt, xrt_updt, dsa_updt, dkr_updt, brd_updt)
-            
+                
     # Check Access Key
     homedir = os.environ['HOME']
     if os.path.exists(os.path.join(homedir, 'cred.json')):
@@ -372,31 +362,53 @@ def run(skip, tag, vendor, appname):
         print_status('Access Key Check', 'Failed')
         print(f" [!] Please copy your access key in {os.path.join(homedir, 'cred.json')} and run this script again")
         return
-            
-    # TODO:Export FPGA Devs
-    # Create command lines
+        
+    # FPGA Device Identification script
+    if not os.path.exists('/opt/xilinx/appstore'):
+        exec_cmd_with_ret_output('sudo mkdir /opt/xilinx/appstore ')
+    exec_cmd_with_ret_output('sudo chmod -R 777 /opt/xilinx/appstore')
+    shutil.copyfile('xilinx_appstore_env.sh', '/opt/xilinx/appstore/set_env.sh')
+    print_status('FPGA Device Identification Script', 'Created')
+    
+    # Update Docker Commands
     username = getpass.getuser()
     pullCmd=appdef['DockerCmds']['pull']
     runCmd=appdef['DockerCmds']['run'].replace('$USER', username)
     
-    print(f"\n > Your host is configured correctly, you can start to use the aplication !")
-    print(f"{pullCmd}")
-    print(f"{runCmd}")
-    
+    # Create runapp script
+    run_app_fname=f"runapp_{vendor.lower()}_{appname.lower()}.sh"
+    run_app_path=os.path.join('/opt', 'xilinx', 'appstore', run_app_fname)
+    with open(run_app_path,"w+") as f:
+        f.write('#!/bin/bash\n')
+        f.write('source /opt/xilinx/appstore/set_env.sh\n\n')
+        f.write(f"{pullCmd}\n")
+        f.write(f"{runCmd}\n")
+    print_status('Run App Script', 'Created')
+
+    print(f"\n > Your host is configured correctly, you can start to use the aplication:")
+    print(f" > A. By using convienient script: {run_app_path}")
+    print(f" > B. By using the following commands:")
+    print(f"\tsource /opt/xilinx/appstore/set_env.sh")
+    print(f"\t{pullCmd}")
+    print(f"\t{runCmd}\n\n")
+
+
+def run_app(appvendor, appname):
+    run_app_fname=f"runapp_{appvendor.lower()}_{appname.lower()}.sh"
+    run_app_path=os.path.join('/opt', 'xilinx', 'appstore', run_app_fname)
+    if not os.path.exists(run_app_path):
+        print(f" [ERROR] Unable to find run app script [{run_app_path}]")
+        sys.exit(1)
+        
+    exec_cmd_with_ret_output(run_app_path)
     
 
 if __name__ == '__main__':
-    
-    #if os.geteuid() != 0:
-    #    exit(" [!] You need to have root privileges to run this script.\n [!] Please try again, this time using 'sudo'. Exiting.")
-    
-    print(f"Welcome to the Xilinx Host Setup Script for Alveo Boards")
-    print(f"This script will :")
-    print(f"1. AAA")
-    print(f"2. BBBB")
-    
-    board_shell_flash(0)
-    sys.exit(0)
+
+    print(f"  -------------------------------------------")
+    print(f" | Xilinx Host Setup Script for Alveo Boards |")
+    print(f"  -------------------------------------------")
+    print(f"Welcome to the Xilinx Host Setup Script for Alveo Boards.\nThis script will guide to setup your host for running one of the Xilinx AppStore FPGA application\n")
     
     # Parse the arguments
     option = argparse.ArgumentParser()
@@ -404,9 +416,13 @@ if __name__ == '__main__':
                         required=False, help="App Vendor")
     option.add_argument('--appname', '-a', dest="appname", type=str, default="UNKNOWN",
                         required=False, help="App Name")
-    option.add_argument('--tag', '-t', dest="tag", type=str, default="master",
-                        required=False, help="Force git repo tag when cloning")
+    option.add_argument('--run', '-r', dest="run", action="store_true", 
+                        help="Run the AppStore Application")
     option.add_argument('--skip', '-s', dest="skip", action="store_true", 
                         help="Skip questions and use default value")
     args = option.parse_args()
-    sys.exit(run(skip=args.skip, tag=args.tag, vendor=args.vendor, appname=args.appname))
+    
+    if args.run:
+        sys.exit(run_app(args.vendor, args.appname))
+    
+    sys.exit(run_setup(skip=args.skip, vendor=args.vendor, appname=args.appname))

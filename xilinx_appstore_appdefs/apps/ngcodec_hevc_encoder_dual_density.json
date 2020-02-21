@@ -1,5 +1,6 @@
 {
-    "vendor": "NGCodec",
+    "appvendor": "NGCodec",
+    "appname": "hevc_enc_dual",
     "short_desc": "HEVC/H.265 Encoder Dual Density",
     "summary": "NGCodec's RealityCodec is a distribution broadcast-quality transcoder for H.265/HEVC, supporting ABR and running on both on-premises Alveo cards and in FPGA instances in the cloud.",
     "Publisher":"Xilinx",

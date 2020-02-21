@@ -3,12 +3,14 @@
     "author": "Accelize",
     "apps": [
         {
-            "vendor": "NGCodec",
+            "appvendor": "NGCodec",
+            "appname": "hevc_enc_dual",
             "short_desc": "HEVC/H.265 Encoder Dual Density",
             "appdef_path": "apps/ngcodec_hevc_encoder_dual_density.json"
         },
         {
-            "vendor": "b<>com",
+            "appvendor": "b<>com",
+            "appname": "sdr_hdr_converter",
             "short_desc": "SDR-HDR Converter",
             "appdef_path": "apps/bcom_sdr_hdr_converter.json"
         }
