@@ -130,9 +130,9 @@ def check_dependencies(host_os):
     deps= host_dependencies_ubuntu if 'ubuntu' in host_os else host_dependencies_centos
     for dep in deps.split(' '):
         if not check_host_pkg_installed(host_os, dep):
-            print_status('OS  Dependency Package(s)', 'OK')
+            print_status('OS  Dependency Package(s)', 'Failed')
             return True
-    print_status('OS  Dependency Package(s)', 'Failed')
+    print_status('OS  Dependency Package(s)', 'OK')
     return False
 
 
@@ -159,6 +159,7 @@ def check_board_shell(boardIdx):
 
 
 def check_host_pkg_installed(host_os, pkg):
+    print(f"check_host_pkg_installed pkg={pkg}")
     if 'ubuntu' in host_os:
         cmd = 'sudo apt list --installed | grep '+ pkg
     elif 'centos' in host_os:
