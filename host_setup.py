@@ -132,7 +132,7 @@ def check_dependencies(host_os):
         if not check_host_pkg_installed(host_os, dep):
             print_status('OS  Dependency Package(s)', 'OK')
             return True
-     print_status('OS  Dependency Package(s)', 'Failed')
+    print_status('OS  Dependency Package(s)', 'Failed')
     return False
 
 
