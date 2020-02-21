@@ -1,0 +1,16 @@
+{
+    "name": "Xilinx AppStore Applications Definitions",
+    "author": "Accelize",
+    "apps": [
+        {
+            "vendor": "NGCodec",
+            "short_desc": "HEVC/H.265 Encoder Dual Density",
+            "appdef_path": "apps/ngcodec_hevc_encoder_dual_density.json"
+        },
+        {
+            "vendor": "b<>com",
+            "short_desc": "SDR-HDR Converter",
+            "appdef_path": "apps/bcom_sdr_hdr_converter.json"
+        }
+    ]
+}
