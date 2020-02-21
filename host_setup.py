@@ -407,6 +407,7 @@ def run_setup(skip, vendor, appname):
         f.write('source /opt/xilinx/appstore/set_env.sh\n\n')
         f.write(f"{pullCmd}\n")
         f.write(f"{runCmd}\n")
+    run(f'sudo chmod +x {run_app_path}', shell=True)
     print_status('Run App Script', 'Created')
 
     print(f"\n > Your host is configured correctly, you can start to use the aplication:")
