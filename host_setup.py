@@ -54,11 +54,11 @@ def fpga_board_list():
 def get_xrt_version(host_os):
     xrt=None
     if 'centos' in host_os.lower():
-        ret, out, err = exec_cmd_with_ret_output("sudo yum info xrt | grep Version | cut -d ':' -f2")
+        ret, out, err = exec_cmd_with_ret_output("sudo yum info xrt | grep Version | cut -d ':' -f2").split('-')[0]
         xrt=out.strip()
-        
     if 'ubuntu' in host_os.lower():
-        ret, out, err = exec_cmd_with_ret_output("sudo apt list --installed | grep xrt | tail -n1 | cut -d' ' -f2")
+        ret, out, err = exec_cmd_with_ret_output("sudo apt-cache show xrt | grep Version | cut -d' ' -f2")
+        xrt=out.strip()
     return xrt
 
 
@@ -66,8 +66,8 @@ def get_host_env():
     # Get OS
     import platform
     host_os=None
-    if 'ubuntu-18.04' in platform.platform(): host_os='ubuntu-18.04'
-    if 'ubuntu-16.04' in platform.platform(): host_os='ubuntu-16.04'
+    if 'ubuntu-18.04' in platform.platform().lower: host_os='ubuntu-18.04'
+    if 'ubuntu-16.04' in platform.platform().lower: host_os='ubuntu-16.04'
     if 'centos' in platform.platform(): host_os='centos'
     print_status('Detected OS', f'{host_os}')
     return host_os
@@ -112,8 +112,8 @@ def dsa_format(dsa):
 def check_xrt(host_os, target_version):
     if not check_host_pkg_installed(host_os, 'xrt'):
         return True
-    
-    xrt_version = get_xrt_version(host_os).split('-')[0]
+     
+    xrt_version = get_xrt_version(host_os)
     if not xrt_version: 
         return True
     print_status('Detected XRT', f'{xrt_version}')
@@ -126,12 +126,14 @@ def check_xrt(host_os, target_version):
 
  
 def check_host_dsa(host_os, conf_pkg):
-    #"dsa_package":"xilinx-u200-xdma-201830.2-2580015_16.04.deb"
     pkg_name=conf_pkg.split('-')[0]+'-'+conf_pkg.split('-')[1]+'-'+conf_pkg.split('-')[2]
     pkg_vers=conf_pkg.split('-')[3]
-    
-    ret, out, err = exec_cmd_with_ret_output(f'sudo yum list installed | grep {pkg_name} | grep {pkg_vers} > /dev/null 2>&1')
-    
+   
+    if 'centos' in host_os: 
+        ret, out, err = exec_cmd_with_ret_output(f'sudo yum list installed | grep {pkg_name} | grep {pkg_vers} > /dev/null 2>&1')
+    else:
+        ret, out, err = exec_cmd_with_ret_output(f'sudo apt list --installed | grep {pkg_name} | grep {pkg_vers} > /dev/null 2>&1')
+
     if ret:
         print_status('Board Shell [HOST] Version Check', f'Failed ({pkg_name}-{pkg_vers})')
         return True 
@@ -205,10 +207,7 @@ def host_pkg_remove(host_os, packages):
         cmd = 'sudo apt-get remove -y '+ packages + '> /dev/null 2>&1'
     elif 'centos' in host_os:
         cmd = 'sudo yum remove -y '+ packages + '> /dev/null 2>&1'
-    ret, out, err = exec_cmd_with_ret_output(cmd)
-    if ret:
-        raise
-
+    run(cmd, shell=True)
 
 def host_pkg_download(pkg):
     print_status(f'Downloading {pkg}', '')
@@ -296,7 +295,7 @@ def update_host_env(host_os, update_kernel, dependencies, install_docker=False):
             install_DockerCE()        
             print_status('Updating DockerCE', 'Done')        
         
-        print(f" > Packages install/update completed, please reboot your server")
+        print(f" > Packages install/update completed, please reboot your server and relaunch this script.")
         host_reboot(cold=False)
     else:
         sys.exit(0)
@@ -327,7 +326,7 @@ def update_fpga_env(host_os, selected_conf, xrt_outdated, host_dsa_outdated):
             print_status('Updating Board Shell [HOST]', 'Done')
             
         # Reboot
-        print(f" > Packages install/update completed, please reboot your server")
+        print(f" > Packages install/update completed, please reboot your server and relaunch this script.")
         host_reboot(cold=False)
     else:
         sys.exit(0)  
@@ -346,7 +345,7 @@ def update_board_dsa(board_idx):
         board_shell_flash(board_idx)
         print_status('Programming Board Shell [FPGA]', 'Done')
         
-        print(f" > Packages install/update completed, please do a cold reboot of your server")
+        print(f" > Packages install/update completed, please do a cold reboot of your server and relaunch this script.")
         host_reboot(cold=True)
     else:
         sys.exit(0)
@@ -354,8 +353,8 @@ def update_board_dsa(board_idx):
 
 def run_setup(skip, vendor, appname):
     # Loading App Catalog file
-    print(f" > Loading App Catalog...")
     appcatalog=jsonfile_to_dict(os.path.join(APPDEFS_FOLDER, APPLIST_FNAME))
+    print_status('Loading App Catalog', 'OK')
     
     appdef_path=''
     for app in appcatalog['apps']:
@@ -369,8 +368,8 @@ def run_setup(skip, vendor, appname):
     print_status('Selected App', f"{vendor} - {appname}")
        
     # Loading App Definition file
-    print(f" > Loading App Definition file...")
-    appdef=jsonfile_to_dict(os.path.join(APPDEFS_FOLDER, appdef_path))
+    appdef=jsonfile_to_dict(os.path.join(APPDEFS_FOLDER, appdef_path))  
+    print_status('Loading App Definition file', 'OK')
     
     # Detect host environement
     host_os = get_host_env()
@@ -398,6 +397,7 @@ def run_setup(skip, vendor, appname):
     print_status('FPGA Board Compatibility', 'OK')
     
     # Board Model Selection
+    board_model_idx=0
     if len(lspci_boards) > 1:
         print(f"\n > Found {len(lspci_boards)} board models")
         for i in range(0,len(lspci_boards)):
