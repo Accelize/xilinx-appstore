@@ -54,8 +54,8 @@ def fpga_board_list():
 def get_xrt_version(host_os):
     xrt=None
     if 'centos' in host_os.lower():
-        ret, out, err = exec_cmd_with_ret_output("sudo yum info xrt | grep Version | cut -d ':' -f2").split('-')[0]
-        xrt=out.strip()
+        ret, out, err = exec_cmd_with_ret_output("sudo yum info xrt | grep Version | cut -d ':' -f2")
+        xrt=out.split('-')[0].strip()
     if 'ubuntu' in host_os.lower():
         ret, out, err = exec_cmd_with_ret_output("sudo apt-cache show xrt | grep Version | cut -d' ' -f2")
         xrt=out.strip()
