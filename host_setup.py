@@ -398,6 +398,7 @@ def run_setup(skip, vendor, appname):
     
     # Board Model Selection
     board_model_idx=0
+    lspci_boards = list(set(lspci_boards).intersection(appdef['Supported']['boards']))
     if len(lspci_boards) > 1:
         print(f"\n > Found {len(lspci_boards)} board models")
         for i in range(0,len(lspci_boards)):
