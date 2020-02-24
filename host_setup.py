@@ -480,15 +480,6 @@ def run_setup(skip, vendor, appname):
     print(f" > B. By using convenient script: {run_app_path}\n\n")
 
 
-def run_app(appvendor, appname):
-    print(f" > Running Application [{appvendor} - {appname}]")
-    run_app_fname=f"runapp_{appvendor.lower()}_{appname.lower()}.sh"
-    run_app_path=os.path.join('/opt', 'xilinx', 'appstore', run_app_fname)
-    if not os.path.exists(run_app_path):
-        print(f" [ERROR] Unable to find run app script [{run_app_path}]")
-        sys.exit(1)
-    run(run_app_path, shell=True)
-
 
 if __name__ == '__main__':
 
@@ -504,15 +495,10 @@ if __name__ == '__main__':
                         required=False, help="App Vendor")
     option.add_argument('--appname', '-a', dest="appname", type=str, default=None,
                         required=False, help="App Name")
-    option.add_argument('--run', '-r', dest="run", action="store_true", 
-                        help="Run the AppStore Application")
     option.add_argument('--skip', '-s', dest="skip", action="store_true", 
                         help="Skip questions and use default value")
     args = option.parse_args()
-    
-    if args.run:
-        sys.exit(run_app(args.vendor, args.appname))
-        
+            
     if not args.vendor or not args.appname:
         print(f" > You must provide application vendor and name from following list:")
         appcatalog=jsonfile_to_dict(os.path.join(APPDEFS_FOLDER, APPLIST_FNAME))

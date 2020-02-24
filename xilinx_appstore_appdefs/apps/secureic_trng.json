@@ -43,5 +43,6 @@
     "DockerCmds": {
         "pull": "docker pull hubxilinx/secureic_trng_alveo_u200",
         "run": "docker run -v /home/$USER/cred.json:/home/appuser/cred.json -v /dev/shm:/data $XILINX_FPGA_DEV_IDS hubxilinx/secureic_trng_alveo_u200"
-    }
+    },
+    "Results":"Generate 256 bytes of true random dat using the following command\ncurl http://{aws_instance_ip}:8080/?size=256"
 }
