@@ -228,7 +228,7 @@ def install_dependencies(host_os):
 
 
 def install_DockerCE():
-    cmd = 'curl -fsSL https://get.docker.com | sudo sh && sudo echo '{"max-concurrent-downloads": 1}' > /etc/docker/daemon.json && sudo systemctl start docker && sudo systemctl enable docker && sudo usermod -aG docker $USER'
+    cmd = 'curl -fsSL https://get.docker.com | sudo sh && sudo echo "{\"max-concurrent-downloads\": 1}" > /etc/docker/daemon.json && sudo systemctl start docker && sudo systemctl enable docker && sudo usermod -aG docker $USER'
     ret, out, err = exec_cmd_with_ret_output(cmd)
     if ret:
         raise
