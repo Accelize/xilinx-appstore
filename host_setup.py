@@ -66,9 +66,9 @@ def get_host_env():
     # Get OS
     import platform
     host_os=None
-    if 'ubuntu-18.04' in platform.platform().lower: host_os='ubuntu-18.04'
-    if 'ubuntu-16.04' in platform.platform().lower: host_os='ubuntu-16.04'
-    if 'centos' in platform.platform(): host_os='centos'
+    if 'ubuntu-18.04' in platform.platform().lower(): host_os='ubuntu-18.04'
+    if 'ubuntu-16.04' in platform.platform().lower(): host_os='ubuntu-16.04'
+    if 'centos' in platform.platform().lower(): host_os='centos'
     print_status('Detected OS', f'{host_os}')
     return host_os
     
