@@ -476,8 +476,8 @@ def run_setup(skip, vendor, appname):
     print(f" > A. By using the following commands:")
     print(f"\tsource /opt/xilinx/appstore/set_env.sh")
     print(f"\t{pullCmd}")
-    print(f"\t{runCmd}\n\n")
-    print(f" > B. By using convenient script: {run_app_path}")
+    print(f"\t{runCmd}")
+    print(f" > B. By using convenient script: {run_app_path}\n\n")
 
 
 def run_app(appvendor, appname):
