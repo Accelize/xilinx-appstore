@@ -20,7 +20,7 @@ def print_status(text, status, fulllength=40):
 
 
 def jsonfile_to_dict(filename):
-    with open(filename, 'r') as json_file:
+    with open(filename, 'r', encoding="utf-8") as json_file:
         return json.load(json_file)
 
 
@@ -235,7 +235,7 @@ def install_DockerCE():
 
 
 def configure_DockerCE():
-    cmd = 'echo "{\"max-concurrent-downloads\": 1}" | sudo tee -a /etc/docker/daemon.json && sudo systemctl restart docker && sudo systemctl enable docker && sudo usermod -aG docker $USER'
+    cmd = 'sudo mkdir -p /etc/docker && echo "{\"max-concurrent-downloads\": 1}" | sudo tee -a /etc/docker/daemon.json && sudo systemctl restart docker && sudo systemctl enable docker && sudo usermod -aG docker $USER'
     ret, out, err = exec_cmd_with_ret_output(cmd)
     if ret:
         raise
