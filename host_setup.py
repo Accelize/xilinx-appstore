@@ -383,6 +383,14 @@ def run_setup(skip, vendor, appname):
     
     # Detect host environement
     host_os = get_host_env()
+    
+    # Set environement variables
+    os.environ['LANG'] = "en_US.UTF-8"
+    os.environ['LANGUAGE'] = "en_US.UTF-8"
+    os.environ['LC_COLLATE'] = "C"
+    os.environ['LC_CTYPE'] = "en_US.UTF-8"
+    
+    # Check host updates needed
     dep_updt=check_dependencies(host_os)
     krn_updt=check_kernel()
     dkr_updt=check_docker(host_os)

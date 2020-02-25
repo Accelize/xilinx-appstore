@@ -44,5 +44,43 @@
         "pull": "docker pull hubxilinx/vnova_pplus_alveo_u200",
         "run": "docker run -v /home/$USER/cred.json:/vnova_pplus/cred.json:Z -v /dev/shm:/io:Z $XILINX_FPGA_DEV_IDS hubxilinx/vnova_pplus_alveo_u200 -y -s 3840x2160 -pix_fmt yuv420p -vcodec rawvideo -stream_loop 0 -r 60 -i /samples/sample_3840x2160_8bit_P420.yuv -c:v pplusenc_hevc -base_encoder ngcodec_sdx_hevc -eil_params \"accel_type=xilinx_xma;encoding_transform_type=dd;temporal_enabled=0;temporal_use_refresh=0;api_mode=asynchronous;baseEncType=ngcodec;xclbinHasNGC=1;encoding_downsample_luma=area;encoding_upsample=cubic;rate_control_mode=variableratio;rc_bucket_duration_ms=2000;encoding_step_width_model=v1;encoding_step_width_min_qp=41;bitrate_max_base_prop=0.8;bitrate_base_prop=0.8;perseus_mode=robust;qp_min=30;xma_config=/vnova_pplus/SystemCfg_194.yaml\" -b:v 8000k \"/io/output.ts\""
     },
-    "Results": "Once execution is completed, you can use your video player software to display the HD version of the output file \"/dev/shm/output.ts\" or use a P+-compliant player to display the 4K version."
+    "Instructions": {
+        "Nimbix":{
+            "Application Execution": {
+                "Start the Application on the Nimbix Platform": {
+                    "URL":"https://platform.jarvice.com/?page=compute&name=NGCodec",
+                    "ButtonName":"HEVC Batch Encoder",
+                    "Asset": "assets/vnova_perseus_plus/vnova01.png"
+                },
+                "Configure the Application": {
+                    "MachineType":"nx5u_xdma_201830_2",
+                    "MachineCores":16,
+                    "Parameters":{
+                        "Accelize credentials:": "Browse FTP to select your \"cred.json\" Access Key file from Step 2.",
+                        "FFMPEG arguments:": "-y -s 3840x2160 -pix_fmt yuv420p -vcodec rawvideo -stream_loop 0 -r 60 -i /samples/sample_3840x2160_8bit_P420.yuv -c:v pplusenc_hevc -base_encoder ngcodec_sdx_hevc -eil_params \"accel_type=xilinx_xma;encoding_transform_type=dd;temporal_enabled=0;temporal_use_refresh=0;api_mode=asynchronous;baseEncType=ngcodec;xclbinHasNGC=1;encoding_downsample_luma=area;encoding_upsample=cubic;rate_control_mode=variableratio;rc_bucket_duration_ms=2000;encoding_step_width_model=v1;encoding_step_width_min_qp=41;bitrate_max_base_prop=0.8;bitrate_base_prop=0.8;perseus_mode=robust;qp_min=30;xma_config=/vnova_pplus/SystemCfg_194.yaml\" -b:v 8000k /data/output.ts"
+                    },
+                    "Asset": "assets/vnova_perseus_plus/vnova02.png"
+                },
+                "Results": {
+                    "Text": "Once your job is complete, an “output.ts” 4K HEVC encoded sample will be available on the Nimbix FTP. You can download it and use your video player software to display it.\nYou can now use your own input video file by\n\t+ Uploading it on Nimbix FTP\n\t+ Replacing “-i /samples/in.mp4” with “-i /data/{YourFileName}” in the FFMPEG arguments",
+                    "Asset": "assets/vnova_perseus_plus/vnova03.png"
+                }
+            }
+        },
+        "Alveo U200": {
+            "Host Setup": {
+                "Ubuntu": "sudo apt install -y python3 git curl && git clone https://github.com/Accelize/xilinx-appstore.git && python3 xilinx-appstore/host_setup.py -v ngcodec -a hevc_enc_dual",
+                "Centos": "sudo yum install -y python3 git curl && git clone https://github.com/Accelize/xilinx-appstore.git && python3 xilinx-appstore/host_setup.py -v ngcodec -a hevc_enc_dual"
+            },
+            "Application Execution": {
+                "Setup Environment Variables": "source /opt/xilinx/appstore/set_env.sh",
+                "Pull the Docker Image":"docker pull hubxilinx/ngcodec_hevc_alveo_u200",
+                "Run the Docker Image":"docker run -v /home/labo/cred.json:/home/appuser/cred.json -v /dev/shm:/data $XILINX_FPGA_DEV_IDS hubxilinx/ngcodec_hevc_alveo_u200 -i /samples/in.mp4 -c:v NGC265 -b:v 3M -g 0 -idr-period 120 -y -f mp4 /data/out.mp4"
+            },
+            "Results": {
+                    "Text": "Once your job is complete, an “out.mp4” HEVC encoded sample will be available on the Nimbix FTP. You download it and use your video player software to display it.\nYou can now use your own input video file by\n\t+ Uploading it on Nimbix FTP\n\t+ Replacing “-i /samples/in.mp4” with “-i /data/{YourFileName}” in the FFMPEG arguments",
+                    "Asset": "assets/vnova_perseus_plus/vnova03.png"
+            }
+        }
+    }
 }
