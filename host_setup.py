@@ -228,11 +228,19 @@ def install_dependencies(host_os):
 
 
 def install_DockerCE():
-    cmd = 'curl -fsSL https://get.docker.com | sudo sh && sudo echo "{\"max-concurrent-downloads\": 1}" > /etc/docker/daemon.json && sudo systemctl start docker && sudo systemctl enable docker && sudo usermod -aG docker $USER'
+    cmd = 'curl -fsSL https://get.docker.com | sudo sh'
     ret, out, err = exec_cmd_with_ret_output(cmd)
     if ret:
         raise
-        
+
+
+def configure_DockerCE():
+    cmd = 'echo "{\"max-concurrent-downloads\": 1}" | sudo tee -a /etc/docker/daemon.json && sudo systemctl restart docker && sudo systemctl enable docker && sudo usermod -aG docker $USER'
+    ret, out, err = exec_cmd_with_ret_output(cmd)
+    if ret:
+        raise
+
+
 def update_os_kernel(host_os):
     if 'ubuntu' in host_os:
         cmd = 'sudo apt-get update -y kernel'
@@ -276,7 +284,7 @@ def update_host_env(host_os, update_kernel, dependencies, install_docker=False):
     print(f" > Packages install/update:")
     if dependencies: print(f" > \tDependencies (curl, ...)")
     if update_kernel: print(f" > \tKernel Update")
-    if install_docker: print(f" > \tDocker CE")
+    print(f" > \tDocker CE")
     
     answer = None
     while answer not in ['y', 'n']:
@@ -290,10 +298,12 @@ def update_host_env(host_os, update_kernel, dependencies, install_docker=False):
             print_status('Updating Kernel', '')
             update_os_kernel(host_os)     
             print_status('Updating Kernel', 'Done')
+        
+        print_status('Updating DockerCE', '')
         if install_docker:
-            print_status('Updating DockerCE', '')
-            install_DockerCE()        
-            print_status('Updating DockerCE', 'Done')        
+            install_DockerCE()  
+        configure_DockerCE()        
+        print_status('Updating DockerCE', 'Done')        
         
         print(f" > Packages install/update completed, please reboot your server and relaunch this script.")
         host_reboot(cold=False)
