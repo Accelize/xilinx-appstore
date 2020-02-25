@@ -2,7 +2,7 @@
     "appvendor": "secure-ic",
     "appname": "trng",
     "short_desc": "True random Number Generator",
-    "summary": "Secure-IC offers both True Random Number Generator (TRNG) resilient to harmoni c injection for statistically independent sets of bits generation and Deterministic Random Bit Generator (DRBG) for high bitrates requirements.These random generators are compliant with commonly used statistical tests suites.",
+    "summary": "Secure-IC offers both True Random Number Generator (TRNG) resilient to harmonic injection for statistically independent sets of bits generation and Deterministic Random Bit Generator (DRBG) for high bitrates requirements.These random generators are compliant with commonly used statistical tests suites.",
     "Publisher":"Secure-IC",
     "Published By":"Accelize",
     "Modified":"January 23, 2020",
@@ -44,5 +44,42 @@
         "pull": "docker pull hubxilinx/secureic_trng_alveo_u200",
         "run": "docker run -p 8080:8080 -v /home/$USER/cred.json:/home/appuser/cred.json -v /dev/shm:/data $XILINX_FPGA_DEV_IDS hubxilinx/secureic_trng_alveo_u200"
     },
-    "Results":"Generate 256 bytes of true random dat using the following command\ncurl http://{host_url}:8080?size=256 | hexdump"
+    "Instructions": {
+        "Nimbix":{
+            "Application Execution": {
+                "Start the Application on the Nimbix Platform": {
+                    "URL":"https://platform.jarvice.com/?page=compute&name=SecureIC",
+                    "ButtonName":"TRNG Micro-Service",
+                    "Asset": "assets/secureic_trng/secureic01.png"
+                },
+                "Configure the Application": {
+                    "MachineType":"nx5u_xdma_201830_2",
+                    "MachineCores":16,
+                    "Parameters":{
+                        "Accelize credentials:": "Browse FTP to select your \"cred.json\" Access Key file from Step 2."
+                    },
+                    "Asset": "assets/secureic_trng/secureic02.png"
+                },
+                "Results": {
+                    "Text": "It will start a webservice that generates random numbers \"on-demand\".\nGenerate 256 bytes of true random data using the following command\ncurl http://{nimbix_instance_ip}:8080?size=256 | hexdump",
+                    "Asset": "assets/secureic_trng/secureic03.png"
+                }
+            }
+        },
+        "Alveo U200": {
+            "Host Setup": {
+                "Ubuntu": "sudo apt install -y python3 git curl && git clone https://github.com/Accelize/xilinx-appstore.git && python3 xilinx-appstore/host_setup.py -v ngcodec -a hevc_enc_dual",
+                "Centos": "sudo yum install -y python3 git curl && git clone https://github.com/Accelize/xilinx-appstore.git && python3 xilinx-appstore/host_setup.py -v ngcodec -a hevc_enc_dual"
+            },
+            "Application Execution": {
+                "Setup Environment Variables": "source /opt/xilinx/appstore/set_env.sh",
+                "Pull the Docker Image":"docker pull hubxilinx/secureic_trng_alveo_u200",
+                "Run the Docker Image":"docker run -p 8080:8080 -v /home/$USER/cred.json:/home/appuser/cred.json -v /dev/shm:/data $XILINX_FPGA_DEV_IDS hubxilinx/secureic_trng_alveo_u200"
+            },
+            "Results": {
+                    "Text": "It will start a webservice that generates random numbers \"on-demand\".\nGenerate 256 bytes of true random data using the following command\ncurl http://{host_ip}:8080?size=256 | hexdump",
+                    "Asset": "assets/secureic_trng/secureic03.png"
+                }
+        }
+    }
 }
