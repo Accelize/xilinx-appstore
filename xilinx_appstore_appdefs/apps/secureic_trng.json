@@ -9,7 +9,7 @@
     "Size":"285.49 MB",
     "DeploymentOptions": {
         "CloudServices": {
-            "aws":"f1"
+            "Nimbix":"nx5u_xdma_201830_2"
         },
         "OnPremisess": {
             "Alveo U200":"xdma-201830.2"

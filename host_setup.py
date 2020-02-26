@@ -42,10 +42,13 @@ def fpga_board_list():
     fpga_boards=[]
     ret, out, err = exec_cmd_with_ret_output('sudo lspci  -d 10ee: | grep " Processing accelerators" | grep "Xilinx" | cut -d" " -f7')
     for line in out.splitlines():
-        if '5000' in line: fpga_boards.append('u200')
-        if '5004' in line: fpga_boards.append('u250')
-        if '500c' in line: fpga_boards.append('u280')
-        if '5020' in line: fpga_boards.append('u50')
+        if '5000' in line: fpga_boards.append('u200') # XDMA
+        if '5004' in line: fpga_boards.append('u250') # XDMA
+        if '5008' in line: fpga_boards.append('u280') # ES1-XDMA
+        if '500c' in line: fpga_boards.append('u280') # XDMA
+        if '5010' in line: fpga_boards.append('u200') # QDMA
+        if '5014' in line: fpga_boards.append('u250') # QDMA
+        if '5020' in line: fpga_boards.append('u50')  # XDMA
     
     fpga_boards = list(dict.fromkeys(fpga_boards))
     return fpga_boards
