@@ -1,7 +1,7 @@
 {
     "appvendor": "v-nova",
     "appname": "p+",
-    "short_desc": "SDR-HDR Converter",
+    "short_desc": "P+ encoder",
     "summary": "P+ (previously PERSEUS Plus) is the industry’s first highly optimized software library for encoding and decoding enhanced video streams with MPEG-5 Part 2, low-complexity enhancement video coding.",
     "Publisher":"V-Nova",
     "Published By":"Accelize",
