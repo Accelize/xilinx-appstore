@@ -47,12 +47,12 @@
     "Instructions": {
         "Nimbix":{
             "Application Execution": {
-                "Start the Application on the Nimbix Platform": {
+                "Select the Application on the Nimbix Platform": {
                     "URL":"https://platform.jarvice.com/?page=compute&name=SecureIC",
                     "ButtonName":"TRNG Micro-Service",
                     "Asset": "assets/secureic_trng/secureic01.png"
                 },
-                "Configure the Application": {
+                "Run the Application": {
                     "MachineType":"nx5u_xdma_201830_2",
                     "MachineCores":16,
                     "Parameters":{
@@ -61,15 +61,18 @@
                     "Asset": "assets/secureic_trng/secureic02.png"
                 },
                 "Results": {
-                    "Text": "It will start a webservice that generates random numbers \"on-demand\".\nGenerate 256 bytes of true random data using the following command\ncurl http://{nimbix_instance_ip}:8080?size=256 | hexdump",
+                    "Text": "It will start a webservice that generates random numbers \"on-demand\".\n \
+                    Generate 256 bytes of true random data using the following command:\n \
+                    curl http://{nimbix_instance_address}:8080?size=256 | hexdump \
+                    Note: The Nimbix Instance Address is displayed when running the application (e.g: \"NAE-165-254-189-68.jarvice.com\")",
                     "Asset": "assets/secureic_trng/secureic03.png"
                 }
             }
         },
         "Alveo U200": {
             "Host Setup": {
-                "Ubuntu": "sudo apt install -y python3 git curl && git clone https://github.com/Accelize/xilinx-appstore.git && python3 xilinx-appstore/host_setup.py -v ngcodec -a hevc_enc_dual",
-                "Centos": "sudo yum install -y python3 git curl && git clone https://github.com/Accelize/xilinx-appstore.git && python3 xilinx-appstore/host_setup.py -v ngcodec -a hevc_enc_dual"
+                "Ubuntu": "sudo apt install -y python3 git curl && git clone https://github.com/Accelize/xilinx-appstore.git && python3 xilinx-appstore/host_setup.py -v secure-ic -a trng",
+                "Centos": "sudo yum install -y python3 git curl && git clone https://github.com/Accelize/xilinx-appstore.git && python3 xilinx-appstore/host_setup.py -v secure-ic -a trng"
             },
             "Application Execution": {
                 "Setup Environment Variables": "source /opt/xilinx/appstore/set_env.sh",
@@ -77,7 +80,9 @@
                 "Run the Docker Image":"docker run -p 8080:8080 -v /home/$USER/cred.json:/home/appuser/cred.json -v /dev/shm:/data $XILINX_FPGA_DEV_IDS hubxilinx/secureic_trng_alveo_u200"
             },
             "Results": {
-                    "Text": "It will start a webservice that generates random numbers \"on-demand\".\nGenerate 256 bytes of true random data using the following command\ncurl http://{host_ip}:8080?size=256 | hexdump",
+                    "Text": "It will start a webservice that generates random numbers \"on-demand\".\n \
+                    Generate 256 bytes of true random data using the following command:\n \
+                    curl http://{host_ip}:8080?size=256 | hexdump",
                     "Asset": "assets/secureic_trng/secureic03.png"
                 }
         }

@@ -70,8 +70,12 @@ def get_host_env():
     import platform
     host_os=None
     if 'ubuntu-18.04' in platform.platform().lower(): host_os='ubuntu-18.04'
-    if 'ubuntu-16.04' in platform.platform().lower(): host_os='ubuntu-16.04'
-    if 'centos' in platform.platform().lower(): host_os='centos'
+    elif 'ubuntu-16.04' in platform.platform().lower(): host_os='ubuntu-16.04'
+    elif 'centos-7' in platform.platform().lower(): host_os='centos'
+    
+    if host_os is None:
+        print(f" [ERROR] Your Operating System is nt supported.\nSupported OS: CentOS 7, Ubuntu 16.04 and Ubuntu 18.04")
+        sys.exit(1)
     print_status('Detected OS', f'{host_os}')
     return host_os
     

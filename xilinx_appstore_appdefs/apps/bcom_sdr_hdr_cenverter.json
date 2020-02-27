@@ -47,12 +47,12 @@
     "Instructions": {
         "Nimbix":{
             "Application Execution": {
-                "Start the Application on the Nimbix Platform": {
+                "Select the Application on the Nimbix Platform": {
                     "URL":"https://platform.jarvice.com/?page=compute&name=B-com",
                     "ButtonName":"SDR to HDR Batch Converter",
                     "Asset": "assets/bcom_sdrtohdr/bcom01.png"
                 },
-                "Configure the Application": {
+                "Run the Application": {
                     "MachineType":"nx5u_xdma_201830_2",
                     "MachineCores":16,
                     "Parameters":{
@@ -89,7 +89,9 @@
                          You can use Vooya video player to display it:\n \
                          \t+ Download Vooya video player: https://www.offminor.de/downloads.html\n \
                          \t+ Play the output file: vooya -p -w 1920 -h 1080 -r 60 --packing R210 --color rgb -b 10 out.raw\n \
-                         You can now use your own input video file by replacing \"/samples/in.raw\" with \"/data/{YourFileName}\" in the docker run command",     
+                         You can now use your own input video file by:\n \
+                         \t+Copying your file in \"/dev/shm/{YourFileName}\" \
+                         \t+Replacing \"-i /samples/in.raw\" with \"-i /data/{YourFileName}\" in the docker run command",   
                 "Asset": "assets/bcom_sdrtohdr/bcom03.png"
             }
         }
