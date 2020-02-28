@@ -30,10 +30,6 @@ def parse_value(key_value):
 
 def pip_install(package):
     run([sys.executable, '-m', 'pip', 'install', package])
-    if hasattr(pip, 'main'):
-        pip.main(['install', package])
-    else:
-        pip._internal.main(['install', package]
    
 
 def print_status(text, status, fulllength=40):
