@@ -1,19 +1,21 @@
-apps:
-- appdef_path: apps/ngcodec_hevc_encoder_dual_density.json
-  appname: hevc_enc_dual
-  appvendor: NGCodec
-  short_desc: HEVC/H.265 Encoder Dual Density
-- appdef_path: apps/bcom_sdr_hdr_cenverter.json
-  appname: sdr_hdr_converter
-  appvendor: b-com
-  short_desc: SDR-HDR Converter
-- appdef_path: apps/vnova_perseus_plus.json
-  appname: p+
-  appvendor: v-nova
-  short_desc: P+ (previously PERSEUS Plus)
-- appdef_path: apps/secureic_trng.json
-  appname: trng
-  appvendor: secure-ic
-  short_desc: True Random Number Generator
-author: Accelize
 name: Xilinx AppStore Applications Definitions
+author: Accelize
+apps:
+- appvendor: NGCodec
+  appname: hevc_enc_dual
+  short_desc: HEVC/H.265 Encoder Dual Density
+  appdef_path: apps/ngcodec_hevc_encoder_dual_density.yaml
+- appvendor: b-com
+  appname: sdr_hdr_converter
+  short_desc: SDR-HDR Converter
+  appdef_path: apps/bcom_sdr_hdr_cenverter.yaml
+- appvendor: v-nova
+  appname: p+  
+  short_desc: P+ (previously PERSEUS Plus)
+  appdef_path: apps/vnova_perseus_plus.yaml
+- appvendor: secure-ic
+  appname: trng
+  short_desc: True Random Number Generator
+  appdef_path: apps/secureic_trng.yaml
+
+
