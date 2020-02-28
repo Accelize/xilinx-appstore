@@ -415,6 +415,9 @@ def run_setup(skip, vendor, appname):
     os.environ['LC_COLLATE'] = "C"
     os.environ['LC_CTYPE'] = "en_US.UTF-8"
     
+    # Install Script Dependencies
+    pip_install('pyYAML')
+    
     # Loading App Catalog file
     appcatalog=yamlfile_to_dict(os.path.join(APPDEFS_FOLDER, APPLIST_FNAME))
     print_status('Loading App Catalog', 'OK')
