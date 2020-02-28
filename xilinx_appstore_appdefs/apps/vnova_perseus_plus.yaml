@@ -1,0 +1,67 @@
+DeploymentOptions:
+  CloudServices: N/A
+  OnPremisess:
+    Alveo U200: xdma-201830.2
+  PortalURL: https://v-nova.accelize.com/user/login?destination=/front/customer/listpurchase?product=PPlus-NGC-HEVC
+DockerCmds:
+  pull: docker pull hubxilinx/vnova_pplus_alveo_u200
+  run: docker run -v /home/$USER/cred.json:/vnova_pplus/cred.json:Z -v /dev/shm:/io:Z
+    $XILINX_FPGA_DEV_IDS hubxilinx/vnova_pplus_alveo_u200 -y -s 3840x2160 -pix_fmt
+    yuv420p -vcodec rawvideo -stream_loop 0 -r 60 -i /samples/sample_3840x2160_8bit_P420.yuv
+    -c:v pplusenc_hevc -base_encoder ngcodec_sdx_hevc -eil_params "accel_type=xilinx_xma;encoding_transform_type=dd;temporal_enabled=0;temporal_use_refresh=0;api_mode=asynchronous;baseEncType=ngcodec;xclbinHasNGC=1;encoding_downsample_luma=area;encoding_upsample=cubic;rate_control_mode=variableratio;rc_bucket_duration_ms=2000;encoding_step_width_model=v1;encoding_step_width_min_qp=41;bitrate_max_base_prop=0.8;bitrate_base_prop=0.8;perseus_mode=robust;qp_min=30;xma_config=/vnova_pplus/SystemCfg_194.yaml"
+    -b:v 8000k /io/output.ts
+HostSetupConfiguration:
+- board: xilinx-u200
+  dsa_package: xilinx-u200-xdma-201830.2-2580015_16.04.deb
+  os: ubuntu-16.04
+  xrt_package: xrt_201910.2.2.2250_16.04-xrt.deb
+- board: xilinx-u200
+  dsa_package: xilinx-u200-xdma-201830.2-2580015_18.04.deb
+  os: ubuntu-18.04
+  xrt_package: xrt_201910.2.2.2250_18.04-xrt.deb
+- board: xilinx-u200
+  dsa_package: xilinx-u200-xdma-201830.2-2580015.x86_64.rpm
+  os: centos
+  xrt_package: xrt_201910.2.2.2250_7.4.1708-xrt.rpm
+Instructions:
+  Alveo U200:
+    Application Execution:
+      Pull the Docker Image: docker pull hubxilinx/vnova_pplus_alveo_u200
+      Run the Docker Image: docker run -v /home/$USER/cred.json:/vnova_pplus/cred.json:Z
+        -v /dev/shm:/io:Z $XILINX_FPGA_DEV_IDS hubxilinx/vnova_pplus_alveo_u200 -y
+        -s 3840x2160 -pix_fmt yuv420p -vcodec rawvideo -stream_loop 0 -r 60 -i /samples/sample_3840x2160_8bit_P420.yuv
+        -c:v pplusenc_hevc -base_encoder ngcodec_sdx_hevc -eil_params "accel_type=xilinx_xma;encoding_transform_type=dd;temporal_enabled=0;temporal_use_refresh=0;api_mode=asynchronous;baseEncType=ngcodec;xclbinHasNGC=1;encoding_downsample_luma=area;encoding_upsample=cubic;rate_control_mode=variableratio;rc_bucket_duration_ms=2000;encoding_step_width_model=v1;encoding_step_width_min_qp=41;bitrate_max_base_prop=0.8;bitrate_base_prop=0.8;perseus_mode=robust;qp_min=30;xma_config=/vnova_pplus/SystemCfg_194.yaml"
+        -b:v 8000k /io/output.ts
+      Setup Environment Variables: source /opt/xilinx/appstore/set_env.sh
+    Host Setup:
+      Centos: sudo yum install -y python3 git curl && git clone https://github.com/Accelize/xilinx-appstore.git
+        && python3 xilinx-appstore/host_setup.py -v v-nova -a p+
+      Ubuntu: sudo apt install -y python3 git curl && git clone https://github.com/Accelize/xilinx-appstore.git
+        && python3 xilinx-appstore/host_setup.py -v v-nova -a p+
+    Results:
+      Asset: assets/vnova_perseus_plus/vnova03.png
+      Text: "Once your job is complete, an \u201Coutput.ts\u201D 4K HEVC encoded sample\
+        \ will be available in \"/dev/shm\".\nYou can use The Perseus decoder on Microsoft\
+        \ Windows 10 to display it.\nYou will need to install these 2 apps:\n\t+HEVC\
+        \ extension app: https://www.microsoft.com/en-us/store/p/hevc-video-extension/9n4wgh0z6vhq\n\
+        \t+V-Nova Perseus Decoder: https://www.microsoft.com/en-gb/p/v-nova/9n9c2z21xhl9?activetab=pivot:overviewtab\n\
+        You can now use your own input video file by:\n\t+Copying your file in \"\
+        /dev/shm/{YourFileName}\" \n\t+Replacing \"-i /samples/sample_3840x2160_8bit_P420.yuv\"\
+        \ with \"-i /data/{YourFileName}\" in the docker run command"
+Modified: January 23, 2020
+Published By: Accelize
+Publisher: V-Nova
+Size: 942 MB
+Supported:
+  boards:
+  - u200
+  os:
+  - ubuntu-16.04
+  - ubuntu-18.04
+  - centos
+appname: p+
+appvendor: v-nova
+short_desc: P+ encoder
+summary: "V-Nova P+ is the industry\u2019s first highly optimized software library\
+  \ for encoding and decoding enhanced video streams with MPEG-5 Part 2, low-complexity\
+  \ enhancement video coding."

@@ -9,10 +9,11 @@ import locale
 SCRIPT_PATH=os.path.dirname(os.path.realpath(__file__))
 GIT_REPO_XX_APPSTORE="https://github.com/Accelize/xilinx_appstore_appdefs.git"
 APPDEFS_FOLDER=os.path.join(SCRIPT_PATH, "xilinx_appstore_appdefs")
-APPLIST_FNAME="applist.json"
+APPLIST_FNAME="applist.yaml"
 SETENV_SCRIPT=os.path.join(SCRIPT_PATH, 'xilinx_appstore_env.sh')
 host_dependencies_ubuntu = 'curl linux-headers'
 host_dependencies_centos = 'curl epel-release kernel-headers kernel-devel'
+MIN_PYTHON = (3, 6)
 
 def parse_value(key_value):
     """
@@ -41,6 +42,18 @@ def jsonfile_to_dict(filename):
         return json.load(json_file)
 
 
+def yamlfile_to_dict(filename):
+    import yaml
+    with open(filename, 'r', encoding="utf-8") as yaml_file:
+        return yaml.safe_load(yaml_file)
+        
+
+def dict_to_yamlfile(d, filename):
+    import yaml
+    with open(filename, 'w', encoding="utf-8") as yaml_file:
+        yaml.dump(d, yaml_file)
+        
+        
 def dict_pretty_print(in_dict):
     print(json.dumps(in_dict, sort_keys=True, indent=4))
     
@@ -403,7 +416,7 @@ def run_setup(skip, vendor, appname):
     os.environ['LC_CTYPE'] = "en_US.UTF-8"
     
     # Loading App Catalog file
-    appcatalog=jsonfile_to_dict(os.path.join(APPDEFS_FOLDER, APPLIST_FNAME))
+    appcatalog=yamlfile_to_dict(os.path.join(APPDEFS_FOLDER, APPLIST_FNAME))
     print_status('Loading App Catalog', 'OK')
     
     appdef_path=''
@@ -418,7 +431,7 @@ def run_setup(skip, vendor, appname):
     print_status('Selected App', f"{vendor} - {appname}")
        
     # Loading App Definition file
-    appdef=jsonfile_to_dict(os.path.join(APPDEFS_FOLDER, appdef_path))  
+    appdef=yamlfile_to_dict(os.path.join(APPDEFS_FOLDER, appdef_path))  
     print_status('Loading App Definition file', 'OK')
     
     # Detect host environement
@@ -535,6 +548,9 @@ def run_setup(skip, vendor, appname):
 
 if __name__ == '__main__':
 
+    if sys.version_info < MIN_PYTHON:
+        sys.exit("Python %s.%s or later is required.\n" % MIN_PYTHON)
+    
     print(f"  -------------------------------------------")
     print(f" | Xilinx Host Setup Script for Alveo Boards |")
     print(f"  -------------------------------------------")
@@ -553,7 +569,7 @@ if __name__ == '__main__':
             
     if not args.vendor or not args.appname:
         print(f" > You must provide application vendor and name from following list:")
-        appcatalog=jsonfile_to_dict(os.path.join(APPDEFS_FOLDER, APPLIST_FNAME))
+        appcatalog=yamlfile_to_dict(os.path.join(APPDEFS_FOLDER, APPLIST_FNAME))
         for app in appcatalog['apps']:
             print_status(f"\t{app['appvendor'].lower()}", f"{app['appname'].lower()}", 20)
         print(f" > e.g: python3 host_setup.py -v ngcodec -a hevc_enc_dual\n")

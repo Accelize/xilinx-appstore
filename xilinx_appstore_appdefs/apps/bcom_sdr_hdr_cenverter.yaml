@@ -1,0 +1,87 @@
+DeploymentOptions:
+  CloudServices:
+    Nimbix: nx5u_xdma_201830_2
+  OnPremisess:
+    Alveo U200: xdma-201830.2
+  PortalURL: https://b-com.accelize.com/user/login?destination=/front/customer/listpurchase?product=SDR%20to%20HDR
+DockerCmds:
+  pull: docker pull hubxilinx/bcom_sdr2hdr_alveo_u200
+  run: docker run -v /home/$USER/cred.json:/home/appuser/cred.json -v /dev/shm:/data
+    $XILINX_FPGA_DEV_IDS hubxilinx/bcom_sdr2hdr_alveo_u200 /samples/in.raw /data/out.raw
+HostSetupConfiguration:
+- board: xilinx-u200
+  dsa_package: xilinx-u200-xdma-201830.2-2580015_16.04.deb
+  os: ubuntu-16.04
+  xrt_package: xrt_201910.2.2.2250_16.04-xrt.deb
+- board: xilinx-u200
+  dsa_package: xilinx-u200-xdma-201830.2-2580015_18.04.deb
+  os: ubuntu-18.04
+  xrt_package: xrt_201910.2.2.2250_18.04-xrt.deb
+- board: xilinx-u200
+  dsa_package: xilinx-u200-xdma-201830.2-2580015.x86_64.rpm
+  os: centos
+  xrt_package: xrt_201910.2.2.2250_7.4.1708-xrt.rpm
+Instructions:
+  Alveo U200:
+    Application Execution:
+      Pull the Docker Image: docker pull hubxilinx/bcom_sdr2hdr_alveo_u200
+      Run the Docker Image: docker run -v /home/$USER/cred.json:/home/appuser/cred.json
+        -v /dev/shm:/data $XILINX_FPGA_DEV_IDS hubxilinx/bcom_sdr2hdr_alveo_u200 /samples/in.raw
+        /data/out.raw
+      Setup Environment Variables: source /opt/xilinx/appstore/set_env.sh
+    Host Setup:
+      Centos: sudo yum install -y python3 git curl && git clone https://github.com/Accelize/xilinx-appstore.git
+        && python3 xilinx-appstore/host_setup.py -v b-com -a sdr_hdr_converter
+      Ubuntu: sudo apt install -y python3 git curl && git clone https://github.com/Accelize/xilinx-appstore.git
+        && python3 xilinx-appstore/host_setup.py -v b-com -a sdr_hdr_converter
+    Results:
+      Asset: assets/bcom_sdrtohdr/bcom03.png
+      Text: "Once your job is complete, an \u201Cout.raw\u201D HD HDR sample will\
+        \ be available in \"/dev/shm\". \nYou can use Vooya video player to display\
+        \ it:\n\t+ Download Vooya video player: https://www.offminor.de/downloads.html\n\
+        \t+ Play the output file: vooya -p -w 1920 -h 1080 -r 60 --packing R210 --color\
+        \ rgb -b 10 out.raw\nYou can now use your own input video file by:\n\t+ Copying\
+        \ your file in \"/dev/shm/{YourFileName}\"\n\t+ Replacing \"-i /samples/in.raw\"\
+        \ with \"-i /data/{YourFileName}\" in the docker run command"
+  Nimbix:
+    Application Execution:
+      Results:
+        Asset: assets/bcom_sdrtohdr/bcom03.png
+        Text: "Once your job is complete, an \u201Cout.raw\u201D HD HDR sample will\
+          \ be available on the Nimbix FTP.\nYou can download it and use Vooya video\
+          \ player to display it:\n\t+ Download Vooya video player: https://www.offminor.de/downloads.html\n\
+          \t+ Play the output file: vooya -p -w 1920 -h 1080 -r 60 --packing R210\
+          \ --color rgb -b 10 out.raw\nYou can now use your own input video file by\n\
+          \t+ Uploading it on Nimbix FTP\n\t+ Replacing \"/samples/in.raw\" with \"\
+          /data/{YourFileName}\" in File Input argument"
+      Run the Application:
+        Asset: assets/bcom_sdrtohdr/bcom02.png
+        MachineCores: 16
+        MachineType: nx5u_xdma_201830_2
+        Parameters:
+          'Accelize credentials:': Browse FTP to select your "cred.json" Access Key
+            file from Step 2.
+          'Input File:': /samples/in.raw
+          'Output File:': out.raw
+      Select the Application on the Nimbix Platform:
+        Asset: assets/bcom_sdrtohdr/bcom01.png
+        ButtonName: SDR to HDR Batch Converter
+        URL: https://platform.jarvice.com/?page=compute&name=B-com
+Modified: January 23, 2020
+Published By: Accelize
+Publisher: b<>com
+Size: 515.11 MB
+Supported:
+  boards:
+  - u200
+  os:
+  - ubuntu-16.04
+  - ubuntu-18.04
+  - centos
+appname: sdr_hdr_converter
+appvendor: b-com
+short_desc: SDR-HDR Converter
+summary: This SDR-to-HDR technology provides a simple yet powerful way to convert
+  SDR (Standard Dynamic Range) content into an HDR (High Dynamic Range) format. The
+  algorithm intelligently exploits high dynamic range of the target display while
+  carefully preserving the artistic intent of the source SDR video.

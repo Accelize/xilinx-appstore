@@ -1,0 +1,83 @@
+DeploymentOptions:
+  CloudServices:
+    Nimbix: nx5u_xdma_201830_2
+  OnPremisess:
+    Alveo U200: xdma-201830.2
+  PortalURL: https://xilinx-ngcodec.accelize.com/user/login?destination=/front/customer/listpurchase?product=HEVC%20Encoder%20UHD%20Dual%20Density
+DockerCmds:
+  pull: docker pull hubxilinx/ngcodec_hevc_alveo_u200
+  run: docker run -v /home/$USER/cred.json:/home/appuser/cred.json -v /dev/shm:/data
+    $XILINX_FPGA_DEV_IDS hubxilinx/ngcodec_hevc_alveo_u200 -i /samples/in.mp4 -c:v
+    NGC265 -b:v 3M -g 0 -idr-period 120 -y -f mp4 /data/out.mp4
+HostSetupConfiguration:
+- board: xilinx-u200
+  dsa_package: xilinx-u200-xdma-201830.2-2580015_16.04.deb
+  os: ubuntu-16.04
+  xrt_package: xrt_201910.2.2.2250_16.04-xrt.deb
+- board: xilinx-u200
+  dsa_package: xilinx-u200-xdma-201830.2-2580015_18.04.deb
+  os: ubuntu-18.04
+  xrt_package: xrt_201910.2.2.2250_18.04-xrt.deb
+- board: xilinx-u200
+  dsa_package: xilinx-u200-xdma-201830.2-2580015.x86_64.rpm
+  os: centos
+  xrt_package: xrt_201910.2.2.2250_7.4.1708-xrt.rpm
+Instructions:
+  Alveo U200:
+    Application Execution:
+      Pull the Docker Image: docker pull hubxilinx/ngcodec_hevc_alveo_u200
+      Run the Docker Image: docker run -v /home/$USER/cred.json:/home/appuser/cred.json
+        -v /dev/shm:/data $XILINX_FPGA_DEV_IDS hubxilinx/ngcodec_hevc_alveo_u200 -i
+        /samples/in.mp4 -c:v NGC265 -b:v 3M -g 0 -idr-period 120 -y -f mp4 /data/out.mp4
+      Setup Environment Variables: source /opt/xilinx/appstore/set_env.sh
+    Host Setup:
+      Centos: sudo yum install -y python3 git curl && git clone https://github.com/Accelize/xilinx-appstore.git
+        && python3 xilinx-appstore/host_setup.py -v ngcodec -a hevc_enc_dual
+      Ubuntu: sudo apt install -y python3 git curl && git clone https://github.com/Accelize/xilinx-appstore.git
+        && python3 xilinx-appstore/host_setup.py -v ngcodec -a hevc_enc_dual
+    Results:
+      Asset: assets/ngcodec_hevc_encoder_dual_density/ngc03.png
+      Text: "Once your job is complete, an \"out.mp4\" HEVC encoded sample will be\
+        \ available in \"/dev/shm\".\nYou can use your video player software to display\
+        \ it.\nYou can now use your own input video file by:\n\t+Copying your file\
+        \ in \"/dev/shm/{YourFileName}\" \n\t+Replacing \"-i /samples/in.mp4\" with\
+        \ \"-i /data/{YourFileName}\" in the docker run command"
+  Nimbix:
+    Application Execution:
+      Results:
+        Asset: assets/ngcodec_hevc_encoder_dual_density/ngc03.png
+        Text: "Once your job is complete, an \u201Cout.mp4\u201D HEVC encoded sample\
+          \ will be available on the Nimbix FTP. You can download it and use your\
+          \ video player software to display it.\nYou can now use your own input video\
+          \ file by\n\t+ Uploading it on Nimbix FTP\n\t+ Replacing \"-i /samples/in.mp4\"\
+          \ with \"-i /data/{YourFileName}\" in the FFMPEG arguments"
+      Run the Application:
+        Asset: assets/ngcodec_hevc_encoder_dual_density/ngc02.png
+        MachineCores: 16
+        MachineType: nx5u_xdma_201830_2
+        Parameters:
+          'Accelize credentials:': Browse FTP to select your "cred.json" Access Key
+            file from Step 2.
+          'FFMPEG arguments:': -i /samples/in.mp4 -c:v NGC265 -b:v 3M -g 0 -idr-period
+            120 -y -f mp4 /data/out.mp4
+      Select the Application on the Nimbix Platform:
+        Asset: assets/ngcodec_hevc_encoder_dual_density/ngc01.png
+        ButtonName: HEVC Batch Encoder
+        URL: https://platform.jarvice.com/?page=compute&name=NGCodec%20H.265/HEVC%20encoder
+Modified: January 23, 2020
+Published By: Accelize
+Publisher: Xilinx
+Size: 288.41 MB
+Supported:
+  boards:
+  - u200
+  os:
+  - ubuntu-16.04
+  - ubuntu-18.04
+  - centos
+appname: hevc_enc_dual
+appvendor: NGCodec
+short_desc: HEVC/H.265 Encoder Dual Density
+summary: NGCodec's RealityCodec is a distribution broadcast-quality transcoder for
+  H.265/HEVC, supporting ABR and running on both on-premises Alveo cards and in FPGA
+  instances in the cloud.
