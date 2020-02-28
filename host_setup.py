@@ -35,13 +35,12 @@ def pip_install(package):
    
 
 def clone_appstore_repo():
-    from git import Repo
+    import git
     if os.path.exists(REPO_DIR):
-        o = Repo(REPO_DIR).remotes.origin
+        o = git.Repo(REPO_DIR).remotes.origin
         o.pull()
     else:
-        Repo.clone_from(GIT_URL, REPO_DIR, depth=1)
-    return repo_dir
+        git.Repo.clone_from(GIT_URL, REPO_DIR, depth=1)
 
 
 def print_status(text, status, fulllength=40):
