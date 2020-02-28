@@ -3,7 +3,7 @@
 
 """
 import os, sys, shutil, json, argparse, getpass, pip
-from subprocess import Popen, PIPE, STDOUT, run,check_call
+from subprocess import Popen, PIPE, STDOUT, run
 import locale
 
 SCRIPT_PATH=os.path.dirname(os.path.realpath(__file__))
@@ -29,11 +29,11 @@ def parse_value(key_value):
     
 
 def pip_install(package):
-    #check_call(['sudo', sys.executable, '-m', 'pip', 'install', package])
+    run([sys.executable, '-m', 'pip', 'install', package])
     if hasattr(pip, 'main'):
         pip.main(['install', package])
     else:
-        pip._internal.main(['install', package])
+        pip._internal.main(['install', package]
    
 
 def print_status(text, status, fulllength=40):
