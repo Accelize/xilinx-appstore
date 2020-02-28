@@ -417,7 +417,7 @@ def run_setup(skip, vendor, appname):
     
     # Install Script Dependencies
     pip_install('pyYAML')
-    
+    print(sys.path)    
     # Loading App Catalog file
     appcatalog=yamlfile_to_dict(os.path.join(APPDEFS_FOLDER, APPLIST_FNAME))
     print_status('Loading App Catalog', 'OK')
