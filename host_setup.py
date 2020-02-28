@@ -1,18 +1,20 @@
 # coding=utf-8
 """
-
+curl -sL https://github.com/Accelize/xilinx-appstore/raw/master/host_setup.py | python3 -
 """
 import os, sys, shutil, json, argparse, getpass, pip
 from subprocess import Popen, PIPE, STDOUT, run
-import locale
 
+MIN_PYTHON = (3, 6)
 SCRIPT_PATH=os.path.dirname(os.path.realpath(__file__))
-APPDEFS_FOLDER=os.path.join(SCRIPT_PATH, "xilinx_appstore_appdefs")
+REPO_DIR='/tmp/xilinx-appstore'
+GIT_URL='https://github.com/Accelize/xilinx-appstore.git'
+APPDEFS_FOLDER=os.path.join(REPO_DIR, "xilinx_appstore_appdefs")
 APPLIST_FNAME="applist.yaml"
-SETENV_SCRIPT=os.path.join(SCRIPT_PATH, 'xilinx_appstore_env.sh')
+SETENV_SCRIPT=os.path.join(REPO_DIR, 'xilinx_appstore_env.sh')
 host_dependencies_ubuntu = 'curl linux-headers'
 host_dependencies_centos = 'curl epel-release kernel-headers kernel-devel'
-MIN_PYTHON = (3, 6)
+
 
 def parse_value(key_value):
     """
@@ -31,6 +33,16 @@ def pip_install(package):
     run(['sudo', sys.executable, '-m', 'pip', 'install', package, '--prefix=/usr'],
     stdout=PIPE, stderr=PIPE, check=True)
    
+
+def clone_appstore_repo():
+    from git import Repo
+    if os.path.exists(REPO_DIR):
+        o = Repo(REPO_DIR).remotes.origin
+        o.pull()
+    else:
+        Repo.clone_from(GIT_URL, REPO_DIR, depth=1)
+    return repo_dir
+
 
 def print_status(text, status, fulllength=40):
     padding_size = fulllength - len(text)
@@ -550,6 +562,11 @@ def run_setup(skip, vendor, appname):
 
 
 if __name__ == '__main__':
+    
+    # TEST
+    #pip_install('gitpython')
+    #clone_appstore_repo()
+    #sys.exit(0)
 
     if sys.version_info < MIN_PYTHON:
         sys.exit("Python %s.%s or later is required.\n" % MIN_PYTHON)
