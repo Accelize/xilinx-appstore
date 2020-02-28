@@ -30,20 +30,19 @@ Instructions:
   Nimbix:
     Application Execution:
       Select the Application on the Nimbix Platform:
-        Asset: assets/bcom_sdrtohdr/bcom01.png
-        ButtonName: SDR to HDR Batch Converter
         URL: https://platform.jarvice.com/?page=compute&name=B-com
+        ButtonName: SDR to HDR Batch Converter        
+        Asset: assets/bcom_sdrtohdr/bcom01.png
       Run the Application:
-        Asset: assets/bcom_sdrtohdr/bcom02.png
-        MachineCores: 16
         MachineType: nx5u_xdma_201830_2
+        MachineCores: 16
         Parameters:
           'Accelize credentials:': Browse FTP to select your "cred.json" Access Key
             file from Step 2.
           'Input File:': /samples/in.raw
           'Output File:': out.raw
+        Asset: assets/bcom_sdrtohdr/bcom02.png
       Results:
-        Asset: assets/bcom_sdrtohdr/bcom03.png
         Text: '
         Once your job is complete, an \"out.raw" HD HDR sample will be available on the Nimbix FTP.
         You can download it and use Vooya video player to display it:
@@ -53,6 +52,7 @@ Instructions:
             + Uploading it on Nimbix FTP
             + Replacing "/samples/in.raw" with "/data/{YourFileName}" in File Input argument
         ' 
+        Asset: assets/bcom_sdrtohdr/bcom03.png
   Alveo U200:
     Host Setup:
       CentOS: sudo yum install -y python3 git curl && git clone https://github.com/Accelize/xilinx-appstore.git

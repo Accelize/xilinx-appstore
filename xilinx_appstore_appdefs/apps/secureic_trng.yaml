@@ -26,46 +26,44 @@ DockerCmds:
   
 ### Running the Application
 Instructions:
-  Alveo U200:
-    Application Execution:
-      Pull the Docker Image: docker_pull docker pull hubxilinx/secureic_trng_alveo_u200
-      Run the Docker Image: docker run -p 8080:8080 -v /home/$USER/cred.json:/home/appuser/cred.json -v /dev/shm:/data $XILINX_FPGA_DEV_IDS hubxilinx/secureic_trng_alveo_u200
-      Setup Environment Variables: source /opt/xilinx/appstore/set_env.sh
-    Host Setup:
-      Centos: sudo yum install -y python3 git curl && git clone https://github.com/Accelize/xilinx-appstore.git
-        && python3 xilinx-appstore/host_setup.py -v secure-ic -a trng
-      Ubuntu: sudo apt install -y python3 git curl && git clone https://github.com/Accelize/xilinx-appstore.git
-        && python3 xilinx-appstore/host_setup.py -v secure-ic -a trng
-    Results:
-      Asset: assets/secureic_trng/secureic03.png
-      Text: 'It will start a webservice that generates random numbers "on-demand".
-
-        Generate 256 bytes of true random data using the following command:
-
-        curl http://{host_ip}:8080?size=256 | hexdump'
   Nimbix:
     Application Execution:
-      Results:
-        Asset: assets/secureic_trng/secureic03.png
-        Text: 'It will start a webservice that generates random numbers "on-demand".
-
-          Generate 256 bytes of true random data using the following command:
-
-          curl http://{nimbix_instance_address}:8080?size=256 | hexdump
-
-          Note: The Nimbix Instance Address is displayed when running the application
-          (e.g: "NAE-165-254-189-68.jarvice.com")'
+      Select the Application on the Nimbix Platform:
+        URL: https://platform.jarvice.com/?page=compute&name=SecureIC
+        ButtonName: TRNG Micro-Service
+        Asset: assets/secureic_trng/secureic01.png
       Run the Application:
-        Asset: assets/secureic_trng/secureic02.png
-        MachineCores: 16
         MachineType: nx5u_xdma_201830_2
+        MachineCores: 16
         Parameters:
           'Accelize credentials:': Browse FTP to select your "cred.json" Access Key
             file from Step 2.
-      Select the Application on the Nimbix Platform:
-        Asset: assets/secureic_trng/secureic01.png
-        ButtonName: TRNG Micro-Service
-        URL: https://platform.jarvice.com/?page=compute&name=SecureIC
+        Asset: assets/secureic_trng/secureic02.png
+      Results:
+        Text: '
+          It will start a webservice that generates random numbers "on-demand".
+          Generate 256 bytes of true random data using the following command:
+            curl http://{nimbix_instance_address}:8080?size=256 | hexdump
+          Note: The Nimbix Instance Address is displayed when running the application
+          (e.g: "NAE-165-254-189-68.jarvice.com")
+        '
+        Asset: assets/secureic_trng/secureic03.png
+  Alveo U200:
+    Host Setup:
+      CentOS: sudo yum install -y python3 git curl && git clone https://github.com/Accelize/xilinx-appstore.git
+        && python3 xilinx-appstore/host_setup.py -v secure-ic -a trng
+      Ubuntu: sudo apt install -y python3 git curl && git clone https://github.com/Accelize/xilinx-appstore.git
+        && python3 xilinx-appstore/host_setup.py -v secure-ic -a trng
+    Run the Application:
+      Pull the Docker Image: docker_pull docker pull hubxilinx/secureic_trng_alveo_u200
+      Run the Docker Image: docker run -p 8080:8080 -v /home/$USER/cred.json:/home/appuser/cred.json -v /dev/shm:/data $XILINX_FPGA_DEV_IDS hubxilinx/secureic_trng_alveo_u200
+      Setup Environment Variables: source /opt/xilinx/appstore/set_env.sh
+    Results:
+      Text: '
+        It will start a webservice that generates random numbers "on-demand".
+        Generate 256 bytes of true random data using the following command:
+            curl http://{host_ip}:8080?size=256 | hexdump'
+      Asset: assets/secureic_trng/secureic03.png
         
 ### Reserved for host_setup script #####################################
 Supported:
