@@ -55,9 +55,9 @@ Instructions:
         Asset: assets/bcom_sdrtohdr/bcom03.png
   Alveo U200:
     Host Setup:
-      CentOS: sudo yum install -y python3 git curl && git clone https://github.com/Accelize/xilinx-appstore.git
+      CentOS: sudo yum install -y python3 git && git clone https://github.com/Accelize/xilinx-appstore.git
         && python3 xilinx-appstore/host_setup.py -v b-com -a sdr_hdr_converter
-      Ubuntu: sudo apt install -y python3 git curl && git clone https://github.com/Accelize/xilinx-appstore.git
+      Ubuntu: sudo apt install -y python3 git && git clone https://github.com/Accelize/xilinx-appstore.git
         && python3 xilinx-appstore/host_setup.py -v b-com -a sdr_hdr_converter
     Run the Application:
       Setup Environment Variables: source /opt/xilinx/appstore/set_env.sh

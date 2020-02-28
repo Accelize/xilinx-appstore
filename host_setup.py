@@ -7,7 +7,6 @@ from subprocess import Popen, PIPE, STDOUT, run
 import locale
 
 SCRIPT_PATH=os.path.dirname(os.path.realpath(__file__))
-GIT_REPO_XX_APPSTORE="https://github.com/Accelize/xilinx_appstore_appdefs.git"
 APPDEFS_FOLDER=os.path.join(SCRIPT_PATH, "xilinx_appstore_appdefs")
 APPLIST_FNAME="applist.yaml"
 SETENV_SCRIPT=os.path.join(SCRIPT_PATH, 'xilinx_appstore_env.sh')

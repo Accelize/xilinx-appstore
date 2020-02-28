@@ -53,9 +53,9 @@ Instructions:
         Asset: assets/ngcodec_hevc_encoder_dual_density/ngc03.png
   Alveo U200:
     Host Setup:
-      Centos: sudo yum install -y python3 git curl && git clone https://github.com/Accelize/xilinx-appstore.git
+      Centos: sudo yum install -y python3 git && git clone https://github.com/Accelize/xilinx-appstore.git
         && python3 xilinx-appstore/host_setup.py -v ngcodec -a hevc_enc_dual
-      Ubuntu: sudo apt install -y python3 git curl && git clone https://github.com/Accelize/xilinx-appstore.git
+      Ubuntu: sudo apt install -y python3 git && git clone https://github.com/Accelize/xilinx-appstore.git
         && python3 xilinx-appstore/host_setup.py -v ngcodec -a hevc_enc_dual
     Application Execution:
       Setup Environment Variables: source /opt/xilinx/appstore/set_env.sh
