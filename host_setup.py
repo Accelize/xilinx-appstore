@@ -429,6 +429,10 @@ def run_setup(skip, vendor, appname):
     
     # Install Script Dependencies
     pip_install('pyYAML')
+    pip_install('gitpython')
+    
+    # Clone or Update Git Repository
+    clone_appstore_repo()
   
     # Loading App Catalog file
     appcatalog=yamlfile_to_dict(os.path.join(APPDEFS_FOLDER, APPLIST_FNAME))
