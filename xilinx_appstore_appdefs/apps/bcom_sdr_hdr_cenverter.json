@@ -2,7 +2,7 @@
     "appvendor": "b-com",
     "appname": "sdr_hdr_converter",
     "short_desc": "SDR-HDR Converter",
-    "summary": "100% 10 A solution to convert SDR content into HDR format Screen reader support enabled. A solution to convert SDR content into HDR format.",
+    "summary": "This SDR-to-HDR technology provides a simple yet powerful way to convert SDR (Standard Dynamic Range) content into an HDR (High Dynamic Range) format. The algorithm intelligently exploits high dynamic range of the target display while carefully preserving the artistic intent of the source SDR video.",
     "Publisher":"b<>com",
     "Published By":"Accelize",
     "Modified":"January 23, 2020",
@@ -90,8 +90,8 @@
                          \t+ Download Vooya video player: https://www.offminor.de/downloads.html\n \
                          \t+ Play the output file: vooya -p -w 1920 -h 1080 -r 60 --packing R210 --color rgb -b 10 out.raw\n \
                          You can now use your own input video file by:\n \
-                         \t+Copying your file in \"/dev/shm/{YourFileName}\" \
-                         \t+Replacing \"-i /samples/in.raw\" with \"-i /data/{YourFileName}\" in the docker run command",   
+                         \t+ Copying your file in \"/dev/shm/{YourFileName}\" \
+                         \t+ Replacing \"-i /samples/in.raw\" with \"-i /data/{YourFileName}\" in the docker run command",   
                 "Asset": "assets/bcom_sdrtohdr/bcom03.png"
             }
         }

@@ -528,7 +528,8 @@ if __name__ == '__main__':
         print(f" > You must provide application vendor and name from following list:")
         appcatalog=jsonfile_to_dict(os.path.join(APPDEFS_FOLDER, APPLIST_FNAME))
         for app in appcatalog['apps']:
-            print_status(f"\t{app['appvendor']}", f"{app['appname']}", 20)
+            print_status(f"\t{app['appvendor'].lower()}", f"{app['appname'].lower()}", 20)
+        print(f" > e.g: host_setup.py -v ngcodec -a hevc_enc_dual")
         sys.exit(1)
     
     sys.exit(run_setup(skip=args.skip, vendor=args.vendor, appname=args.appname))
