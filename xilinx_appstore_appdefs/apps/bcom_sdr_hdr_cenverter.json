@@ -63,13 +63,7 @@
                     "Asset": "assets/bcom_sdrtohdr/bcom02.png"
                 },
                 "Results": {
-                    "Text": "Once your job is complete, an “out.raw” HD HDR sample will be available on the Nimbix FTP. \
-                             You can download it and use Vooya video player to display it:\n \
-                             \t+ Download Vooya video player: https://www.offminor.de/downloads.html\n \
-                             \t+ Play the output file: vooya -p -w 1920 -h 1080 -r 60 --packing R210 --color rgb -b 10 out.raw\n \
-                             You can now use your own input video file by\n \
-                             \t+ Uploading it on Nimbix FTP\n \
-                             \t+ Replacing \"/samples/in.raw\" with \"/data/{YourFileName}\" in File Input argument",
+                    "Text": "Once your job is complete, an “out.raw” HD HDR sample will be available on the Nimbix FTP.\nYou can download it and use Vooya video player to display it:\n\t+ Download Vooya video player: https://www.offminor.de/downloads.html\n\t+ Play the output file: vooya -p -w 1920 -h 1080 -r 60 --packing R210 --color rgb -b 10 out.raw\nYou can now use your own input video file by\n\t+ Uploading it on Nimbix FTP\n\t+ Replacing \"/samples/in.raw\" with \"/data/{YourFileName}\" in File Input argument",
                     "Asset": "assets/bcom_sdrtohdr/bcom03.png"
                 }
             }
@@ -85,13 +79,7 @@
                 "Run the Docker Image":"docker run -v /home/$USER/cred.json:/home/appuser/cred.json -v /dev/shm:/data $XILINX_FPGA_DEV_IDS hubxilinx/bcom_sdr2hdr_alveo_u200 /samples/in.raw /data/out.raw"
             },
             "Results": {
-                "Text": "Once your job is complete, an “out.raw” HD HDR sample will be available in \"/dev/shm\". \
-                         You can use Vooya video player to display it:\n \
-                         \t+ Download Vooya video player: https://www.offminor.de/downloads.html\n \
-                         \t+ Play the output file: vooya -p -w 1920 -h 1080 -r 60 --packing R210 --color rgb -b 10 out.raw\n \
-                         You can now use your own input video file by:\n \
-                         \t+ Copying your file in \"/dev/shm/{YourFileName}\" \
-                         \t+ Replacing \"-i /samples/in.raw\" with \"-i /data/{YourFileName}\" in the docker run command",   
+                "Text": "Once your job is complete, an “out.raw” HD HDR sample will be available in \"/dev/shm\". \nYou can use Vooya video player to display it:\n\t+ Download Vooya video player: https://www.offminor.de/downloads.html\n\t+ Play the output file: vooya -p -w 1920 -h 1080 -r 60 --packing R210 --color rgb -b 10 out.raw\nYou can now use your own input video file by:\n\t+ Copying your file in \"/dev/shm/{YourFileName}\"\n\t+ Replacing \"-i /samples/in.raw\" with \"-i /data/{YourFileName}\" in the docker run command",   
                 "Asset": "assets/bcom_sdrtohdr/bcom03.png"
             }
         }

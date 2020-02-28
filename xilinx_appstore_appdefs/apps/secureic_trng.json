@@ -11,7 +11,7 @@
         "CloudServices": {
             "Nimbix":"nx5u_xdma_201830_2"
         },
-        "OnPremisess": {
+        "OnPremises": {
             "Alveo U200":"xdma-201830.2"
         },
         "PortalURL":"https://secure-ic.accelize.com/front/customer/listpurchase?product=True%20Random%20Number%20Generator"
@@ -61,10 +61,7 @@
                     "Asset": "assets/secureic_trng/secureic02.png"
                 },
                 "Results": {
-                    "Text": "It will start a webservice that generates random numbers \"on-demand\".\n \
-                    Generate 256 bytes of true random data using the following command:\n \
-                    curl http://{nimbix_instance_address}:8080?size=256 | hexdump \
-                    Note: The Nimbix Instance Address is displayed when running the application (e.g: \"NAE-165-254-189-68.jarvice.com\")",
+                    "Text": "It will start a webservice that generates random numbers \"on-demand\".\nGenerate 256 bytes of true random data using the following command:\ncurl http://{nimbix_instance_address}:8080?size=256 | hexdump\nNote: The Nimbix Instance Address is displayed when running the application (e.g: \"NAE-165-254-189-68.jarvice.com\")",
                     "Asset": "assets/secureic_trng/secureic03.png"
                 }
             }
@@ -80,9 +77,7 @@
                 "Run the Docker Image":"docker run -p 8080:8080 -v /home/$USER/cred.json:/home/appuser/cred.json -v /dev/shm:/data $XILINX_FPGA_DEV_IDS hubxilinx/secureic_trng_alveo_u200"
             },
             "Results": {
-                    "Text": "It will start a webservice that generates random numbers \"on-demand\".\n \
-                    Generate 256 bytes of true random data using the following command:\n \
-                    curl http://{host_ip}:8080?size=256 | hexdump",
+                    "Text": "It will start a webservice that generates random numbers \"on-demand\".\nGenerate 256 bytes of true random data using the following command:\ncurl http://{host_ip}:8080?size=256 | hexdump",
                     "Asset": "assets/secureic_trng/secureic03.png"
                 }
         }

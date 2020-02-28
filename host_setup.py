@@ -3,7 +3,8 @@
 
 """
 import os, sys, shutil, json, argparse, getpass
-from subprocess import Popen, PIPE, STDOUT, run
+from subprocess import Popen, PIPE, STDOUT, run,check_call
+import locale, yaml
 
 SCRIPT_PATH=os.path.dirname(os.path.realpath(__file__))
 GIT_REPO_XX_APPSTORE="https://github.com/Accelize/xilinx_appstore_appdefs.git"
@@ -13,6 +14,30 @@ SETENV_SCRIPT=os.path.join(SCRIPT_PATH, 'xilinx_appstore_env.sh')
 host_dependencies_ubuntu = 'curl linux-headers'
 host_dependencies_centos = 'curl epel-release kernel-headers kernel-devel'
 
+def parse_value(key_value):
+    """
+    Parse os-release value
+
+    Args:
+        key_value (str): key="value"
+
+    Returns:
+        str: Value
+    """
+    return key_value.split('=')[1].rstrip().strip('""').lower()
+    
+
+def pip_install(package):
+    check_call(['sudo', sys.executable, '-m', 'pip', 'install', package])
+
+
+def curl_dwnld(url, output):
+    import pycurl
+    c = pycurl.Curl()
+    c.setopt(c.URL, url)
+    with open(output, 'w') as f:
+        c.setopt(c.WRITEFUNCTION, f.write)
+        c.perform()    
 
 def print_status(text, status, fulllength=40):
     padding_size = fulllength - len(text)
@@ -22,6 +47,16 @@ def print_status(text, status, fulllength=40):
 def jsonfile_to_dict(filename):
     with open(filename, 'r', encoding="utf-8") as json_file:
         return json.load(json_file)
+        
+
+def yamlfile_to_dict(filename):
+    with open(filename, 'r', encoding="utf-8") as yaml_file:
+        return yaml.safe_load(yaml_file)
+        
+
+def dict_to_yamlfile(d, filename):
+    with open(filename, 'w', encoding="utf-8") as yaml_file:
+        yaml.dump(d, yaml_file)
 
 
 def dict_pretty_print(in_dict):
@@ -67,13 +102,23 @@ def get_xrt_version(host_os):
 
 def get_host_env():
     # Get OS
-    import platform
+    os_release_path = (
+    '/usr/lib/os-release' if os.path.exists('/usr/lib/os-release') else
+    '/etc/os-release')
+    host_os_version=None
     host_os=None
-    if 'ubuntu-18.04' in platform.platform().lower(): host_os='ubuntu-18.04'
-    elif 'ubuntu-16.04' in platform.platform().lower(): host_os='ubuntu-16.04'
-    elif 'centos-7' in platform.platform().lower(): host_os='centos'
+    with open(os_release_path, 'rt') as os_release:
+        for line in os_release:
+            if line.startswith('VERSION_ID='):
+                host_os_version = parse_value(line)
+            elif line.startswith('ID='):
+                host_os = parse_value(line).lower()
+            if host_os_version and host_os:
+                break
     
-    if host_os is None:
+    if  host_os is 'ubuntu' and host_os_version not in ['16.04','18.04'] or \
+        host_os is 'centos' and host_os_version not in ['7'] or \
+        host_os is None:
         print(f" [ERROR] Your Operating System is nt supported.\nSupported OS: CentOS 7, Ubuntu 16.04 and Ubuntu 18.04")
         sys.exit(1)
     print_status('Detected OS', f'{host_os}')
@@ -390,12 +435,6 @@ def run_setup(skip, vendor, appname):
     
     # Detect host environement
     host_os = get_host_env()
-    
-    # Set environement variables
-    os.environ['LANG'] = "en_US.UTF-8"
-    os.environ['LANGUAGE'] = "en_US.UTF-8"
-    os.environ['LC_COLLATE'] = "C"
-    os.environ['LC_CTYPE'] = "en_US.UTF-8"
     
     # Check host updates needed
     dep_updt=check_dependencies(host_os)
