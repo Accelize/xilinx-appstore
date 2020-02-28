@@ -4,7 +4,7 @@
 """
 import os, sys, shutil, json, argparse, getpass
 from subprocess import Popen, PIPE, STDOUT, run,check_call
-import locale, yaml
+import locale
 
 SCRIPT_PATH=os.path.dirname(os.path.realpath(__file__))
 GIT_REPO_XX_APPSTORE="https://github.com/Accelize/xilinx_appstore_appdefs.git"
@@ -29,15 +29,7 @@ def parse_value(key_value):
 
 def pip_install(package):
     check_call(['sudo', sys.executable, '-m', 'pip', 'install', package])
-
-
-def curl_dwnld(url, output):
-    import pycurl
-    c = pycurl.Curl()
-    c.setopt(c.URL, url)
-    with open(output, 'w') as f:
-        c.setopt(c.WRITEFUNCTION, f.write)
-        c.perform()    
+   
 
 def print_status(text, status, fulllength=40):
     padding_size = fulllength - len(text)
@@ -47,16 +39,6 @@ def print_status(text, status, fulllength=40):
 def jsonfile_to_dict(filename):
     with open(filename, 'r', encoding="utf-8") as json_file:
         return json.load(json_file)
-        
-
-def yamlfile_to_dict(filename):
-    with open(filename, 'r', encoding="utf-8") as yaml_file:
-        return yaml.safe_load(yaml_file)
-        
-
-def dict_to_yamlfile(d, filename):
-    with open(filename, 'w', encoding="utf-8") as yaml_file:
-        yaml.dump(d, yaml_file)
 
 
 def dict_pretty_print(in_dict):
