@@ -396,6 +396,8 @@ def update_board_dsa(board_idx):
 
 
 def run_setup(skip, vendor, appname):
+    locale.setlocale(locale.LC_ALL, "")
+    
     # Loading App Catalog file
     appcatalog=jsonfile_to_dict(os.path.join(APPDEFS_FOLDER, APPLIST_FNAME))
     print_status('Loading App Catalog', 'OK')
