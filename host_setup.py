@@ -29,7 +29,7 @@ def parse_value(key_value):
     
 
 def pip_install(package):
-    run([sys.executable, '-m', 'pip', 'install', package])
+    run([sys.executable, '-m', 'pip', 'install', package, '--prefix=/usr'])
    
 
 def print_status(text, status, fulllength=40):
