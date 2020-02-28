@@ -14,7 +14,7 @@ Size: 288.41 MB
 DeploymentOptions:
   CloudServices:
     Nimbix: nx5u_xdma_201830_2
-  OnPremisess:
+  OnPremises:
     Alveo U200: xdma-201830.2
   PortalURL: https://xilinx-ngcodec.accelize.com/user/login?destination=/front/customer/listpurchase?product=HEVC%20Encoder%20UHD%20Dual%20Density
   
@@ -27,47 +27,52 @@ DockerCmds:
     
 ### Running the Application
 Instructions:
-  Alveo U200:
-    Application Execution:
-      Pull the Docker Image: docker pull hubxilinx/ngcodec_hevc_alveo_u200
-      Run the Docker Image: docker run -v /home/$USER/cred.json:/home/appuser/cred.json
-        -v /dev/shm:/data $XILINX_FPGA_DEV_IDS hubxilinx/ngcodec_hevc_alveo_u200 -i
-        /samples/in.mp4 -c:v NGC265 -b:v 3M -g 0 -idr-period 120 -y -f mp4 /data/out.mp4
-      Setup Environment Variables: source /opt/xilinx/appstore/set_env.sh
-    Host Setup:
-      Centos: sudo yum install -y python3 git curl && git clone https://github.com/Accelize/xilinx-appstore.git
-        && python3 xilinx-appstore/host_setup.py -v ngcodec -a hevc_enc_dual
-      Ubuntu: sudo apt install -y python3 git curl && git clone https://github.com/Accelize/xilinx-appstore.git
-        && python3 xilinx-appstore/host_setup.py -v ngcodec -a hevc_enc_dual
-    Results:
-      Asset: assets/ngcodec_hevc_encoder_dual_density/ngc03.png
-      Text: "Once your job is complete, an \"out.mp4\" HEVC encoded sample will be\
-        \ available in \"/dev/shm\".\nYou can use your video player software to display\
-        \ it.\nYou can now use your own input video file by:\n\t+Copying your file\
-        \ in \"/dev/shm/{YourFileName}\" \n\t+Replacing \"-i /samples/in.mp4\" with\
-        \ \"-i /data/{YourFileName}\" in the docker run command"
   Nimbix:
     Application Execution:
-      Results:
-        Asset: assets/ngcodec_hevc_encoder_dual_density/ngc03.png
-        Text: "Once your job is complete, an \u201Cout.mp4\u201D HEVC encoded sample\
-          \ will be available on the Nimbix FTP. You can download it and use your\
-          \ video player software to display it.\nYou can now use your own input video\
-          \ file by\n\t+ Uploading it on Nimbix FTP\n\t+ Replacing \"-i /samples/in.mp4\"\
-          \ with \"-i /data/{YourFileName}\" in the FFMPEG arguments"
+      Select the Application on the Nimbix Platform:
+        URL: https://platform.jarvice.com/?page=compute&name=NGCodec%20H.265/HEVC%20encoder
+        ButtonName: HEVC Batch Encoder
+        Asset: assets/ngcodec_hevc_encoder_dual_density/ngc01.png
       Run the Application:
-        Asset: assets/ngcodec_hevc_encoder_dual_density/ngc02.png
-        MachineCores: 16
         MachineType: nx5u_xdma_201830_2
+        MachineCores: 16
         Parameters:
           'Accelize credentials:': Browse FTP to select your "cred.json" Access Key
             file from Step 2.
           'FFMPEG arguments:': -i /samples/in.mp4 -c:v NGC265 -b:v 3M -g 0 -idr-period
             120 -y -f mp4 /data/out.mp4
-      Select the Application on the Nimbix Platform:
-        Asset: assets/ngcodec_hevc_encoder_dual_density/ngc01.png
-        ButtonName: HEVC Batch Encoder
-        URL: https://platform.jarvice.com/?page=compute&name=NGCodec%20H.265/HEVC%20encoder
+        Asset: assets/ngcodec_hevc_encoder_dual_density/ngc02.png
+      Results:
+        Text: '
+            Once your job is complete, an "out.mp4" HEVC encoded sample will be available on the Nimbix FTP. 
+            You can download it and use your video player software to display it.
+            You can now use your own input video file by:
+                + Uploading it on Nimbix FTP
+                + Replacing "-i /samples/in.mp4" with "-i /data/{YourFileName}" in the FFMPEG arguments
+        '
+        Asset: assets/ngcodec_hevc_encoder_dual_density/ngc03.png
+  Alveo U200:
+    Host Setup:
+      Centos: sudo yum install -y python3 git curl && git clone https://github.com/Accelize/xilinx-appstore.git
+        && python3 xilinx-appstore/host_setup.py -v ngcodec -a hevc_enc_dual
+      Ubuntu: sudo apt install -y python3 git curl && git clone https://github.com/Accelize/xilinx-appstore.git
+        && python3 xilinx-appstore/host_setup.py -v ngcodec -a hevc_enc_dual
+    Application Execution:
+      Setup Environment Variables: source /opt/xilinx/appstore/set_env.sh
+      Pull the Docker Image: docker pull hubxilinx/ngcodec_hevc_alveo_u200
+      Run the Docker Image: docker run -v /home/$USER/cred.json:/home/appuser/cred.json
+        -v /dev/shm:/data $XILINX_FPGA_DEV_IDS hubxilinx/ngcodec_hevc_alveo_u200 -i
+        /samples/in.mp4 -c:v NGC265 -b:v 3M -g 0 -idr-period 120 -y -f mp4 /data/out.mp4
+    Results:
+      Text: '
+        Once your job is complete, an "out.mp4" HEVC encoded sample will be available in "/dev/shm".
+        You can use your video player software to display it.
+        You can now use your own input video file by:
+            + Copying your file in "/dev/shm/{YourFileName}"
+            + Replacing "-i /samples/in.mp4" with "-i /data/{YourFileName}" in the docker run command
+        '
+      Asset: assets/ngcodec_hevc_encoder_dual_density/ngc03.png
+      
 
 ### Reserved for host_setup script #####################################
 Supported:

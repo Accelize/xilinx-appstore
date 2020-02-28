@@ -15,7 +15,7 @@ Size: 515.11 MB
 DeploymentOptions:
   CloudServices:
     Nimbix: nx5u_xdma_201830_2
-  OnPremisess:
+  OnPremises:
     Alveo U200: xdma-201830.2
   PortalURL: https://b-com.accelize.com/user/login?destination=/front/customer/listpurchase?product=SDR%20to%20HDR
   
@@ -60,11 +60,11 @@ Instructions:
       Ubuntu: sudo apt install -y python3 git curl && git clone https://github.com/Accelize/xilinx-appstore.git
         && python3 xilinx-appstore/host_setup.py -v b-com -a sdr_hdr_converter
     Run the Application:
+      Setup Environment Variables: source /opt/xilinx/appstore/set_env.sh
       Pull the Docker Image: docker pull hubxilinx/bcom_sdr2hdr_alveo_u200
       Run the Docker Image: docker run -v /home/$USER/cred.json:/home/appuser/cred.json
         -v /dev/shm:/data $XILINX_FPGA_DEV_IDS hubxilinx/bcom_sdr2hdr_alveo_u200 /samples/in.raw
         /data/out.raw
-      Setup Environment Variables: source /opt/xilinx/appstore/set_env.sh
     Results:
       Asset: assets/bcom_sdrtohdr/bcom03.png
       Text: '

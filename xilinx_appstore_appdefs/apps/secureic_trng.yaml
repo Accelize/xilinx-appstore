@@ -55,9 +55,9 @@ Instructions:
       Ubuntu: sudo apt install -y python3 git curl && git clone https://github.com/Accelize/xilinx-appstore.git
         && python3 xilinx-appstore/host_setup.py -v secure-ic -a trng
     Run the Application:
+      Setup Environment Variables: source /opt/xilinx/appstore/set_env.sh
       Pull the Docker Image: docker_pull docker pull hubxilinx/secureic_trng_alveo_u200
       Run the Docker Image: docker run -p 8080:8080 -v /home/$USER/cred.json:/home/appuser/cred.json -v /dev/shm:/data $XILINX_FPGA_DEV_IDS hubxilinx/secureic_trng_alveo_u200
-      Setup Environment Variables: source /opt/xilinx/appstore/set_env.sh
     Results:
       Text: '
         It will start a webservice that generates random numbers "on-demand".
