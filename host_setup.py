@@ -4,7 +4,6 @@
 """
 import os, sys, shutil, json, argparse, getpass, pip
 from subprocess import Popen, PIPE, STDOUT, run
-import locale
 
 SCRIPT_PATH=os.path.dirname(os.path.realpath(__file__))
 APPDEFS_FOLDER=os.path.join(SCRIPT_PATH, "xilinx_appstore_appdefs")
