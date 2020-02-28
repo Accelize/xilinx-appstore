@@ -30,7 +30,7 @@ def parse_value(key_value):
 
 def pip_install(package):
     run(['sudo', sys.executable, '-m', 'pip', 'install', package, '--prefix=/usr'],
-    capture_output=True, check=True)
+    capture_outputs=True, check=True)
    
 
 def print_status(text, status, fulllength=40):
