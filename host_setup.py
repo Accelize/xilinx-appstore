@@ -30,7 +30,10 @@ def parse_value(key_value):
 
 def pip_install(package):
     #check_call(['sudo', sys.executable, '-m', 'pip', 'install', package])
-    pip._internal.main(['install', package])
+    if hasattr(pip, 'main'):
+        pip.main(['install', package])
+    else:
+        pip._internal.main(['install', package])
    
 
 def print_status(text, status, fulllength=40):
