@@ -138,21 +138,15 @@ def get_fpga_env(host_os):
     if nbBoardsFound == '0': 
         print(f" [ERROR] No FPGA Board Detected. you need at least one FPGA board to use this application.")
         sys.exit(1)
-        
-    ret, out, err = exec_cmd_with_ret_output("/opt/xilinx/xrt/bin/xbutil list | grep Found | cut -d' ' -f6")
-    nbBoardsUsable = out.strip()
-    print_status('Board(s) Usable', f'{nbBoardsUsable}')
-    if nbBoardsUsable == '0': 
-        print(f" [ERROR] Deployment Target Platform Not Installed")
-        sys.exit(1)
     
     boards=[]
     shells=[]
-    ret, out, err = exec_cmd_with_ret_output('/opt/xilinx/xrt/bin/xbutil list')
+    ret, out, err = exec_cmd_with_ret_output('sudo /opt/xilinx/xrt/bin/xbutil flash scan')
+    for num, line in enumerate(out.splitlines()):
     for line in out.splitlines():
-        if 'xilinx_' in line: 
-            shells.append(line.split(' ')[-1])
-            boards.append(line.split(' ')[-1].split('_')[1])
+        if line.startswith('Card ['):
+            boards.append(out.splitlines()[num+2].split(':')[1].strip())
+            shells.append(out.splitlines()[num+5].split(',')[0].strip())
     print_status('Detected Boards', f'{boards}')
     print_status('Detected Shells', f'{shells}')
     
@@ -336,6 +330,7 @@ def board_shell_flash(boardIdx):
     prog_dsa=host_dsa_conf.split(',')[0]
     prog_tstamp=int(host_dsa_conf.split(',')[1][4:-1], 0)
     cmd=f'sudo /opt/xilinx/xrt/bin/xbutil flash -d {boardIdx} -a {prog_dsa} -t {prog_tstamp}'
+    print_status('New FPGA Shell', prog_dsa)
     run(cmd, shell=True)
 
 
@@ -490,7 +485,6 @@ def run_setup(skip, vendor, appname):
         for i in range(0,len(lspci_boards)):
             print(f"\t[{i}]: {lspci_boards[i]}")
         board_model_idx = int(input(" > Please select the model to use: "))
-    print(f" > Selected board model: {lspci_boards[board_model_idx]}\n")
     print_status('Selected board model', f'{lspci_boards[board_model_idx]}')
     
     # Find suitable configuration
