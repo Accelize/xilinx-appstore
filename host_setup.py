@@ -9,7 +9,6 @@ MIN_PYTHON = (3, 6)
 SCRIPT_PATH=os.path.dirname(os.path.realpath(__file__))
 REPO_DIR='/tmp/xilinx-appstore'
 REPO_TARBALL_URL='https://api.github.com/repos/Accelize/xilinx-appstore/tarball'
-#GIT_URL='https://github.com/Accelize/xilinx-appstore.git'
 APPDEFS_FOLDER=os.path.join(REPO_DIR, "xilinx_appstore_appdefs")
 APPLIST_FNAME="applist.yaml"
 SETENV_SCRIPT=os.path.join(REPO_DIR, 'xilinx_appstore_env.sh')
@@ -36,14 +35,11 @@ def pip_install(package):
    
 
 def download_appstore_catalog():
-    if os.path.exists():
+    if os.path.exists(REPO_DIR):
         shutil.rmtree(REPO_DIR, ignore_errors=True)
     os.makedirs(REPO_DIR)
-    run(['curl', '-sL', REPO_TARBALL_URL, '|', 'tar', 'xvzf', '-', '-C', REPO_DIR, '--strip 1'],
-    stdout=PIPE, stderr=PIPE, check=True)
-    
-    
-    #curl -sL https://api.github.com/repos/Accelize/xilinx-appstore/tarball | tar xvzf - -C /tmp/xx --strip 1
+    run(f'sudo curl -sL {REPO_TARBALL_URL} | tar xvzf - -C {REPO_DIR} --strip 1',
+    stdout=PIPE, stderr=PIPE, check=True, shell=True)
 
 
 def print_status(text, status, fulllength=40):
