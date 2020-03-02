@@ -125,7 +125,7 @@ def get_host_env():
             if host_os_version and host_os:
                 break
     
-    if  host_os is not in ['ubuntu', 'centos'] or \
+    if  host_os not in ['ubuntu', 'centos'] or \
         host_os is 'ubuntu' and host_os_version not in ['16.04','18.04'] or \
         host_os is 'centos' and host_os_version not in ['7'] or \
         host_os is None:
