@@ -128,7 +128,7 @@ def get_host_env():
         print(f" [ERROR] Your Operating System is not supported.\nSupported OS: CentOS 7, Ubuntu 16.04 and Ubuntu 18.04")
         sys.exit(1)
     print_status('Detected OS', f'{host_os}')
-    return host_os
+    return host_os, host_os_version
     
 def get_fpga_env(host_os):
     # Get FPGA Boards & Shells
@@ -190,7 +190,7 @@ def check_host_dsa(host_os, conf_pkg):
     if 'centos' in host_os: 
         ret, out, err = exec_cmd_with_ret_output(f'sudo yum list installed | grep {pkg_name} | grep {pkg_vers} > /dev/null 2>&1')
     else:
-        ret, out, err = exec_cmd_with_ret_output(f'sudo apt list --installed | grep {pkg_name} | grep {pkg_vers} > /dev/null 2>&1')
+        ret, out, err = exec_cmd_with_ret_output(f'sudo apt list --installed 2>/dev/null | grep {pkg_name} | grep {pkg_vers} > /dev/null 2>&1')
 
     if ret:
         print_status('Board Shell [HOST] Version Check', f'Failed ({pkg_name}-{pkg_vers})')
@@ -241,7 +241,7 @@ def check_board_shell(boardIdx):
 
 def check_host_pkg_installed(host_os, pkg):
     if 'ubuntu' in host_os:
-        cmd = 'sudo apt list --installed | grep '+ pkg
+        cmd = 'sudo apt list --installed 2>/dev/null | grep '+ pkg
     elif 'centos' in host_os:
         cmd = 'sudo yum list installed | grep '+ pkg
     ret, out, err = exec_cmd_with_ret_output(cmd)
@@ -452,7 +452,8 @@ def run_setup(skip, vendor, appname):
     print_status('Loading App Definition file', 'OK')
     
     # Detect host environement
-    host_os = get_host_env()
+    host_os, host_os_version = get_host_env()
+    host_os_full= f'{host_os}-{host_os_version}'
     
     # Check host updates needed
     dep_updt=check_dependencies(host_os)
@@ -468,8 +469,8 @@ def run_setup(skip, vendor, appname):
         sys.exit(1)
     
     # Check Host Compatibility (OS, FPGA Boards)
-    if not host_os in appdef['Supported']['os']:
-        print(f" [ERROR] Operating System {host_os}] not supported")
+    if not host_os_full in appdef['Supported']['os']:
+        print(f" [ERROR] Operating System [{host_os}] not supported")
         sys.exit(1)
     print_status('OS Compatibility', 'OK')
     if not any(item in lspci_boards for item in appdef['Supported']['boards']):
@@ -492,7 +493,7 @@ def run_setup(skip, vendor, appname):
     # Find suitable configuration
     selected_conf=None
     for conf in appdef['HostSetupConfiguration']:
-        if host_os == conf['os'] and lspci_boards[board_model_idx] in conf['board']:
+        if host_os_full == conf['os'] and lspci_boards[board_model_idx] in conf['board']:
             print_status('Suitable App Configuration', 'OK')
             selected_conf=conf
     if not selected_conf:
