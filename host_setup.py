@@ -127,7 +127,6 @@ def get_host_env():
         host_os is None:
         print(f" [ERROR] Your Operating System is not supported.\nSupported OS: CentOS 7, Ubuntu 16.04 and Ubuntu 18.04")
         sys.exit(1)
-    print_status('Detected OS', f'{host_os}')
     return host_os, host_os_version
     
 def get_fpga_env(host_os):
@@ -250,14 +249,17 @@ def check_host_pkg_installed(host_os, pkg):
     return True
 
 
-def host_pkg_install(host_os, packages):    
+def host_pkg_install(host_os, packages):
+    print_status(f'Installing {packages}', '') 
     if 'ubuntu' in host_os:
         cmd = 'sudo apt-get install -y '+ packages + '> /dev/null 2>&1'
     elif 'centos' in host_os:
         cmd = 'sudo yum install -y '+ packages + '> /dev/null 2>&1'
     ret, out, err = exec_cmd_with_ret_output(cmd)
     if ret:
+        print_status(f'Installing {packages}', 'Failed')
         raise
+    print_status(f'Installing {packages}', 'OK')
 
  
 def host_pkg_remove(host_os, packages):
@@ -454,6 +456,7 @@ def run_setup(skip, vendor, appname):
     # Detect host environement
     host_os, host_os_version = get_host_env()
     host_os_full= f'{host_os}-{host_os_version}'
+    print_status('Detected OS', f'{host_os_full}')
     
     # Check host updates needed
     dep_updt=check_dependencies(host_os)
