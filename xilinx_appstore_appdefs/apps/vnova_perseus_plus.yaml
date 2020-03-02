@@ -63,7 +63,7 @@ Supported:
   os:
   - ubuntu-16.04
   - ubuntu-18.04
-  - centos
+  - centos-7
   
 HostSetupConfiguration:
 - board: xilinx-u200
@@ -76,5 +76,5 @@ HostSetupConfiguration:
   xrt_package: xrt_201910.2.2.2250_18.04-xrt.deb
 - board: xilinx-u200
   dsa_package: xilinx-u200-xdma-201830.2-2580015.x86_64.rpm
-  os: centos
+  os: centos-7
   xrt_package: xrt_201910.2.2.2250_7.4.1708-xrt.rpm

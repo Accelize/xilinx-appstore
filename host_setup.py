@@ -286,7 +286,7 @@ def install_dependencies(host_os):
 
 
 def install_DockerCE():
-    cmd = 'curl -fsSL https://get.docker.com | sudo sh'
+    cmd = 'curl -fsSL https://get.docker.com | sudo sh > /dev/null 2>&1'
     ret, out, err = exec_cmd_with_ret_output(cmd)
     if ret:
         raise
@@ -470,7 +470,7 @@ def run_setup(skip, vendor, appname):
     
     # Check Host Compatibility (OS, FPGA Boards)
     if not host_os_full in appdef['Supported']['os']:
-        print(f" [ERROR] Operating System [{host_os}] not supported")
+        print(f" [ERROR] Operating System [{host_os_full}] not supported")
         sys.exit(1)
     print_status('OS Compatibility', 'OK')
     if not any(item in lspci_boards for item in appdef['Supported']['boards']):
