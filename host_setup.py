@@ -8,7 +8,8 @@ from subprocess import Popen, PIPE, STDOUT, run
 MIN_PYTHON = (3, 6)
 SCRIPT_PATH=os.path.dirname(os.path.realpath(__file__))
 REPO_DIR='/tmp/xilinx-appstore'
-GIT_URL='https://github.com/Accelize/xilinx-appstore.git'
+REPO_TARBALL_URL='https://api.github.com/repos/Accelize/xilinx-appstore/tarball'
+#GIT_URL='https://github.com/Accelize/xilinx-appstore.git'
 APPDEFS_FOLDER=os.path.join(REPO_DIR, "xilinx_appstore_appdefs")
 APPLIST_FNAME="applist.yaml"
 SETENV_SCRIPT=os.path.join(REPO_DIR, 'xilinx_appstore_env.sh')
@@ -34,13 +35,15 @@ def pip_install(package):
     stdout=PIPE, stderr=PIPE, check=True)
    
 
-def clone_appstore_repo():
-    import git
-    if os.path.exists(REPO_DIR):
-        o = git.Repo(REPO_DIR).remotes.origin
-        o.pull()
-    else:
-        git.Repo.clone_from(GIT_URL, REPO_DIR, depth=1)
+def download_appstore_catalog():
+    if os.path.exists():
+        shutil.rmtree(REPO_DIR, ignore_errors=True)
+    os.makedirs(REPO_DIR)
+    run(['curl', '-sL', REPO_TARBALL_URL, '|', 'tar', 'xvzf', '-', '-C', REPO_DIR, '--strip 1'],
+    stdout=PIPE, stderr=PIPE, check=True)
+    
+    
+    #curl -sL https://api.github.com/repos/Accelize/xilinx-appstore/tarball | tar xvzf - -C /tmp/xx --strip 1
 
 
 def print_status(text, status, fulllength=40):
@@ -118,14 +121,15 @@ def get_host_env():
             if line.startswith('VERSION_ID='):
                 host_os_version = parse_value(line)
             elif line.startswith('ID='):
-                host_os = parse_value(line).lower()
+                host_os = parse_value(line)
             if host_os_version and host_os:
                 break
     
-    if  host_os is 'ubuntu' and host_os_version not in ['16.04','18.04'] or \
+    if  host_os is not in ['ubuntu', 'centos'] or \
+        host_os is 'ubuntu' and host_os_version not in ['16.04','18.04'] or \
         host_os is 'centos' and host_os_version not in ['7'] or \
         host_os is None:
-        print(f" [ERROR] Your Operating System is nt supported.\nSupported OS: CentOS 7, Ubuntu 16.04 and Ubuntu 18.04")
+        print(f" [ERROR] Your Operating System is not supported.\nSupported OS: CentOS 7, Ubuntu 16.04 and Ubuntu 18.04")
         sys.exit(1)
     print_status('Detected OS', f'{host_os}')
     return host_os
@@ -428,10 +432,9 @@ def run_setup(skip, vendor, appname):
     
     # Install Script Dependencies
     pip_install('pyYAML')
-    pip_install('gitpython')
     
-    # Clone or Update Git Repository
-    clone_appstore_repo()
+    # Download or Update App Catalog
+    download_appstore_catalog()
   
     # Loading App Catalog file
     appcatalog=yamlfile_to_dict(os.path.join(APPDEFS_FOLDER, APPLIST_FNAME))
@@ -565,11 +568,6 @@ def run_setup(skip, vendor, appname):
 
 
 if __name__ == '__main__':
-    
-    # TEST
-    #pip_install('gitpython')
-    #clone_appstore_repo()
-    #sys.exit(0)
 
     if sys.version_info < MIN_PYTHON:
         sys.exit("Python %s.%s or later is required.\n" % MIN_PYTHON)
