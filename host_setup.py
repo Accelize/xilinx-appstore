@@ -281,17 +281,23 @@ def install_dependencies(host_os):
 
 
 def install_DockerCE():
-    cmd = 'curl -fsSL https://get.docker.com | sudo sh > /dev/null 2>&1'
+    cmd = 'curl -fsSL https://get.docker.com | sudo sh > /tmp/xxappstore_hostsetup_installdocker.log 2>&1'
     ret, out, err = exec_cmd_with_ret_output(cmd)
     if ret:
-        raise
+        print(out)
+        print(err)
+        print('[ERROR] Docker Installation. Check log file /tmp/xxappstore_hostsetup_installdocker.log')
+        sys.exit(1)
 
 
 def configure_DockerCE():
-    cmd = 'sudo mkdir -p /etc/docker && echo \'{\"max-concurrent-downloads\": 1}\' | sudo tee -a /etc/docker/daemon.json && sudo systemctl restart docker && sudo systemctl enable docker > /dev/null 2>&1 && sudo usermod -aG docker $USER'
+    cmd = 'sudo mkdir -p /etc/docker && echo \'{\"max-concurrent-downloads\": 1}\' | sudo tee -a /etc/docker/daemon.json && sudo systemctl restart docker && sudo systemctl enable docker > /tmp/xxappstore_hostsetup_configuredocker.log 2>&1 && sudo usermod -aG docker $USER'
     ret, out, err = exec_cmd_with_ret_output(cmd)
     if ret:
-        raise
+        print(out)
+        print(err)
+        print('[ERROR] Docker Configuration. Check log file /tmp/xxappstore_hostsetup_configuredocker.log')
+        sys.exit(1)
 
 
 def update_os_kernel(host_os):
@@ -301,7 +307,10 @@ def update_os_kernel(host_os):
         cmd = 'sudo yum update -y kernel'
     ret, out, err = exec_cmd_with_ret_output(cmd)
     if ret:
-        raise
+        print(out)
+        print(err)
+        print('[ERROR] Kernel OS update')
+        sys.exit(1)
 
 
 def host_reboot(cold=False):
