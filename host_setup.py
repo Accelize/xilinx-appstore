@@ -89,6 +89,8 @@ def fpga_board_list():
         if '5010' in line: fpga_boards.append('u200') # QDMA
         if '5014' in line: fpga_boards.append('u250') # QDMA
         if '5020' in line: fpga_boards.append('u50')  # XDMA
+        if '5050' in line: fpga_boards.append('u25')  # XDMA
+        if '0B03' in line: fpga_boards.append('u25')  # XDMA U25 (X2)
     
     fpga_boards = list(dict.fromkeys(fpga_boards))
     return fpga_boards
