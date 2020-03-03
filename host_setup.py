@@ -143,7 +143,6 @@ def get_fpga_env(host_os):
     shells=[]
     ret, out, err = exec_cmd_with_ret_output('sudo /opt/xilinx/xrt/bin/xbutil flash scan')
     for num, line in enumerate(out.splitlines()):
-    for line in out.splitlines():
         if line.startswith('Card ['):
             boards.append(out.splitlines()[num+2].split(':')[1].strip())
             shells.append(out.splitlines()[num+5].split(',')[0].strip())
