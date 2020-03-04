@@ -1,6 +1,11 @@
 #!/bin/bash
 export LANG=en_US.UTF-8 && export LANGUAGE=en_US.UTF-8 && export LC_COLLATE=C && export LC_CTYPE=en_US.UTF-8
 
+if [ ! "$BASH_VERSION" ] ; then
+    echo "Please do not use sh to run this script ($0), just execute it directly" 1>&2
+    exit 1
+fi
+
 # Make sure this script is sourced
 script=${BASH_SOURCE[0]}
 if [ $script == $0 ]; then

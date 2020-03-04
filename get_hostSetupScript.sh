@@ -1,5 +1,10 @@
 #!/bin/bash
 
+if [ ! "$BASH_VERSION" ] ; then
+    echo "Please do not use sh to run this script ($0), just execute it directly" 1>&2
+    exit 1
+fi
+
 if [[ $UID != 0 ]]; then
     echo "Please run this script with sudo:"
     echo "sudo $0 $*"

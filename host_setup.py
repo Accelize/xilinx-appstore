@@ -556,7 +556,8 @@ def run_setup(skip, vendor, appname):
     run_app_path=os.path.join('/opt', 'xilinx', 'appstore', run_app_fname)
     with open(run_app_path,"w+") as f:
         f.write('#!/bin/bash\n')
-        f.write('source /opt/xilinx/appstore/set_env.sh\n\n')
+        f.write('if [ ! "$BASH_VERSION" ] ; then echo "Please do not use sh to run this script ($0), just execute it directly" 1>&2; exit 1; fi\n')
+        f.write('source /opt/xilinx/appstore/set_env.sh\n')
         f.write(f"{pullCmd}\n")
         f.write(f"{runCmd}\n")
     run(f'sudo chmod +x {run_app_path}', shell=True)
@@ -567,7 +568,7 @@ def run_setup(skip, vendor, appname):
     print(f"\tsource /opt/xilinx/appstore/set_env.sh")
     print(f"\t{pullCmd}")
     print(f"\t{runCmd}")
-    print(f" > B. By using convenient script: {run_app_path}\n\n")
+    print(f" > B. By using convenient bash script: {run_app_path}\n\n")
 
 
 
