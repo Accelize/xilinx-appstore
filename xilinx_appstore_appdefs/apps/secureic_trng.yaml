@@ -49,11 +49,16 @@ Instructions:
         '
         Asset: assets/secureic_trng/secureic03.png
   Alveo U200:
-    Host Setup:
-      CentOS: sudo yum install -y python3 git && git clone https://github.com/Accelize/xilinx-appstore.git
-        && python3 xilinx-appstore/host_setup.py -v secure-ic -a trng
-      Ubuntu: sudo apt install -y python3 git && git clone https://github.com/Accelize/xilinx-appstore.git
-        && python3 xilinx-appstore/host_setup.py -v secure-ic -a trng
+    Host Setup: '
+      Install the Host Setup Script
+        curl -sL https://tinyurl.com/getHostSetup | sudo bash
+      Run the Host Setup Script
+        python3 /opt/xilinx/appstore/host_setup.py -v secure-ic -a trng
+        
+        Note:
+          + Run the host setup script without arguments to get the list of available applications
+          + The setup script might require to reboot the host. In this case, please reboot the host and launch the script again until setup is complete.
+    '
     Run the Application:
       Setup Environment Variables: source /opt/xilinx/appstore/set_env.sh
       Pull the Docker Image: docker_pull docker pull hubxilinx/secureic_trng_alveo_u200

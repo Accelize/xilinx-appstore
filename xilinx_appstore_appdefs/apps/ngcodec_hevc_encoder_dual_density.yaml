@@ -52,11 +52,16 @@ Instructions:
         '
         Asset: assets/ngcodec_hevc_encoder_dual_density/ngc03.png
   Alveo U200:
-    Host Setup:
-      Centos: sudo yum install -y python3 git && git clone https://github.com/Accelize/xilinx-appstore.git
-        && python3 xilinx-appstore/host_setup.py -v ngcodec -a hevc_enc_dual
-      Ubuntu: sudo apt install -y python3 git && git clone https://github.com/Accelize/xilinx-appstore.git
-        && python3 xilinx-appstore/host_setup.py -v ngcodec -a hevc_enc_dual
+    Host Setup: '
+      Install the Host Setup Script
+        curl -sL https://tinyurl.com/getHostSetup | sudo bash
+      Run the Host Setup Script
+        python3 /opt/xilinx/appstore/host_setup.py -v ngcodec -a hevc_enc_dual
+        
+        Note:
+          + Run the host setup script without arguments to get the list of available applications
+          + The setup script might require to reboot the host. In this case, please reboot the host and launch the script again until setup is complete.
+    '
     Application Execution:
       Setup Environment Variables: source /opt/xilinx/appstore/set_env.sh
       Pull the Docker Image: docker pull hubxilinx/ngcodec_hevc_alveo_u200

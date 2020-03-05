@@ -29,11 +29,16 @@ DockerCmds:
 ### Running the Application
 Instructions:
   Alveo U200:
-    Host Setup:
-      Centos: sudo yum install -y python3 git && git clone https://github.com/Accelize/xilinx-appstore.git
-        && python3 xilinx-appstore/host_setup.py -v v-nova -a p+
-      Ubuntu: sudo apt install -y python3 git && git clone https://github.com/Accelize/xilinx-appstore.git
-        && python3 xilinx-appstore/host_setup.py -v v-nova -a p+
+    Host Setup: '
+      Install the Host Setup Script
+        curl -sL https://tinyurl.com/getHostSetup | sudo bash
+      Run the Host Setup Script
+        python3 /opt/xilinx/appstore/host_setup.py -v v-nova -a p+
+        
+        Note:
+          + Run the host setup script without arguments to get the list of available applications
+          + The setup script might require to reboot the host. In this case, please reboot the host and launch the script again until setup is complete.
+    '
     Run the Application:
       Setup Environment Variables: source /opt/xilinx/appstore/set_env.sh
       Pull the Docker Image: docker pull hubxilinx/vnova_pplus_alveo_u200

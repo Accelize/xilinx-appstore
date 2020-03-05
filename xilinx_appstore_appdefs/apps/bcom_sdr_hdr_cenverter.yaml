@@ -1,7 +1,7 @@
 ### Application Summary
 appvendor: b-com
 appname: sdr_hdr_converter
-short_desc: SDR-HDR Converter
+short_desc: [SDR-HDR Converter]
 summary: This SDR-to-HDR technology provides a simple yet powerful way to convert
   SDR (Standard Dynamic Range) content into an HDR (High Dynamic Range) format. The
   algorithm intelligently exploits high dynamic range of the target display while
@@ -54,11 +54,16 @@ Instructions:
         ' 
         Asset: assets/bcom_sdrtohdr/bcom03.png
   Alveo U200:
-    Host Setup:
-      CentOS: sudo yum install -y python3 git && git clone https://github.com/Accelize/xilinx-appstore.git
-        && python3 xilinx-appstore/host_setup.py -v b-com -a sdr_hdr_converter
-      Ubuntu: sudo apt install -y python3 git && git clone https://github.com/Accelize/xilinx-appstore.git
-        && python3 xilinx-appstore/host_setup.py -v b-com -a sdr_hdr_converter
+    Host Setup: '
+      Install the Host Setup Script
+        curl -sL https://tinyurl.com/getHostSetup | sudo bash
+      Run the Host Setup Script
+        python3 /opt/xilinx/appstore/host_setup.py -v bcom -a sdr_hdr_converter
+        
+        Note:
+          + Run the host setup script without arguments to get the list of available applications
+          + The setup script might require to reboot the host. In this case, please reboot the host and launch the script again until setup is complete.
+    '
     Run the Application:
       Setup Environment Variables: source /opt/xilinx/appstore/set_env.sh
       Pull the Docker Image: docker pull hubxilinx/bcom_sdr2hdr_alveo_u200
