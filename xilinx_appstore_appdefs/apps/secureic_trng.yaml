@@ -1,6 +1,6 @@
 ---
-Secure-IC True Random Number Generator Definition file
----
+# Secure-IC True Random Number Generator Definition file
+
 ### Application Summary
 appvendor: secure-ic
 appname: trng

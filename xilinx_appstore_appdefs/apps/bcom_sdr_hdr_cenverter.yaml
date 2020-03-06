@@ -1,6 +1,6 @@
 ---
-b<>com [SDR-HDR Converter] Definition file
----
+# b<>com [SDR-HDR Converter] Definition file
+
 ### Application Summary
 appvendor: b-com
 appname: sdr_hdr_converter

@@ -1,6 +1,6 @@
 ---
-Xilinx/NGCodec HEVC/H.265 Dual Density Encoder Definition file
----
+# Xilinx/NGCodec HEVC/H.265 Dual Density Encoder Definition file
+
 ### Application Summary
 appvendor: NGCodec
 appname: hevc_enc_dual
