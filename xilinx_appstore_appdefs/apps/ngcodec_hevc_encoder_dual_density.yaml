@@ -1,3 +1,6 @@
+---
+Xilinx/NGCodec HEVC/H.265 Dual Density Encoder Definition file
+---
 ### Application Summary
 appvendor: NGCodec
 appname: hevc_enc_dual
@@ -16,15 +19,15 @@ DeploymentOptions:
     Nimbix: nx5u_xdma_201830_2
   OnPremises:
     Alveo U200: xdma-201830.2
-  PortalURL: https://xilinx-ngcodec.accelize.com/user/login?destination=/front/customer/listpurchase?product=HEVC%20Encoder%20UHD%20Dual%20Density
-  
+  PortalURL: https://xilinx-ngcodec.accelize.com/front/customer/listpurchase?name=Xilinx%20AppStore%20Free%20Eval%20Plan
+
 ### Docker Commands
 DockerCmds:
   pull: docker pull hubxilinx/ngcodec_hevc_alveo_u200
   run: docker run -v /home/$USER/cred.json:/home/appuser/cred.json -v /dev/shm:/data
     $XILINX_FPGA_DEV_IDS hubxilinx/ngcodec_hevc_alveo_u200 -i /samples/in.mp4 -c:v
     NGC265 -b:v 3M -g 0 -idr-period 120 -y -f mp4 /data/out.mp4
-    
+
 ### Running the Application
 Instructions:
   Nimbix:
@@ -44,7 +47,7 @@ Instructions:
         Asset: assets/ngcodec_hevc_encoder_dual_density/ngc02.png
       Results:
         Text: '
-            Once your job is complete, an "out.mp4" HEVC encoded sample will be available on the Nimbix FTP. 
+            Once your job is complete, an "out.mp4" HEVC encoded sample will be available on the Nimbix FTP.
             You can download it and use your video player software to display it.
             You can now use your own input video file by:
                 + Uploading it on Nimbix FTP
@@ -57,7 +60,7 @@ Instructions:
         curl -sL https://tinyurl.com/getHostSetup | sudo bash
       Run the Host Setup Script
         python3 /opt/xilinx/appstore/host_setup.py -v ngcodec -a hevc_enc_dual
-        
+
         Note:
           + Run the host setup script without arguments to get the list of available applications
           + The setup script might require to reboot the host. In this case, please reboot the host and launch the script again until setup is complete.
@@ -77,26 +80,25 @@ Instructions:
             + Replacing "-i /samples/in.mp4" with "-i /data/{YourFileName}" in the docker run command
         '
       Asset: assets/ngcodec_hevc_encoder_dual_density/ngc03.png
-      
 
 ### Reserved for host_setup script #####################################
 Supported:
   boards:
-  - u200
+    - u200
   os:
-  - ubuntu-16.04
-  - ubuntu-18.04
-  - centos-7
+    - ubuntu-16.04
+    - ubuntu-18.04
+    - centos-7
 HostSetupConfiguration:
-- board: xilinx-u200
-  dsa_package: xilinx-u200-xdma-201830.2-2580015_16.04.deb
-  os: ubuntu-16.04
-  xrt_package: xrt_201910.2.2.2250_16.04-xrt.deb
-- board: xilinx-u200
-  dsa_package: xilinx-u200-xdma-201830.2-2580015_18.04.deb
-  os: ubuntu-18.04
-  xrt_package: xrt_201910.2.2.2250_18.04-xrt.deb
-- board: xilinx-u200
-  dsa_package: xilinx-u200-xdma-201830.2-2580015.x86_64.rpm
-  os: centos-7
-  xrt_package: xrt_201910.2.2.2250_7.4.1708-xrt.rpm
+  - board: xilinx-u200
+    dsa_package: xilinx-u200-xdma-201830.2-2580015_16.04.deb
+    os: ubuntu-16.04
+    xrt_package: xrt_201910.2.2.2250_16.04-xrt.deb
+  - board: xilinx-u200
+    dsa_package: xilinx-u200-xdma-201830.2-2580015_18.04.deb
+    os: ubuntu-18.04
+    xrt_package: xrt_201910.2.2.2250_18.04-xrt.deb
+  - board: xilinx-u200
+    dsa_package: xilinx-u200-xdma-201830.2-2580015.x86_64.rpm
+    os: centos-7
+    xrt_package: xrt_201910.2.2.2250_7.4.1708-xrt.rpm
