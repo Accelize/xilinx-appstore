@@ -17,5 +17,9 @@ apps:
   appname: trng
   short_desc: True Random Number Generator
   appdef_path: apps/secureic_trng.yaml
+- appvendor: deepoly
+  appname: thunderimage
+  short_desc: Image Processing Library
+  appdef_path: apps/deepoly_thunderimage.yaml
 
 
