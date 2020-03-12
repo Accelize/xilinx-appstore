@@ -1,0 +1,99 @@
+---
+# Deepoly ThunderImage Definition file
+
+### Application Summary
+appvendor: deepoly
+appname: thunderimage
+short_desc: Image Processing Library
+summary: ThunderImage is DeePoly's leadership product for image processing acceleration based on Xilinx Alveo accelerators. Leveraging ThunderImage, data center users could accelerate image processing performance up to 20X with up to 5X lower latency with consistent QoS and 10X better power efficiency, reduce the TCO by 5X.
+Publisher: Deepoly
+Published By: Accelize
+Modified: March 12, 2020
+Size: 633 MB
+
+### Deployment Options
+DeploymentOptions:
+  CloudServices:
+    Nimbix: Coming soon
+  OnPremises:
+    Alveo U200: xdma-201830.2
+  PortalURL: https://deepoly.accelize.com/front/customer/listpurchase?name=Xilinx%20AppStore%20Free%20Eval%20Plan
+
+### Docker Commands
+DockerCmds:
+  pull: docker pull hubxilinx/deepoly_thunderimage_alveo_u200
+  run: docker run -v /home/$USER/cred.json:/opt/ThunderImage-Premium/server/cred.json -v /dev/shm:/opt/user_outputs $XILINX_FPGA_DEV_IDS --shm-size=64G hubxilinx/deepoly_thunderimage_alveo_u200:latest /opt/run.sh
+
+### Running the Application
+Instructions:
+  Nimbix:
+    Application Execution:
+      Select the Application on the Nimbix Platform:
+        URL: https://platform.jarvice.com/?page=compute&name=Deepoly%20ThunderImage
+        ButtonName: Run ThunderImage Processingr
+        Asset: assets/deepoly_thunderimage/dpy01.png
+      Run the Application:
+        MachineType: nx5u_xdma_201830_2
+        MachineCores: 16
+        Parameters:
+          'Accelize credentials:': Browse FTP to select your "cred.json" Access Key
+            file from Step 2.
+          'Input Folder:': /opt/samples
+          'Output Folder:': .
+        Asset: assets/deepoly_thunderimage/dpy02.png
+      Results:
+        Text: '
+            Once your job is complete, a "case_ali.webp" WebP encoded sample file will be available in Nimbix FTP.
+            You can use your internet browser to display it.
+            You can now use your own input and output folders by :
+                + Uploading them on Nimbix FTP
+                + Providing their path in "Input Folder" and "Output Folder" arguments
+        '
+        Asset: assets/deepoly_thunderimage/dpy03.png
+  Alveo U200:
+    Host Setup: '
+      Install the Host Setup Script
+        curl -sL https://tinyurl.com/getHostSetup | sudo bash
+      Run the Host Setup Script
+        python3 /opt/xilinx/appstore/host_setup.py -v deepoly -a thunderimage
+
+        Note:
+          + Run the host setup script without arguments to get the list of available applications
+          + The setup script might require to reboot the host. In this case, please reboot the host and launch the script again until setup is complete.
+    '
+    Application Execution:
+      Setup Environment Variables: source /opt/xilinx/appstore/set_env.sh
+      Pull the Docker Image: docker pull hubxilinx/deepoly_thunderimage_alveo_u200
+      Run the Docker Image (Outside Mainland China): docker run -v /home/$USER/cred.json:/opt/ThunderImage-Premium/server/cred.json -v /dev/shm:/opt/user_outputs $XILINX_FPGA_DEV_IDS --shm-size=64G hubxilinx/deepoly_thunderimage_alveo_u200:latest /opt/run.sh
+      Run the Docker Image (Mainland China): docker run -v /home/$USER/cred.json:/opt/ThunderImage-Premium/server/cred.json -v /dev/shm:/opt/user_outputs $XILINX_FPGA_DEV_IDS --shm-size=64G hubxilinx/deepoly_thunderimage_alveo_u200:latest /opt/run.sh -r cn
+    Results:
+      Text: '
+        Once your job is complete, a "case_ali.webp" WebP encoded sample file will be available in "/dev/shm".
+        You can use your internet browser to display it.
+        You can now use your own input and output folders by using the following command:
+        docker run -v /home/$USER/cred.json:/opt/ThunderImage-Premium/server/cred.json -v {YourInputFolder}:/opt/user_inputs -v {YourOutputFolder}:/opt/user_outputs $XILINX_FPGA_DEV_IDS --shm-size=64G hubxilinx/deepoly_thunderimage_alveo_u200:latest /opt/run.sh -i /opt/user_inputs -o /opt/user_outputs
+        '
+      Asset: assets/deepoly_thunderimage/dpy03.png
+
+
+### Reserved for host_setup script #####################################
+Supported:
+  boards:
+    - u200
+  os:
+    - ubuntu-16.04
+    - ubuntu-18.04
+    - centos-7
+HostSetupConfiguration:
+  - board: xilinx-u200
+    dsa_package: xilinx-u200-xdma-201830.2-2580015_16.04.deb
+    os: ubuntu-16.04
+    xrt_package: xrt_201910.2.2.2250_16.04-xrt.deb
+  - board: xilinx-u200
+    dsa_package: xilinx-u200-xdma-201830.2-2580015_18.04.deb
+    os: ubuntu-18.04
+    xrt_package: xrt_201910.2.2.2250_18.04-xrt.deb
+  - board: xilinx-u200
+    dsa_package: xilinx-u200-xdma-201830.2-2580015.x86_64.rpm
+    os: centos-7
+    xrt_package: xrt_201910.2.2.2250_7.4.1708-xrt.rpm

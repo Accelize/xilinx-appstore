@@ -71,7 +71,7 @@ def dict_pretty_print(in_dict):
 def exec_cmd_with_ret_output(cmd, path='.'): 
     try:
         cmd = 'cd %s && %s' %(path, cmd)
-        p = Popen(cmd, shell=True, stdout=PIPE, universal_newlines=True)
+        p = Popen(cmd, shell=True, stdout=PIPE, , encoding="utf-8", universal_newlines=True)
         stdout, stderr = p.communicate()
         return p.returncode, stdout, stderr
     except KeyboardInterrupt as e:
@@ -173,7 +173,7 @@ def check_xrt(host_os, target_version):
     if xrt_version in target_version :
         print_status('XRT Version Check', f'OK ({xrt_version})')
         return False
-    print_status('XRT Version Check', 'Failed')
+    print_status('XRT Version Check', 'Update Required')
     return True
 
  
@@ -187,7 +187,7 @@ def check_host_dsa(host_os, conf_pkg):
         ret, out, err = exec_cmd_with_ret_output(f'sudo apt list --installed 2>/dev/null | grep {pkg_name} | grep {pkg_vers} > /dev/null 2>&1')
 
     if ret:
-        print_status('Board Shell [HOST] Version Check', f'Failed ({pkg_name}-{pkg_vers})')
+        print_status('Board Shell [HOST] Version Check', f'Update Required ({pkg_name}-{pkg_vers})')
         return True 
     print_status('Board Shell [HOST] Version Check', f'OK ({pkg_name}-{pkg_vers})')    
     return False
@@ -197,7 +197,7 @@ def check_docker(host_os):
     if check_host_pkg_installed(host_os, 'docker-ce'):
         print_status('DockerCE  Check', 'OK')
         return False
-    print_status('DockerCE  Check', 'Failed')
+    print_status('DockerCE  Check', 'Update Required')
     return True
 
 
@@ -205,7 +205,7 @@ def check_dependencies(host_os):
     deps= host_dependencies_ubuntu if 'ubuntu' in host_os else host_dependencies_centos
     for dep in deps.split(' '):
         if not check_host_pkg_installed(host_os, dep):
-            print_status('OS  Dependency Package(s)', 'Failed')
+            print_status('OS  Dependency Package(s)', 'Update Required')
             return True
     print_status('OS  Dependency Package(s)', 'OK')
     return False
@@ -215,7 +215,7 @@ def check_kernel():
     if os.path.exists(os.path.join('/lib','modules', os.uname()[2], 'build')):
         print_status('Kernel Version Check', 'OK')
         return False
-    print_status('Kernel Version Check', 'Failed')
+    print_status('Kernel Version Check', 'Update Required')
     return True
 
 
@@ -229,7 +229,7 @@ def check_board_shell(boardIdx):
                 print_status('Board Shell Host vs. FPGA', 'OK')
                 return False
         cnt+=1     
-    print_status('Board Shell Host vs. FPGA', 'Failed')
+    print_status('Board Shell Host vs. FPGA', 'Update Required')
     return True
 
 
@@ -331,6 +331,7 @@ def board_shell_flash(boardIdx):
     ret, out, err = exec_cmd_with_ret_output(cmd)
     cnt=0
     host_dsa_conf=''
+    host_dsa_conf=''
     for l in out.splitlines():
         if f'Card [{boardIdx}]' in l:
             host_dsa_conf=out.splitlines()[cnt+7].strip()
@@ -364,7 +365,7 @@ def update_host_env(host_os, update_kernel, dependencies, install_docker=False):
             update_os_kernel(host_os)     
             print_status('Updating Kernel', 'Done')
         
-        print_status('Updating DockerCE', '')
+        print_status('Updating DockerCE (may take several minutes)', '')
         if install_docker:
             install_DockerCE()  
         configure_DockerCE()        
@@ -395,7 +396,7 @@ def update_fpga_env(host_os, selected_conf, xrt_outdated, host_dsa_outdated):
 
         # Check Installed versions of Host DSA against selected_conf['dsa_package']
         if host_dsa_outdated:
-            print_status('Updating Board Shell [HOST]', '')
+            print_status('Updating Board Shell [HOST] (may take several minutes)', '')
             pkg_path=host_pkg_download(selected_conf['dsa_package'])
             host_pkg_install(host_os, pkg_path)
             print_status('Updating Board Shell [HOST]', 'Done')
@@ -482,7 +483,6 @@ def run_setup(skip, vendor, appname):
         sys.exit(1)
     print_status('OS Compatibility', 'OK')
     if not any(item in lspci_boards for item in appdef['Supported']['boards']):
-        print_status('FPGA Board Compatibility', 'Failed')
         print(f" [ERROR] Boards {lspci_boards} not supported by this application")
         sys.exit(1)
     print_status('FPGA Board Compatibility', 'OK')
@@ -504,7 +504,7 @@ def run_setup(skip, vendor, appname):
             print_status('Suitable App Configuration', 'OK')
             selected_conf=conf
     if not selected_conf:
-        print_status('Suitable App Configuration', 'Failed')
+        print_status('Suitable App Configuration', 'Not Found')
         sys.exit(1)
         
     # Check Installed versions of XRT against selected_conf['xrt_package']
@@ -535,7 +535,7 @@ def run_setup(skip, vendor, appname):
     if os.path.exists(os.path.join(homedir, 'cred.json')):
         print_status('Access Key Check', 'OK')
     else:
-        print_status('Access Key Check', 'Failed')
+        print_status('Access Key Check', 'Not Found')
         print(f" [!] Please copy your access key in {os.path.join(homedir, 'cred.json')} and run this script again")
         return
         
