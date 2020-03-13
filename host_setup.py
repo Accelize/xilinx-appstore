@@ -71,11 +71,13 @@ def dict_pretty_print(in_dict):
 def exec_cmd_with_ret_output(cmd, path='.'): 
     try:
         cmd = 'cd %s && %s' %(path, cmd)
-        p = Popen(cmd, shell=True, stdout=PIPE, , encoding="utf-8", universal_newlines=True)
-        stdout, stderr = p.communicate()
-        return p.returncode, stdout, stderr
+        p = Popen(cmd, shell=True, stdout=PIPE)
+        stdout, stderr = p.communicate()        
+        out = '' if stdout is None else stdout.decode('utf8')
+        err = '' if stderr is None else stderr.decode('utf8')
+        return p.returncode, out, err
     except KeyboardInterrupt as e:
-        raise(e)     
+        raise(e)
 
 
 def fpga_board_list():
@@ -428,6 +430,7 @@ def update_board_dsa(board_idx):
 
 
 def run_setup(skip, vendor, appname):
+    print_status('Initializing', '')
     # Set environement variables
     os.environ['LANG'] = "en_US.UTF-8"
     os.environ['LANGUAGE'] = "en_US.UTF-8"
@@ -436,11 +439,11 @@ def run_setup(skip, vendor, appname):
     
     # Install Script Dependencies
     pip_install('pyYAML')
+    print_status('Initializing', 'OK')
     
     # Download or Update App Catalog
+    print_status('Loading App Catalog', '')
     download_appstore_catalog()
-  
-    # Loading App Catalog file
     appcatalog=yamlfile_to_dict(os.path.join(APPDEFS_FOLDER, APPLIST_FNAME))
     print_status('Loading App Catalog', 'OK')
     
