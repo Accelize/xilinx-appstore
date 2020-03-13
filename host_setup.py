@@ -430,7 +430,7 @@ def update_board_dsa(board_idx):
 
 
 def run_setup(skip, vendor, appname):
-    print_status('Initializing', '')
+
     # Set environement variables
     os.environ['LANG'] = "en_US.UTF-8"
     os.environ['LANGUAGE'] = "en_US.UTF-8"
@@ -439,7 +439,6 @@ def run_setup(skip, vendor, appname):
     
     # Install Script Dependencies
     pip_install('pyYAML')
-    print_status('Initializing', 'OK')
     
     # Download or Update App Catalog
     print_status('Loading App Catalog', '')
