@@ -445,6 +445,14 @@ def run_setup(skip, vendor, appname):
     download_appstore_catalog()
     appcatalog=yamlfile_to_dict(os.path.join(APPDEFS_FOLDER, APPLIST_FNAME))
     print_status('Loading App Catalog', 'OK')
+
+    # Empty program arguments handling
+    if not args.vendor or not args.appname:
+        print(f" > You must provide application vendor and name from following list:")
+        for app in appcatalog['apps']:
+            print_status(f"\t{app['appvendor'].lower()}", f"{app['appname'].lower()}", 20)
+        print(f" > e.g: python3 host_setup.py -v ngcodec -a hevc_enc_dual\n")
+        sys.exit(1)
     
     appdef_path=''
     for app in appcatalog['apps']:
@@ -594,13 +602,5 @@ if __name__ == '__main__':
     option.add_argument('--skip', '-s', dest="skip", action="store_true", 
                         help="Skip questions and use default value")
     args = option.parse_args()
-            
-    if not args.vendor or not args.appname:
-        print(f" > You must provide application vendor and name from following list:")
-        appcatalog=yamlfile_to_dict(os.path.join(APPDEFS_FOLDER, APPLIST_FNAME))
-        for app in appcatalog['apps']:
-            print_status(f"\t{app['appvendor'].lower()}", f"{app['appname'].lower()}", 20)
-        print(f" > e.g: python3 host_setup.py -v ngcodec -a hevc_enc_dual\n")
-        sys.exit(1)
-    
+                
     sys.exit(run_setup(skip=args.skip, vendor=args.vendor, appname=args.appname))

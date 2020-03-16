@@ -14,8 +14,11 @@ if [ $script == $0 ]; then
 fi
 
 # Board selection
-/opt/xilinx/xrt/bin/xbutil list
-read -p "> Please select the index of board you want to use:  " board_idx
+brdcnt=$(/opt/xilinx/xrt/bin/xbutil list | grep "\[" | wc -l)
+board_idx=0
+
+if [[ $brdcnt -eq "0" ]]; then echo "No Boards Detected"; exit 3; fi
+if [[ $brdcnt -gt "1" ]]; then read -p "> Please select the index of board you want to use:  " board_idx; fi
 
 ## FPGA Device Identification
 MGMTDEV=$(/opt/xilinx/xrt/bin/xbutil scan | grep "\[$board_idx\]mgmt" | cut -d']' -f3 | cut -d: -f6)
