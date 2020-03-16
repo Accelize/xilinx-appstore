@@ -18,14 +18,19 @@ Size: 285.49 MB
 DeploymentOptions:
   CloudServices:
     Nimbix: nx5u_xdma_201830_2
+    AWS: f1.2xlarge
   OnPremises:
     Alveo U200: xdma-201830.2
   PortalURL: https://secure-ic.accelize.com/front/customer/listpurchase?name=Xilinx%20AppStore%20Free%20Eval%20Plan
 
 ### Docker Commands
 DockerCmds:
-  pull: docker_pull docker pull hubxilinx/secureic_trng_alveo_u200
-  run: docker run -p 8080:8080 -v /home/$USER/cred.json:/home/appuser/cred.json -v /dev/shm:/data $XILINX_FPGA_DEV_IDS hubxilinx/secureic_trng_alveo_u200
+  AlveoU200:
+    pull: docker_pull docker pull hubxilinx/secureic_trng_alveo_u200
+    run: docker run -p 8080:8080 -v /home/$USER/cred.json:/home/appuser/cred.json -v /dev/shm:/data $XILINX_FPGA_DEV_IDS hubxilinx/secureic_trng_alveo_u200
+  AWS-F1:
+    pull: docker_pull docker pull hubxilinx/secureic_trng_aws_f1
+    run: docker run -p 8080:8080 -v /home/$USER/cred.json:/root/cred.json -v /dev/shm:/data $XILINX_FPGA_DEV_IDS hubxilinx/secureic_trng_aws_f1
 
 ### Running the Application
 Instructions:
@@ -72,11 +77,34 @@ Instructions:
         Generate 256 bytes of true random data using the following command:
             curl http://{host_ip}:8080?size=256 | hexdump'
       Asset: assets/secureic_trng/secureic03.png
+  AWS:
+    1. Sign-up for Amazon Web Services:
+      URL: 'https://portal.aws.amazon.com/billing/signup#/start'
+    2. Start 'FPGA Developer AMI' v1.7.0:
+      Instance Type: f1.2xlarge
+      Asset: AWS01.png
+    3. Upload Access Key:
+      Text: Once your instance is started, use its public IP to copy the Access Key (scp, ftp, ...)
+      Cmd: ssh -i ~/.ssh/AccelizeDev.pem centos@172.31.7.74
+    4. Application Execution:
+      Setup Environment Variables: source /opt/xilinx/appstore/set_env_aws.sh
+      Pull the Docker Image: docker_pull docker pull hubxilinx/secureic_trng_aws_f1
+      Run the Docker Image: docker run -p 8080:8080 -v /home/$USER/cred.json:/root/cred.json -v /dev/shm:/data $XILINX_FPGA_DEV_IDS hubxilinx/secureic_trng_aws_f1
+    5. Results:
+      Text: '
+          It will start a webservice that generates random numbers "on-demand".
+          Generate 256 bytes of true random data using the following command:
+            curl http://{nimbix_instance_address}:8080?size=256 | hexdump
+          Note: The Nimbix Instance Address is displayed when running the application
+          (e.g: "NAE-165-254-189-68.jarvice.com")
+        '
+      Asset: assets/secureic_trng/secureic03.png
 
 ### Reserved for host_setup script #####################################
 Supported:
   boards:
     - u200
+    - f1.2xlarge
   os:
     - ubuntu-16.04
     - ubuntu-18.04
@@ -95,3 +123,6 @@ HostSetupConfiguration:
     dsa_package: xilinx-u200-xdma-201830.2-2580015.x86_64.rpm
     os: centos-7
     xrt_package: xrt_201910.2.2.2250_7.4.1708-xrt.rpm
+  - board: f1.2xlarge
+    os: centos-7
+    xrt_package: xrt-aws-2.2.0-1

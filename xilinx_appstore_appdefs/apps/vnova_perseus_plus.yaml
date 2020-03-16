@@ -22,12 +22,9 @@ DeploymentOptions:
 
 ### Docker Commands
 DockerCmds:
-  pull: docker pull hubxilinx/vnova_pplus_alveo_u200
-  run: docker run -v /home/$USER/cred.json:/vnova_pplus/cred.json:Z -v /dev/shm:/io:Z
-    $XILINX_FPGA_DEV_IDS hubxilinx/vnova_pplus_alveo_u200 -y -s 3840x2160 -pix_fmt
-    yuv420p -vcodec rawvideo -stream_loop 0 -r 60 -i /samples/sample_3840x2160_8bit_P420.yuv
-    -c:v pplusenc_hevc -base_encoder ngcodec_sdx_hevc -eil_params "accel_type=xilinx_xma;encoding_transform_type=dd;temporal_enabled=0;temporal_use_refresh=0;api_mode=asynchronous;baseEncType=ngcodec;xclbinHasNGC=1;encoding_downsample_luma=area;encoding_upsample=cubic;rate_control_mode=variableratio;rc_bucket_duration_ms=2000;encoding_step_width_model=v1;encoding_step_width_min_qp=41;bitrate_max_base_prop=0.8;bitrate_base_prop=0.8;perseus_mode=robust;qp_min=30;xma_config=/vnova_pplus/SystemCfg_194.yaml"
-    -b:v 8000k /io/output.ts
+  AlveoU200:
+    pull: docker pull hubxilinx/vnova_pplus_alveo_u200
+    run: docker run -v /home/$USER/cred.json:/vnova_pplus/cred.json:Z -v /dev/shm:/io:Z $XILINX_FPGA_DEV_IDS hubxilinx/vnova_pplus_alveo_u200 -y -s 3840x2160 -pix_fmt yuv420p -vcodec rawvideo -stream_loop 0 -r 60 -i /samples/sample_3840x2160_8bit_P420.yuv -c:v pplusenc_hevc -base_encoder ngcodec_sdx_hevc -eil_params "accel_type=xilinx_xma;encoding_transform_type=dd;temporal_enabled=0;temporal_use_refresh=0;api_mode=asynchronous;baseEncType=ngcodec;xclbinHasNGC=1;encoding_downsample_luma=area;encoding_upsample=cubic;rate_control_mode=variableratio;rc_bucket_duration_ms=2000;encoding_step_width_model=v1;encoding_step_width_min_qp=41;bitrate_max_base_prop=0.8;bitrate_base_prop=0.8;perseus_mode=robust;qp_min=30;xma_config=/vnova_pplus/SystemCfg_194.yaml" -b:v 8000k /io/output.ts
 
 ### Running the Application
 Instructions:

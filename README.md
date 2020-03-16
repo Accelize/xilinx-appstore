@@ -12,6 +12,14 @@ Run the host setup script with **vendor_name** and **app_name** arguments
 python3 /opt/xilinx/appstore/host_setup.py -v {vendor_name} -a {app_name}
 ````
 
+## Add your application
+- Add section in file 'xilinx_appstore_appdefs/applist.yaml'
+- Add YAML description file in 'xilinx_appstore_appdefs/apps'
+- Check YAML syntax with command : 
+````bash
+yamllint -c .yamllint xilinx_appstore_appdefs/apps
+````
+
 *e.g: python3 /opt/xilinx/appstore/host_setup.py -v ngcodec -a hevc_enc_dual*
 
 **Note:** Run the host setup script without arguments to get the list of available applications

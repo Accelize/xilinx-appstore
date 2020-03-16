@@ -12,9 +12,11 @@ REPO_TARBALL_URL='https://api.github.com/repos/Accelize/xilinx-appstore/tarball'
 APPDEFS_FOLDER=os.path.join(REPO_DIR, "xilinx_appstore_appdefs")
 APPLIST_FNAME="applist.yaml"
 SETENV_SCRIPT=os.path.join(REPO_DIR, 'xilinx_appstore_env.sh')
+SETENV_SCRIPT_AWS=os.path.join(REPO_DIR, 'xilinx_appstore_aws_env.sh')
 host_dependencies_ubuntu = 'curl linux-headers'
 host_dependencies_centos = 'curl epel-release kernel-headers kernel-devel'
-
+XRT_BIN='xbutil'
+AWS_BIN='awssak'
 
 def parse_value(key_value):
     """
@@ -133,9 +135,12 @@ def get_host_env():
         sys.exit(1)
     return host_os, host_os_version
     
-def get_fpga_env(host_os):
+def get_fpga_env(host_os, onAWS):
     # Get FPGA Boards & Shells
-    ret, out, err = exec_cmd_with_ret_output("/opt/xilinx/xrt/bin/xbutil list | grep Found | cut -d' ' -f4")
+    if onAWS:
+        ret, out, err = exec_cmd_with_ret_output(f"sudo /opt/xilinx/xrt/bin/{AWS_BIN} list | grep Found | cut -d' ' -f3")
+    else:
+        ret, out, err = exec_cmd_with_ret_output(f"/opt/xilinx/xrt/bin/{XRT_BIN} list | grep Found | cut -d' ' -f4")
     nbBoardsFound = out.strip()
     if nbBoardsFound == '': nbBoardsFound='0'
     print_status('Board(s) Found', f'{nbBoardsFound}')
@@ -145,11 +150,19 @@ def get_fpga_env(host_os):
     
     boards=[]
     shells=[]
-    ret, out, err = exec_cmd_with_ret_output('sudo /opt/xilinx/xrt/bin/xbutil flash scan')
-    for num, line in enumerate(out.splitlines()):
-        if line.startswith('Card ['):
-            boards.append(out.splitlines()[num+2].split(':')[1].strip())
-            shells.append(out.splitlines()[num+5].split(',')[0].strip())
+    if onAWS:
+        ret, out, err = exec_cmd_with_ret_output(f'sudo /opt/xilinx/xrt/bin/{AWS_BIN} list')
+        for num, line in enumerate(out.splitlines()):
+            if line.startswith('['):
+                brd_num=line.split('[')[1].split(']')[0]
+                boards.append(f'aws_f1_{brd_num}')
+                shells.append(line.split(' ')[1])
+    else:
+        ret, out, err = exec_cmd_with_ret_output(f'sudo /opt/xilinx/xrt/bin/{XRT_BIN} flash scan')
+        for num, line in enumerate(out.splitlines()):
+            if line.startswith('Card ['):
+                boards.append(out.splitlines()[num+2].split(':')[1].strip())
+                shells.append(out.splitlines()[num+5].split(',')[0].strip())
     print_status('Detected Boards', f'{boards}')
     print_status('Detected Shells', f'{shells}')
     
@@ -222,7 +235,7 @@ def check_kernel():
 
 
 def check_board_shell(boardIdx):
-    cmd='sudo /opt/xilinx/xrt/bin/xbutil flash scan'
+    cmd=f'sudo /opt/xilinx/xrt/bin/{XRT_BIN} flash scan'
     ret, out, err = exec_cmd_with_ret_output(cmd)
     cnt=0
     for l in out.splitlines():
@@ -480,9 +493,23 @@ def run_setup(skip, vendor, appname):
     dkr_updt=check_docker(host_os)
     if dkr_updt or krn_updt or dep_updt:
         update_host_env(host_os, krn_updt, dep_updt, dkr_updt)
-        
+       
+
+    # Check if running on AWS
+    running_on_aws=False
+    aws_identity_file='/dev/shm/aws-identity.json'
+    run(f'curl -s http://169.254.169.254/latest/dynamic/instance-identity/document > {aws_identity_file}', shell=True)
+    if os.path.exists(aws_identity_file):
+        print_status('Running on','AWS')
+        instancedef=yamlfile_to_dict(aws_identity_file)
+        print_status('FPGA Board', instancedef['instanceType'])
+        running_on_aws=True
+
     # List FPGA Boards using lspci (XRT not needed)
-    lspci_boards=fpga_board_list()
+    if running_on_aws:
+        lspci_boards=[instancedef['instanceType']]
+    else:
+        lspci_boards=fpga_board_list()
     if not lspci_boards:
         print(f" [ERROR] No FPGA Board Detected. you need at least one FPGA board to use this application.")
         sys.exit(1)
@@ -519,12 +546,15 @@ def run_setup(skip, vendor, appname):
         
     # Check Installed versions of XRT against selected_conf['xrt_package']
     xrt_outdated = check_xrt(host_os, conf['xrt_package'])
-    host_dsa_outdated = check_host_dsa(host_os, selected_conf['dsa_package'])
+    if not running_on_aws:
+        host_dsa_outdated = check_host_dsa(host_os, selected_conf['dsa_package'])
+    else:
+        host_dsa_outdated = False
     if xrt_outdated or host_dsa_outdated:
         update_fpga_env(host_os, selected_conf, xrt_outdated, host_dsa_outdated)
     
     # Detect FPGA environement
-    boards, shells = get_fpga_env(host_os)
+    boards, shells = get_fpga_env(host_os, running_on_aws)
     
     # Board Selection
     board_idx=0
@@ -536,9 +566,10 @@ def run_setup(skip, vendor, appname):
     print_status('Selected board', f'{board_idx}: {boards[board_idx]} {shells[board_idx]}')
     
     # Check Board DSA
-    board_dsa_outdated=check_board_shell(board_idx)
-    if board_dsa_outdated:
-        update_board_dsa(board_idx)
+    if not running_on_aws:
+        board_dsa_outdated=check_board_shell(board_idx)
+        if board_dsa_outdated:
+            update_board_dsa(board_idx)
                 
     # Check Access Key
     homedir = os.environ['HOME']
@@ -553,13 +584,16 @@ def run_setup(skip, vendor, appname):
     if not os.path.exists('/opt/xilinx/appstore'):
         run('sudo mkdir /opt/xilinx/appstore', shell=True)
     run('sudo chmod -R 777 /opt/xilinx/appstore', shell=True)
-    shutil.copyfile(SETENV_SCRIPT, '/opt/xilinx/appstore/set_env.sh')
+    if(running_on_aws):
+        shutil.copyfile(SETENV_SCRIPT_AWS, '/opt/xilinx/appstore/set_env_aws.sh')
+    else:
+        shutil.copyfile(SETENV_SCRIPT, '/opt/xilinx/appstore/set_env.sh')
     print_status('FPGA Device Identification Script', 'Created')
     
     # Update Docker Commands
     username = getpass.getuser()
-    pullCmd=appdef['DockerCmds']['pull']
-    runCmd=appdef['DockerCmds']['run'].replace('$USER', username)
+    pullCmd=appdef['DockerCmds']['AWS_F1']['pull']
+    runCmd=appdef['DockerCmds']['AWS_F1']['run'].replace('$USER', username)
     
     # Create runapp script
     run_app_fname=f"runapp_{vendor.lower()}_{appname.lower()}.sh"
@@ -567,7 +601,10 @@ def run_setup(skip, vendor, appname):
     with open(run_app_path,"w+") as f:
         f.write('#!/bin/bash\n')
         f.write('if [ ! "$BASH_VERSION" ] ; then echo "Please do not use sh to run this script ($0), just execute it directly" 1>&2; exit 1; fi\n')
-        f.write('source /opt/xilinx/appstore/set_env.sh\n')
+        if running_on_aws:
+            f.write('source /opt/xilinx/appstore/set_env_aws.sh\n')
+        else:
+            f.write('source /opt/xilinx/appstore/set_env.sh\n')
         f.write(f"{pullCmd}\n")
         f.write(f"{runCmd}\n")
     run(f'sudo chmod +x {run_app_path}', shell=True)
