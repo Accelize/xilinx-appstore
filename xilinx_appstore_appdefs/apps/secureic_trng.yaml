@@ -26,10 +26,10 @@ DeploymentOptions:
 ### Docker Commands
 DockerCmds:
   AlveoU200:
-    pull: docker_pull docker pull hubxilinx/secureic_trng_alveo_u200
+    pull: docker pull docker pull hubxilinx/secureic_trng_alveo_u200
     run: docker run -p 8080:8080 -v /home/$USER/cred.json:/home/appuser/cred.json -v /dev/shm:/data $XILINX_FPGA_DEV_IDS hubxilinx/secureic_trng_alveo_u200
-  AWS-F1:
-    pull: docker_pull docker pull hubxilinx/secureic_trng_aws_f1
+  AWS_F1:
+    pull: docker pull docker pull hubxilinx/secureic_trng_aws_f1
     run: docker run -p 8080:8080 -v /home/$USER/cred.json:/root/cred.json -v /dev/shm:/data $XILINX_FPGA_DEV_IDS hubxilinx/secureic_trng_aws_f1
 
 ### Running the Application
@@ -69,7 +69,7 @@ Instructions:
     '
     Run the Application:
       Setup Environment Variables: source /opt/xilinx/appstore/set_env.sh
-      Pull the Docker Image: docker_pull docker pull hubxilinx/secureic_trng_alveo_u200
+      Pull the Docker Image: docker pull hubxilinx/secureic_trng_alveo_u200
       Run the Docker Image: docker run -p 8080:8080 -v /home/$USER/cred.json:/home/appuser/cred.json -v /dev/shm:/data $XILINX_FPGA_DEV_IDS hubxilinx/secureic_trng_alveo_u200
     Results:
       Text: '
@@ -88,7 +88,7 @@ Instructions:
       Cmd: ssh -i ~/.ssh/AccelizeDev.pem centos@172.31.7.74
     4. Application Execution:
       Setup Environment Variables: source /opt/xilinx/appstore/set_env_aws.sh
-      Pull the Docker Image: docker_pull docker pull hubxilinx/secureic_trng_aws_f1
+      Pull the Docker Image: docker pull hubxilinx/secureic_trng_aws_f1
       Run the Docker Image: docker run -p 8080:8080 -v /home/$USER/cred.json:/root/cred.json -v /dev/shm:/data $XILINX_FPGA_DEV_IDS hubxilinx/secureic_trng_aws_f1
     5. Results:
       Text: '
