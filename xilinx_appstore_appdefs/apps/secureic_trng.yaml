@@ -25,10 +25,10 @@ DeploymentOptions:
 
 ### Docker Commands
 DockerCmds:
-  AlveoU200:
+  u200:
     pull: docker pull docker pull hubxilinx/secureic_trng_alveo_u200
     run: docker run -p 8080:8080 -v /home/$USER/cred.json:/home/appuser/cred.json -v /dev/shm:/data $XILINX_FPGA_DEV_IDS hubxilinx/secureic_trng_alveo_u200
-  AWS_F1:
+  f1.2xlarge:
     pull: docker pull docker pull hubxilinx/secureic_trng_aws_f1
     run: docker run -p 8080:8080 -v /home/$USER/cred.json:/root/cred.json -v /dev/shm:/data $XILINX_FPGA_DEV_IDS hubxilinx/secureic_trng_aws_f1
 

@@ -500,10 +500,11 @@ def run_setup(skip, vendor, appname):
     aws_identity_file='/dev/shm/aws-identity.json'
     run(f'curl -s http://169.254.169.254/latest/dynamic/instance-identity/document > {aws_identity_file}', shell=True)
     if os.path.exists(aws_identity_file):
-        print_status('Running on','AWS')
         instancedef=yamlfile_to_dict(aws_identity_file)
-        print_status('FPGA Board', instancedef['instanceType'])
-        running_on_aws=True
+        if instancedef:
+            print_status('Running on','AWS')
+            print_status('FPGA Board', instancedef['instanceType'])
+            running_on_aws=True
 
     # List FPGA Boards using lspci (XRT not needed)
     if running_on_aws:
@@ -592,8 +593,8 @@ def run_setup(skip, vendor, appname):
     
     # Update Docker Commands
     username = getpass.getuser()
-    pullCmd=appdef['DockerCmds']['AWS_F1']['pull']
-    runCmd=appdef['DockerCmds']['AWS_F1']['run'].replace('$USER', username)
+    pullCmd=appdef['DockerCmds'][lspci_boards[board_model_idx]]['pull']
+    runCmd=appdef['DockerCmds'][lspci_boards[board_model_idx]]['run'].replace('$USER', username)
     
     # Create runapp script
     run_app_fname=f"runapp_{vendor.lower()}_{appname.lower()}.sh"

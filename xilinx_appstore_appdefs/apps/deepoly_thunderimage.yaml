@@ -21,7 +21,7 @@ DeploymentOptions:
 
 ### Docker Commands
 DockerCmds:
-  AlveoU200:
+  u200:
     pull: docker pull hubxilinx/deepoly_thunderimage_alveo_u200
     run: docker run -v /home/$USER/cred.json:/opt/ThunderImage-Premium/server/cred.json -v /dev/shm:/opt/user_outputs $XILINX_FPGA_DEV_IDS --shm-size=64G hubxilinx/deepoly_thunderimage_alveo_u200:latest /opt/run.sh
 
