@@ -308,7 +308,8 @@ def install_DockerCE():
 
 
 def configure_DockerCE():
-    cmd = 'sudo mkdir -p /etc/docker && echo \'{\"max-concurrent-downloads\": 1}\' | sudo tee -a /etc/docker/daemon.json && sudo systemctl restart docker && sudo systemctl enable docker > /tmp/xxappstore_hostsetup_configuredocker.log 2>&1 && sudo usermod -aG docker $USER'
+    cmd = 'sudo mkdir -p /etc/docker && echo \'{\"max-concurrent-downloads\": 1}\' | sudo tee -a /etc/docker/daemon.json && sudo systemctl restart docker && sudo systemctl enable docker > /tmp/xxappstore_hostsetup_configuredocker.log 2>&1 && sudo usermod -aG docker $USER && sudo chown "$USER":"$USER" /home/"$USER"/.docker -R && sudo chmod g+rwx "/home/$USER/.docker" -R'
+    
     ret, out, err = exec_cmd_with_ret_output(cmd)
     if ret:
         print(out)
@@ -541,6 +542,7 @@ def run_setup(skip, vendor, appname):
         if host_os_full == conf['os'] and lspci_boards[board_model_idx] in conf['board']:
             print_status('Suitable App Configuration', 'OK')
             selected_conf=conf
+            break
     if not selected_conf:
         print_status('Suitable App Configuration', 'Not Found')
         sys.exit(1)

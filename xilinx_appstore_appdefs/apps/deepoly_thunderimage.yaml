@@ -8,13 +8,13 @@ short_desc: Image Processing Library
 summary: ThunderImage is DeePoly's leadership product for image processing acceleration based on Xilinx Alveo accelerators. Leveraging ThunderImage, data center users could accelerate image processing performance up to 20X with up to 5X lower latency with consistent QoS and 10X better power efficiency, reduce the TCO by 5X.
 Publisher: Deepoly
 Published By: Accelize
-Modified: March 12, 2020
+Modified: March 17, 2020
 Size: 633 MB
 
 ### Deployment Options
 DeploymentOptions:
   CloudServices:
-    Nimbix: Coming soon
+    Nimbix: nx5u_xdma_201830_2
   OnPremises:
     Alveo U200: xdma-201830.2
   PortalURL: https://deepoly.accelize.com/front/customer/listpurchase?name=Xilinx%20AppStore%20Free%20Eval%20Plan
@@ -48,7 +48,7 @@ Instructions:
             You can use your internet browser to display it.
             You can now use your own input and output folders by :
                 + Uploading them on Nimbix FTP
-                + Providing their path in "Input Folder" and "Output Folder" arguments
+                + Providing their paths in "Input Folder" and "Output Folder" arguments
         '
         Asset: assets/deepoly_thunderimage/dpy03.png
   Alveo U200:

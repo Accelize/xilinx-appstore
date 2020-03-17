@@ -80,12 +80,12 @@ Instructions:
   AWS:
     1. Sign-up for Amazon Web Services:
       URL: 'https://portal.aws.amazon.com/billing/signup#/start'
-    2. Start 'FPGA Developer AMI' v1.7.0:
+    2. Start FPGA Developer AMI 1.7.0:
       Instance Type: f1.2xlarge
-      Asset: AWS01.png
+      Asset: assets/AWS/AWS01.png
     3. Upload Access Key:
       Text: Once your instance is started, use its public IP to copy the Access Key (scp, ftp, ...)
-      Cmd: ssh -i ~/.ssh/AccelizeDev.pem centos@172.31.7.74
+      Cmd: scp -i {YourAccessKey} cred.json centos@{AmiPublicIP}:.
     4. Application Execution:
       Setup Environment Variables: source /opt/xilinx/appstore/set_env_aws.sh
       Pull the Docker Image: docker pull hubxilinx/secureic_trng_aws_f1
