@@ -94,9 +94,8 @@ Instructions:
       Text: '
           It will start a webservice that generates random numbers "on-demand".
           Generate 256 bytes of true random data using the following command:
-            curl http://{nimbix_instance_address}:8080?size=256 | hexdump
-          Note: The Nimbix Instance Address is displayed when running the application
-          (e.g: "NAE-165-254-189-68.jarvice.com")
+            curl http://{AmiPublicIP}:8080?size=256 | hexdump
+          Note: The AWS AMI Public IP is displayed in the AWS console
         '
       Asset: assets/secureic_trng/secureic03.png
 

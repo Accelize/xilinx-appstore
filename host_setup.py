@@ -308,7 +308,7 @@ def install_DockerCE():
 
 
 def configure_DockerCE():
-    cmd = 'sudo mkdir -p /etc/docker && echo \'{\"max-concurrent-downloads\": 1}\' | sudo tee -a /etc/docker/daemon.json && sudo systemctl restart docker && sudo systemctl enable docker > /tmp/xxappstore_hostsetup_configuredocker.log 2>&1 && sudo usermod -aG docker $USER && sudo chown "$USER":"$USER" /home/"$USER"/.docker -R && sudo chmod g+rwx "/home/$USER/.docker" -R'
+    cmd = 'sudo mkdir -p /etc/docker && echo \'{\"max-concurrent-downloads\": 1}\' | sudo tee -a /etc/docker/daemon.json && sudo systemctl restart docker && sudo systemctl enable docker > /tmp/xxappstore_hostsetup_configuredocker.log 2>&1 && sudo usermod -aG docker $USER && sudo chown -f "$USER":"$USER" /home/"$USER"/.docker -R && sudo chmod -f g+rwx "/home/$USER/.docker" -R'
     
     ret, out, err = exec_cmd_with_ret_output(cmd)
     if ret:
