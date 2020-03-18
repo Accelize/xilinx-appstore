@@ -308,14 +308,14 @@ def install_DockerCE():
 
 
 def configure_DockerCE():
-    cmd = 'sudo mkdir -p /etc/docker && echo \'{\"max-concurrent-downloads\": 1}\' | sudo tee -a /etc/docker/daemon.json && sudo systemctl restart docker && sudo systemctl enable docker > /tmp/xxappstore_hostsetup_configuredocker.log 2>&1 && sudo usermod -aG docker $USER && sudo chown -f "$USER":"$USER" /home/"$USER"/.docker -R && sudo chmod -f g+rwx "/home/$USER/.docker" -R'
-    
+    cmd = 'sudo mkdir -p /etc/docker && echo \'{\"max-concurrent-downloads\": 1}\' | sudo tee -a /etc/docker/daemon.json && sudo systemctl restart docker && sudo systemctl enable docker > /tmp/xxappstore_hostsetup_configuredocker.log 2>&1 && sudo usermod -aG docker $USER'
     ret, out, err = exec_cmd_with_ret_output(cmd)
     if ret:
         print(out)
         print(err)
         print('[ERROR] Docker Configuration. Check log file /tmp/xxappstore_hostsetup_configuredocker.log')
         sys.exit(1)
+    run('sudo chown -f "$USER":"$USER" /home/"$USER"/.docker -R && sudo chmod -f g+rwx "/home/$USER/.docker" -R')
 
 
 def update_os_kernel(host_os):
