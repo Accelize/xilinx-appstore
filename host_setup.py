@@ -315,7 +315,7 @@ def configure_DockerCE():
         print(err)
         print('[ERROR] Docker Configuration. Check log file /tmp/xxappstore_hostsetup_configuredocker.log')
         sys.exit(1)
-    run('sudo chown -f "$USER":"$USER" /home/"$USER"/.docker -R && sudo chmod -f g+rwx "/home/$USER/.docker" -R')
+    exec_cmd_with_ret_output('sudo chown -f "$USER":"$USER" /home/"$USER"/.docker -R && sudo chmod -f g+rwx "/home/$USER/.docker" -R')
 
 
 def update_os_kernel(host_os):
