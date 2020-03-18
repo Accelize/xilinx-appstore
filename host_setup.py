@@ -615,7 +615,10 @@ def run_setup(skip, vendor, appname):
 
     print(f"\n > Your host is configured correctly, you can start to use the aplication:")
     print(f" > A. By using the following commands:")
-    print(f"\tsource /opt/xilinx/appstore/set_env.sh")
+    if(running_on_aws):
+        print(f"\tsource /opt/xilinx/appstore/set_env_aws.sh")
+    else:
+        print(f"\tsource /opt/xilinx/appstore/set_env.sh")
     print(f"\t{pullCmd}")
     print(f"\t{runCmd}")
     print(f" > B. By using convenient bash script: {run_app_path}\n\n")
