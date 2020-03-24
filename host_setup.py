@@ -618,7 +618,7 @@ def run_setup(skip, vendor, appname):
     run(f'sudo chmod +x {run_app_path}', shell=True)
     print_status('Run App Script', 'Created')
 
-    print(f"\n > Your host is configured correctly, you run the application using the following commands:")
+    print(f"\n > Your host is configured correctly, you can run the application using the following commands:")
     if(running_on_aws):
         print(f"\tsource /opt/xilinx/appstore/set_env_aws.sh")
     else:
