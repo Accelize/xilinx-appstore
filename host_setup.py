@@ -638,7 +638,7 @@ if __name__ == '__main__':
     print(f" | Xilinx Host Setup Script for Alveo Boards |")
     print(f"  -------------------------------------------")
     print(f" Welcome to the Xilinx Host Setup Script for Alveo Boards.\n")
-    print(f" This script will guide to setup your host for running one of the Xilinx AppStore FPGA application\n")
+    print(f" This script will guide the setup of your host for running one of the Xilinx AppStore FPGA application\n")
     
     # Parse the arguments
     option = argparse.ArgumentParser()
