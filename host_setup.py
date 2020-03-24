@@ -208,14 +208,6 @@ def check_host_dsa(host_os, conf_pkg):
     return False
 
 
-def check_docker(host_os):
-    if check_host_pkg_installed(host_os, 'docker-ce'):
-        print_status('DockerCE  Check', 'OK')
-        return False
-    print_status('DockerCE  Check', 'Update Required')
-    return True
-
-
 def check_dependencies(host_os):
     deps= host_dependencies_ubuntu if 'ubuntu' in host_os else host_dependencies_centos
     for dep in deps.split(' '):
@@ -297,6 +289,19 @@ def install_dependencies(host_os):
         host_pkg_install(host_os, host_dependencies_centos)
 
 
+def check_docker(host_os):
+    if check_host_pkg_installed(host_os, 'docker-ce'):
+        print_status('DockerCE  Installation', 'OK')
+        ret, out, err = exec_cmd_with_ret_output('groups $USER | grep docker')
+        if ret:
+            configure_DockerCE()
+            print(f" > DockerCE update completed, please reboot your server and relaunch this script.")
+            host_reboot(cold=False)
+        return False
+    print_status('DockerCE  Check', 'Update Required')
+    return True
+    
+    
 def install_DockerCE():
     cmd = 'curl -fsSL https://get.docker.com | sudo sh > /tmp/xxappstore_hostsetup_installdocker.log 2>&1'
     ret, out, err = exec_cmd_with_ret_output(cmd)
@@ -613,15 +618,15 @@ def run_setup(skip, vendor, appname):
     run(f'sudo chmod +x {run_app_path}', shell=True)
     print_status('Run App Script', 'Created')
 
-    print(f"\n > Your host is configured correctly, you can start to use the aplication:")
-    print(f" > A. By using the following commands:")
+    print(f"\n > Your host is configured correctly, you run the application using the following commands:")
     if(running_on_aws):
         print(f"\tsource /opt/xilinx/appstore/set_env_aws.sh")
     else:
         print(f"\tsource /opt/xilinx/appstore/set_env.sh")
     print(f"\t{pullCmd}")
     print(f"\t{runCmd}")
-    print(f" > B. By using convenient bash script: {run_app_path}\n\n")
+    print(f"\n > Note: You can also use the following convenient bash script to run these commands:")
+    print(f" > {run_app_path}\n\n")
 
 
 
