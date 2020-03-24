@@ -61,7 +61,7 @@ Instructions:
       Install the Host Setup Script
         curl -sL https://tinyurl.com/getHostSetup | sudo bash
       Run the Host Setup Script
-        python3 /opt/xilinx/appstore/host_setup.py -v secure-ic -a trng
+        python3.6 /opt/xilinx/appstore/host_setup.py -v secure-ic -a trng
 
         Note:
           + Run the host setup script without arguments to get the list of available applications

@@ -1,6 +1,5 @@
 # coding=utf-8
 """
-curl -sL https://github.com/Accelize/xilinx-appstore/raw/master/host_setup.py | python3 -
 """
 import os, sys, shutil, json, argparse, getpass, pip
 from subprocess import Popen, PIPE, STDOUT, run
@@ -470,7 +469,7 @@ def run_setup(skip, vendor, appname):
         print(f" > You must provide application vendor and name from following list:")
         for app in appcatalog['apps']:
             print_status(f"\t{app['appvendor'].lower()}", f"{app['appname'].lower()}", 20)
-        print(f" > e.g: python3 host_setup.py -v ngcodec -a hevc_enc_dual\n")
+        print(f" > e.g: python3.6 host_setup.py -v ngcodec -a hevc_enc_dual\n")
         sys.exit(1)
     
     appdef_path=''

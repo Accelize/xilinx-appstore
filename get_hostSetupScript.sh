@@ -14,7 +14,7 @@ fi
 echo "Installing Host Setup Script ..."
 source /etc/os-release
 case "$ID" in
-  ubuntu) sudo apt update -y > /dev/null 2>&1 && sudo apt -qq install -y python3-pip curl > /dev/null 2>&1 ;;
+  ubuntu) sudo apt update -y > /dev/null 2>&1 && sudo apt -qq install -y python3-pip curl python3.6 > /dev/null 2>&1 ;;
   centos) sudo yum install -y epel-release > /dev/null 2>&1 && sudo yum install -y python3-pip curl > /dev/null 2>&1;;
        *) echo -e '[ERROR] Your Operating System is not supported.\nSupported OS: CentOS, Ubuntu' ;; 
 esac

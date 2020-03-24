@@ -61,7 +61,7 @@ Instructions:
       Install the Host Setup Script
         curl -sL https://tinyurl.com/getHostSetup | sudo bash
       Run the Host Setup Script
-        python3 /opt/xilinx/appstore/host_setup.py -v bcom -a sdr_hdr_converter
+        python3.6 /opt/xilinx/appstore/host_setup.py -v bcom -a sdr_hdr_converter
 
         Note:
           + Run the host setup script without arguments to get the list of available applications
