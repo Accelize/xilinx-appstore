@@ -305,11 +305,15 @@ def install_DockerCE():
     cmd = 'curl -fsSL https://get.docker.com | sudo sh > /tmp/xxappstore_hostsetup_installdocker.log 2>&1'
     ret, out, err = exec_cmd_with_ret_output(cmd)
     if ret:
-        print(out)
-        print(err)
-        print('[ERROR] Docker Installation. Check log file /tmp/xxappstore_hostsetup_installdocker.log')
+        #print('[ERROR] Docker Installation. Check log file /tmp/xxappstore_hostsetup_installdocker.log')
+        print('[ERROR] Unable to install DockerCE using Docker automated script.\nPlease install DockerCE manually following this documentation:')
+        print(' > [CENTOS] https://docs.docker.com/install/linux/docker-ce/centos/')
+        print(' > [UBUNTU] https://docs.docker.com/install/linux/docker-ce/ubuntu/')
         sys.exit(1)
 
+
+
+https://docs.docker.com/install/linux/docker-ce/ubuntu/
 
 def configure_DockerCE():
     cmd = 'sudo mkdir -p /etc/docker && echo \'{\"max-concurrent-downloads\": 1}\' | sudo tee -a /etc/docker/daemon.json && sudo systemctl restart docker && sudo systemctl enable docker > /tmp/xxappstore_hostsetup_configuredocker.log 2>&1 && sudo usermod -aG docker $USER'
@@ -469,7 +473,7 @@ def run_setup(skip, vendor, appname):
         print(f" > You must provide application vendor and name from following list:")
         for app in appcatalog['apps']:
             print_status(f"\t{app['appvendor'].lower()}", f"{app['appname'].lower()}", 20)
-        print(f" > e.g: python3.6 host_setup.py -v ngcodec -a hevc_enc_dual\n")
+        print(f" > e.g: python3.6 /opt/xilinx/appstore/host_setup.py -v ngcodec -a hevc_enc_dual\n")
         sys.exit(1)
     
     appdef_path=''

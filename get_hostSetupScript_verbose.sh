@@ -22,11 +22,11 @@ echo "Installing Host Setup Script (this may take a few minutes)..."
 source /etc/os-release
 case "$ID-$VERSION_ID" in
 
-  ubuntu-16.04) apt -qq install -y apt-transport-https software-properties-common lsb-release gnupg curl > /dev/null 2>&1 ; add-apt-repository -y ppa:deadsnakes/ppa > /dev/null 2>&1 ; apt update -y > /dev/null 2>&1 ; apt -qq install -y python3.6 python3-pip > /dev/null 2>&1 ;;
+  ubuntu-16.04) apt install -y apt-transport-https software-properties-common lsb-release gnupg curl ; add-apt-repository -y ppa:deadsnakes/ppa ; apt update -y ; apt install -y python3.6 python3-pip ;;
   
-  ubuntu-18.04) apt update -y > /dev/null 2>&1 ; apt -qq install -y python3-pip curl python3.6 > /dev/null 2>&1 ;;
+  ubuntu-18.04) apt update -y ; apt install -y python3-pip curl python3.6;;
   
-  centos-7) yum install -y https://dl.fedoraproject.org/pub/epel/epel-release-latest-7.noarch.rpm > /dev/null 2>&1 ; yum install -y python3-pip curl > /dev/null 2>&1;;
+  centos-7) yum install -y https://dl.fedoraproject.org/pub/epel/epel-release-latest-7.noarch.rpm ; yum install -y python3-pip curl;;
   
    *) echo -e '[ERROR] Your Operating System is not supported.\nSupported OS: CentOS 7, Ubuntu 16.04, Ubuntu 18.04'; exit 1;;
 esac

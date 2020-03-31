@@ -6,6 +6,12 @@
 curl -sL https://tinyurl.com/getHostSetup | sudo bash
 ````
 
+*Note*: Verbose version:
+````bash
+curl -sL https://tinyurl.com/getHostSetupVerbose | sudo bash
+````
+
+
 ## Run the Host Setup Script
 Run the host setup script with **vendor_name** and **app_name** arguments
 ````bash
