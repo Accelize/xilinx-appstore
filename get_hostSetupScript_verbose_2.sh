@@ -1,6 +1,4 @@
 #!/bin/bash
-# exit when any command fails
-set -e
 
 if [ ! "$BASH_VERSION" ] ; then
     echo "Please do not use sh to run this script ($0), just execute it directly" 1>&2
