@@ -39,14 +39,14 @@ Instructions:
       Select the Application on the Nimbix Platform:
         URL: https://platform.jarvice.com/?page=compute&name=SecureIC
         ButtonName: TRNG Micro-Service
-        Asset: assets/secureic_trng/secureic01.png
+        Asset: assets/secureic_trng/secureic-trng_01.png
       Run the Application:
         MachineType: nx5u_xdma_201830_2
         MachineCores: 16
         Parameters:
           'Accelize credentials:': Browse FTP to select your "cred.json" Access Key
             file from Step 2.
-        Asset: assets/secureic_trng/secureic02.png
+        Asset: assets/secureic_trng/secureic-trng_02.png
       Results:
         Text: '
           It will start a webservice that generates random numbers "on-demand".
@@ -55,7 +55,7 @@ Instructions:
           Note: The Nimbix Instance Address is displayed when running the application
           (e.g: "NAE-165-254-189-68.jarvice.com")
         '
-        Asset: assets/secureic_trng/secureic03.png
+        Asset: assets/secureic_trng/secureic-trng_03.png
   Alveo U200:
     Host Setup: '
       Install the Host Setup Script
@@ -76,7 +76,7 @@ Instructions:
         It will start a webservice that generates random numbers "on-demand".
         Generate 256 bytes of true random data using the following command:
             curl http://{host_ip}:8080?size=256 | hexdump'
-      Asset: assets/secureic_trng/secureic03.png
+      Asset: assets/secureic_trng/secureic-trng_03.png
   AWS:
     1. Sign-up for Amazon Web Services:
       URL: 'https://portal.aws.amazon.com/billing/signup#/start'
@@ -97,7 +97,7 @@ Instructions:
             curl http://{AmiPublicIP}:8080?size=256 | hexdump
           Note: The AWS AMI Public IP is displayed in the AWS console
         '
-      Asset: assets/secureic_trng/secureic03.png
+      Asset: assets/secureic_trng/secureic-trng_03.png
 
 ### Reserved for host_setup script #####################################
 Supported:

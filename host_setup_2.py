@@ -1,10 +1,13 @@
+#!/usr/bin/env python
 # coding=utf-8
 """
 """
-import os, sys, shutil, json, argparse, getpass, pip
-from subprocess import Popen, PIPE, STDOUT, run
+import os, sys, shutil, json, argparse
+from subprocess import Popen, PIPE
+from io import open
+from builtins import input
 
-MIN_PYTHON = (3, 6)
+MIN_PYTHON = (2, 7)
 SCRIPT_PATH=os.path.dirname(os.path.realpath(__file__))
 REPO_DIR='/tmp/xilinx-appstore'
 REPO_TARBALL_URL='https://api.github.com/repos/Accelize/xilinx-appstore/tarball'
@@ -12,41 +15,24 @@ APPDEFS_FOLDER=os.path.join(REPO_DIR, "xilinx_appstore_appdefs")
 APPLIST_FNAME="applist.yaml"
 SETENV_SCRIPT=os.path.join(REPO_DIR, 'xilinx_appstore_env.sh')
 SETENV_SCRIPT_AWS=os.path.join(REPO_DIR, 'xilinx_appstore_aws_env.sh')
-host_dependencies_ubuntu = 'curl linux-headers'
-host_dependencies_centos = 'curl epel-release kernel-headers kernel-devel'
 XRT_BIN='xbutil'
 AWS_BIN='awssak'
 
 def parse_value(key_value):
-    """
-    Parse os-release value
-
-    Args:
-        key_value (str): key="value"
-
-    Returns:
-        str: Value
-    """
     return key_value.split('=')[1].rstrip().strip('""').lower()
-    
-
-def pip_install(package):
-    run(['sudo', sys.executable, '-m', 'pip', 'install', package, '--prefix=/usr'],
-    stdout=PIPE, stderr=PIPE, check=True)
    
 
 def download_appstore_catalog():
     if os.path.exists(REPO_DIR):
         shutil.rmtree(REPO_DIR, ignore_errors=True)
     os.makedirs(REPO_DIR)
-    run(f'sudo curl -sL {REPO_TARBALL_URL} | tar xvzf - -C {REPO_DIR} --strip 1',
-    stdout=PIPE, stderr=PIPE, check=True, shell=True)
+    cmd ='sudo curl -sL %s | tar xzf - -C %s --strip 1' % (REPO_TARBALL_URL, REPO_DIR)
+    exec_cmd_with_ret_output(cmd)
 
 
 def print_status(text, status, fulllength=40):
-    padding_size = fulllength - len(text)
-    print(f" > {text} {'.'*padding_size} {status}")
-
+    print(" > {0:{fill}<{size}} {1}".format(text+' ', status, fill='.', size=fulllength))
+    
 
 def jsonfile_to_dict(filename):
     with open(filename, 'r', encoding="utf-8") as json_file:
@@ -54,19 +40,30 @@ def jsonfile_to_dict(filename):
 
 
 def yamlfile_to_dict(filename):
-    import yaml
+    from ruamel.yaml import YAML
+    yaml=YAML(typ='safe')
     with open(filename, 'r', encoding="utf-8") as yaml_file:
-        return yaml.safe_load(yaml_file)
+        return yaml.load(yaml_file)
         
 
 def dict_to_yamlfile(d, filename):
-    import yaml
+    from ruamel.yaml import YAML
+    yaml=YAML()
     with open(filename, 'w', encoding="utf-8") as yaml_file:
         yaml.dump(d, yaml_file)
         
         
 def dict_pretty_print(in_dict):
     print(json.dumps(in_dict, sort_keys=True, indent=4))
+    
+    
+def ask_user_update_permission():
+    answer = None
+    while answer not in ['y', 'n']:
+        answer = input(" > Start process (y/n)? ").lower()
+        if answer == 'y':
+            return True
+    return False
     
 
 def exec_cmd_with_ret_output(cmd, path='.'): 
@@ -130,40 +127,40 @@ def get_host_env():
         host_os is 'ubuntu' and host_os_version not in ['16.04','18.04'] or \
         host_os is 'centos' and host_os_version not in ['7'] or \
         host_os is None:
-        print(f" [ERROR] Your Operating System is not supported.\nSupported OS: CentOS 7, Ubuntu 16.04 and Ubuntu 18.04")
+        print(" [ERROR] Your Operating System is not supported.\nSupported OS: CentOS 7, Ubuntu 16.04 and Ubuntu 18.04")
         sys.exit(1)
     return host_os, host_os_version
     
 def get_fpga_env(host_os, onAWS):
     # Get FPGA Boards & Shells
     if onAWS:
-        ret, out, err = exec_cmd_with_ret_output(f"sudo /opt/xilinx/xrt/bin/{AWS_BIN} list | grep Found | cut -d' ' -f3")
+        ret, out, err = exec_cmd_with_ret_output("sudo /opt/xilinx/xrt/bin/%s list | grep Found | cut -d' ' -f3" % (AWS_BIN))
     else:
-        ret, out, err = exec_cmd_with_ret_output(f"/opt/xilinx/xrt/bin/{XRT_BIN} list | grep Found | cut -d' ' -f4")
+        ret, out, err = exec_cmd_with_ret_output("/opt/xilinx/xrt/bin/%s list | grep Found | cut -d' ' -f4" % (XRT_BIN))
     nbBoardsFound = out.strip()
     if nbBoardsFound == '': nbBoardsFound='0'
-    print_status('Board(s) Found', f'{nbBoardsFound}')
+    print_status('Board(s) Found', '%s'%nbBoardsFound)
     if nbBoardsFound == '0': 
-        print(f" [ERROR] No FPGA Board Detected. you need at least one FPGA board to use this application.")
+        print(" [ERROR] No FPGA Board Detected. you need at least one FPGA board to use this application.")
         sys.exit(1)
     
     boards=[]
     shells=[]
     if onAWS:
-        ret, out, err = exec_cmd_with_ret_output(f'sudo /opt/xilinx/xrt/bin/{AWS_BIN} list')
+        ret, out, err = exec_cmd_with_ret_output('sudo /opt/xilinx/xrt/bin/%s list'%(AWS_BIN))
         for num, line in enumerate(out.splitlines()):
             if line.startswith('['):
                 brd_num=line.split('[')[1].split(']')[0]
-                boards.append(f'aws_f1_{brd_num}')
+                boards.append('aws_f1_%s'%brd_num)
                 shells.append(line.split(' ')[1])
     else:
-        ret, out, err = exec_cmd_with_ret_output(f'sudo /opt/xilinx/xrt/bin/{XRT_BIN} flash scan')
+        ret, out, err = exec_cmd_with_ret_output('sudo /opt/xilinx/xrt/bin/%s flash scan'%(XRT_BIN))
         for num, line in enumerate(out.splitlines()):
             if line.startswith('Card ['):
                 boards.append(out.splitlines()[num+2].split(':')[1].strip())
                 shells.append(out.splitlines()[num+5].split(',')[0].strip())
-    print_status('Detected Boards', f'{boards}')
-    print_status('Detected Shells', f'{shells}')
+    print_status('Detected Boards', ''%boards)
+    print_status('Detected Shells', ''%shells)
     
     return boards, shells
 
@@ -176,19 +173,20 @@ def dsa_format(dsa):
 
 
 def check_xrt(host_os, target_version):
-    if not check_host_pkg_installed(host_os, 'xrt'):
-        return True
-     
-    xrt_version = get_xrt_version(host_os)
-    if not xrt_version: 
-        return True
-    print_status('Detected XRT', f'{xrt_version}')
-    
-    if xrt_version in target_version :
-        print_status('XRT Version Check', f'OK ({xrt_version})')
-        return False
+    if check_host_pkg_installed(host_os, 'xrt'):
+        xrt_version = get_xrt_version(host_os)
+        if xrt_version and  xrt_version in target_version :
+            print_status('XRT Version Check', 'OK (%s)' % xrt_version)
+            return
+
     print_status('XRT Version Check', 'Update Required')
-    return True
+    if ask_user_update_permission():
+        print_status('Updating XRT', '')
+        host_pkg_remove(host_os, 'xrt')
+        pkg_path=host_pkg_download(selected_conf['xrt_package'])
+        host_pkg_install(host_os, pkg_path)
+        print_status('Updating XRT', 'Done')
+        host_reboot(cold=False)
 
  
 def check_host_dsa(host_os, conf_pkg):
@@ -196,47 +194,51 @@ def check_host_dsa(host_os, conf_pkg):
     pkg_vers=conf_pkg.split('-')[3]
    
     if 'centos' in host_os: 
-        ret, out, err = exec_cmd_with_ret_output(f'sudo yum list installed | grep {pkg_name} | grep {pkg_vers} > /dev/null 2>&1')
+        ret, out, err = exec_cmd_with_ret_output('sudo yum list installed | grep %s | grep %s > /dev/null 2>&1' % (pkg_name, pkg_name))
     else:
-        ret, out, err = exec_cmd_with_ret_output(f'sudo apt list --installed 2>/dev/null | grep {pkg_name} | grep {pkg_vers} > /dev/null 2>&1')
+        ret, out, err = exec_cmd_with_ret_output('sudo apt list --installed 2>/dev/null | grep %s | grep %s > /dev/null 2>&1' % (pkg_name, pkg_name))
 
     if ret:
-        print_status('Board Shell [HOST] Version Check', f'Update Required ({pkg_name}-{pkg_vers})')
-        return True 
-    print_status('Board Shell [HOST] Version Check', f'OK ({pkg_name}-{pkg_vers})')    
-    return False
+        print_status('Board Shell [HOST] Version Check', 'Update Required (%s-%s)' % (pkg_name, pkg_name))
+        if ask_user_update_permission():
+            print_status('Updating Board Shell [HOST] (may take several minutes)', '')
+            pkg_path=host_pkg_download(selected_conf['dsa_package'])
+            host_pkg_install(host_os, pkg_path)
+            print_status('Updating Board Shell [HOST]', 'Done')
+            host_reboot(cold=False)
+    else:
+        print_status('Board Shell [HOST] Version Check', 'OK (%s-%s)' % (pkg_name, pkg_name))
 
 
-def check_dependencies(host_os):
-    deps= host_dependencies_ubuntu if 'ubuntu' in host_os else host_dependencies_centos
-    for dep in deps.split(' '):
-        if not check_host_pkg_installed(host_os, dep):
-            print_status('OS  Dependency Package(s)', 'Update Required')
-            return True
-    print_status('OS  Dependency Package(s)', 'OK')
-    return False
-
-
-def check_kernel():
+def check_kernel(host_os):
     if os.path.exists(os.path.join('/lib','modules', os.uname()[2], 'build')):
         print_status('Kernel Version Check', 'OK')
-        return False
-    print_status('Kernel Version Check', 'Update Required')
-    return True
+    else:
+        print_status('Kernel Version Check', 'Update Required')
+        if ask_user_update_permission():
+            print_status('Updating Kernel', '')
+            update_os_kernel(host_os)     
+            print_status('Updating Kernel', 'Done')
+            host_reboot(cold=False)
 
 
 def check_board_shell(boardIdx):
-    cmd=f'sudo /opt/xilinx/xrt/bin/{XRT_BIN} flash scan'
+    cmd='sudo /opt/xilinx/xrt/bin/ flash scan' % (XRT_BIN)
     ret, out, err = exec_cmd_with_ret_output(cmd)
     cnt=0
     for l in out.splitlines():
-        if f'Card [{boardIdx}]' in l:
+        if 'Card [%s]' % boardIdx in l:
             if(out.splitlines()[cnt+5].strip() == out.splitlines()[cnt+7].strip()):
                 print_status('Board Shell Host vs. FPGA', 'OK')
-                return False
+                return
         cnt+=1     
+
     print_status('Board Shell Host vs. FPGA', 'Update Required')
-    return True
+    if ask_user_update_permission():
+        print_status('Programming Board Shell [FPGA]', '')
+        board_shell_flash(board_idx)
+        print_status('Programming Board Shell [FPGA]', 'Done')
+        host_reboot(cold=True)
 
 
 def check_host_pkg_installed(host_os, pkg):
@@ -251,16 +253,16 @@ def check_host_pkg_installed(host_os, pkg):
 
 
 def host_pkg_install(host_os, packages):
-    print_status(f'Installing {packages}', '') 
+    print_status('Installing %s' % packages, '') 
     if 'ubuntu' in host_os:
         cmd = 'sudo apt-get install -y '+ packages + '> /dev/null 2>&1'
     elif 'centos' in host_os:
         cmd = 'sudo yum install -y '+ packages + '> /dev/null 2>&1'
     ret, out, err = exec_cmd_with_ret_output(cmd)
     if ret:
-        print_status(f'Installing {packages}', 'Failed')
+        print_status('Installing %s' % packages, 'Failed')
         raise
-    print_status(f'Installing {packages}', 'OK')
+    print_status('Installing %s' % packages, 'OK')
 
  
 def host_pkg_remove(host_os, packages):
@@ -268,58 +270,40 @@ def host_pkg_remove(host_os, packages):
         cmd = 'sudo apt-get remove -y '+ packages + '> /dev/null 2>&1'
     elif 'centos' in host_os:
         cmd = 'sudo yum remove -y '+ packages + '> /dev/null 2>&1'
-    run(cmd, shell=True)
+    exec_cmd_with_ret_output(cmd)
 
 def host_pkg_download(pkg):
-    print_status(f'Downloading {pkg}', '')
-    cmd = f'curl -sL https://www.xilinx.com/bin/public/openDownload?filename={pkg} -o /tmp/{pkg}'
+    print_status('Downloading %s' % pkg, '')
+    cmd = 'curl -sL https://www.xilinx.com/bin/public/openDownload?filename=%s -o /tmp/%s'  % (pkg, pkg)
     ret, out, err = exec_cmd_with_ret_output(cmd)
     if ret:
-        print(f" > Downloading {pkg} ... Failed")
+        print(" > Downloading %s ... Failed" % pkg)
         raise
-    print_status(f'Downloading {pkg}', 'OK')
-    return f'/tmp/{pkg}'
-
-
-def install_dependencies(host_os):
-    if 'ubuntu' in host_os:
-        host_pkg_install(host_os, host_dependencies_ubuntu)
-    elif 'centos' in host_os:
-        host_pkg_install(host_os, host_dependencies_centos)
+    print_status('Downloading %s' % pkg, 'OK')
+    return '/tmp/%s' % pkg
 
 
 def check_docker(host_os):
-    if check_host_pkg_installed(host_os, 'docker-ce'):
+    # Check that DockerCE is Installed
+    if  check_host_pkg_installed(host_os, 'docker-ce') and \
+        check_host_pkg_installed(host_os, 'docker-ce-cli'):
         print_status('DockerCE  Installation', 'OK')
-        ret, out, err = exec_cmd_with_ret_output('groups $USER | grep docker')
-        if ret:
-            configure_DockerCE()
-            print(f" > DockerCE update completed, please reboot your server and relaunch this script.")
-            host_reboot(cold=False)
-        return False
-    print_status('DockerCE  Check', 'Update Required')
-    return True
-    
-    
-def install_DockerCE():
-    cmd = 'curl -fsSL https://get.docker.com | sudo sh > /tmp/xxappstore_hostsetup_installdocker.log 2>&1'
-    ret, out, err = exec_cmd_with_ret_output(cmd)
-    if ret:
-        print('[ERROR] Unable to install DockerCE using Docker automated script.\nPlease install DockerCE manually following this documentation:')
-        print(' > [CENTOS] https://docs.docker.com/install/linux/docker-ce/centos/')
-        print(' > [UBUNTU] https://docs.docker.com/install/linux/docker-ce/ubuntu/')
+    else:
+        print_status('DockerCE  Installation', 'Update Required')        
+        print(' > Please install DockerCE using the following documentation and relaunch the script:')
+        print(' >   [CENTOS] https://docs.docker.com/install/linux/docker-ce/centos/')
+        print(' >   [UBUNTU] https://docs.docker.com/install/linux/docker-ce/ubuntu/')
         sys.exit(1)
-
-
-def configure_DockerCE():
-    cmd = 'sudo mkdir -p /etc/docker && echo \'{\"max-concurrent-downloads\": 1}\' | sudo tee -a /etc/docker/daemon.json && sudo systemctl restart docker && sudo systemctl enable docker > /tmp/xxappstore_hostsetup_configuredocker.log 2>&1 && sudo usermod -aG docker $USER'
-    ret, out, err = exec_cmd_with_ret_output(cmd)
+        
+    # Check that DockerCE is correctly configured
+    ret, out, err = exec_cmd_with_ret_output('groups $USER | grep docker')
     if ret:
-        print(out)
-        print(err)
-        print('[ERROR] Docker Configuration. Check log file /tmp/xxappstore_hostsetup_configuredocker.log')
+        print_status('DockerCE  Configuration', 'Update Required')        
+        print(' > Please configure DockerCE using the following documentation and relaunch the script:')
+        print(' >   https://docs.docker.com/install/linux/linux-postinstall/')
         sys.exit(1)
-    exec_cmd_with_ret_output('sudo chown -f "$USER":"$USER" /home/"$USER"/.docker -R && sudo chmod -f g+rwx "/home/$USER/.docker" -R')
+    else:
+        print_status('DockerCE  Configuration', 'OK')
 
 
 def update_os_kernel(host_os):
@@ -336,12 +320,16 @@ def update_os_kernel(host_os):
 
 
 def host_reboot(cold=False):
+    txt_reboot = " > Packages install/update completed, please reboot your server and relaunch this script."
+    txt_halt = " > Packages install/update completed, please do a cold reboot of your server and relaunch this script."
     cmd = 'halt' if cold else 'reboot'
+    txt = txt_halt if cold else txt_reboot
+    print(txt)
     answer = None
     while answer not in ['y', 'n']:
-        answer = input(f" > Do you want to {cmd} now (y/n)? ").lower()
+        answer = input(" > Do you want to %s now (y/n)? "%cmd).lower()
     if answer == 'y':
-        run('sudo '+cmd, shell=True)
+        exec_cmd_with_ret_output('sudo '+cmd)
     else:
         sys.exit(1)
 
@@ -353,59 +341,27 @@ def board_shell_flash(boardIdx):
     host_dsa_conf=''
     host_dsa_conf=''
     for l in out.splitlines():
-        if f'Card [{boardIdx}]' in l:
+        if 'Card [%s]'%boardIdx in l:
             host_dsa_conf=out.splitlines()[cnt+7].strip()
             break
         cnt+=1
         
     prog_dsa=host_dsa_conf.split(',')[0]
     prog_tstamp=int(host_dsa_conf.split(',')[1][4:-1], 0)
-    cmd=f'sudo /opt/xilinx/xrt/bin/xbutil flash -d {boardIdx} -a {prog_dsa} -t {prog_tstamp}'
+    cmd='sudo /opt/xilinx/xrt/bin/xbutil flash -d %s -a %s -t %s' % (boardIdx, prog_dsa, prog_tstamp)
     print_status('New FPGA Shell', prog_dsa)
-    run(cmd, shell=True)
-
-
-def update_host_env(host_os, update_kernel, dependencies, install_docker=False):
-    print(f"")
-    print(f" > Packages install/update:")
-    if dependencies: print(f" > \tDependencies (curl, ...)")
-    if update_kernel: print(f" > \tKernel Update")
-    print(f" > \tDocker CE")
-    
-    answer = None
-    while answer not in ['y', 'n']:
-        answer = input(f" > Start update process (y/n)? ").lower()
-    if answer == 'y':
-        if dependencies:
-            print_status('Updating Dependencies', '')            
-            install_dependencies(host_os)       
-            print_status('Updating Dependencies', 'Done')
-        if update_kernel:
-            print_status('Updating Kernel', '')
-            update_os_kernel(host_os)     
-            print_status('Updating Kernel', 'Done')
-        
-        print_status('Updating DockerCE (may take several minutes)', '')
-        if install_docker:
-            install_DockerCE()  
-        configure_DockerCE()        
-        print_status('Updating DockerCE', 'Done')        
-        
-        print(f" > Packages install/update completed, please reboot your server and relaunch this script.")
-        host_reboot(cold=False)
-    else:
-        sys.exit(0)
+    ret, out, err = exec_cmd_with_ret_output(cmd)
 
 
 def update_fpga_env(host_os, selected_conf, xrt_outdated, host_dsa_outdated):
-    print(f"")
-    print(f" > Packages install/update:")
-    if xrt_outdated: print(f" > \tXRT ({selected_conf['xrt_package']})")
-    if host_dsa_outdated: print(f" > \tBoard Shell [HOST] ({selected_conf['dsa_package']})")
+    print("")
+    print(" > Packages install/update:")
+    if xrt_outdated: print(" > \tXRT (%s)" % selected_conf['xrt_package'])
+    if host_dsa_outdated: print(" > \tBoard Shell [HOST] (%s)" % selected_conf['dsa_package'])
 
     answer = None
     while answer not in ['y', 'n']:
-        answer = input(f" > Start update process (y/n)? ").lower()
+        answer = input(" > Start update process (y/n)? ").lower()
     if answer == 'y':
         if xrt_outdated:
             print_status('Updating XRT', '')
@@ -422,29 +378,29 @@ def update_fpga_env(host_os, selected_conf, xrt_outdated, host_dsa_outdated):
             print_status('Updating Board Shell [HOST]', 'Done')
             
         # Reboot
-        print(f" > Packages install/update completed, please reboot your server and relaunch this script.")
+        print(" > Packages install/update completed, please reboot your server and relaunch this script.")
         host_reboot(cold=False)
     else:
         sys.exit(0)  
-        
-          
+
+
 def update_board_dsa(board_idx):
-    print(f"")
-    print(f" > Packages install/update:")
-    print(f" > \tBoard Shell [FPGA])")
+    print("")
+    print(" > Packages install/update:")
+    print(" > \tBoard Shell [FPGA])")
     
     answer = None
     while answer not in ['y', 'n']:
-        answer = input(f" > Start update process (y/n)? ").lower()
-    if answer == 'y':
-        print_status('Programming Board Shell [FPGA]', '')
-        board_shell_flash(board_idx)
-        print_status('Programming Board Shell [FPGA]', 'Done')
-        
-        print(f" > Packages install/update completed, please do a cold reboot of your server and relaunch this script.")
-        host_reboot(cold=True)
-    else:
-        sys.exit(0)
+        answer = input(" > Start update process (y/n)? ").lower()
+        if answer == 'y':
+            print_status('Programming Board Shell [FPGA]', '')
+            board_shell_flash(board_idx)
+            print_status('Programming Board Shell [FPGA]', 'Done')
+            
+            print(" > Packages install/update completed, please do a cold reboot of your server and relaunch this script.")
+            host_reboot(cold=True)
+        else:
+            sys.exit(0)
 
 
 def run_setup(skip, vendor, appname):
@@ -455,9 +411,6 @@ def run_setup(skip, vendor, appname):
     os.environ['LC_COLLATE'] = "C"
     os.environ['LC_CTYPE'] = "en_US.UTF-8"
     
-    # Install Script Dependencies
-    pip_install('pyYAML')
-    
     # Download or Update App Catalog
     print_status('Loading App Catalog', '')
     download_appstore_catalog()
@@ -466,10 +419,10 @@ def run_setup(skip, vendor, appname):
 
     # Empty program arguments handling
     if not args.vendor or not args.appname:
-        print(f" > You must provide application vendor and name from following list:")
+        print(" > You must provide application vendor and name from following list:")
         for app in appcatalog['apps']:
-            print_status(f"\t{app['appvendor'].lower()}", f"{app['appname'].lower()}", 20)
-        print(f" > e.g: python3.6 /opt/xilinx/appstore/host_setup.py -v ngcodec -a hevc_enc_dual\n")
+            print_status("\t%s"%app['appvendor'].lower(), "%s"%app['appname'].lower(), 20)
+        print(" > e.g: python /opt/xilinx/appstore/host_setup.py -v ngcodec -a hevc_enc_dual\n")
         sys.exit(1)
     
     appdef_path=''
@@ -479,9 +432,9 @@ def run_setup(skip, vendor, appname):
             break
             
     if not appdef_path:
-        print(f" [ERROR] Unable to find application named [{appname}] from vendor [{vendor}]")
+        print(" [ERROR] Unable to find application named [%s] from vendor [%s]" % (appname, vendor))
         sys.exit(1)
-    print_status('Selected App', f"{vendor} - {appname}")
+    print_status('Selected App', "%s - %s" % (appname, vendor))
        
     # Loading App Definition file
     appdef=yamlfile_to_dict(os.path.join(APPDEFS_FOLDER, appdef_path))  
@@ -489,21 +442,19 @@ def run_setup(skip, vendor, appname):
     
     # Detect host environement
     host_os, host_os_version = get_host_env()
-    host_os_full= f'{host_os}-{host_os_version}'
-    print_status('Detected OS', f'{host_os_full}')
+    host_os_full= '%s-%s' % (host_os, host_os_version)
+    print_status('Detected OS', '%s'%host_os_full)
     
-    # Check host updates needed
-    dep_updt=check_dependencies(host_os)
-    krn_updt=check_kernel()
-    dkr_updt=check_docker(host_os)
-    if dkr_updt or krn_updt or dep_updt:
-        update_host_env(host_os, krn_updt, dep_updt, dkr_updt)
-       
+    # Check host kernel version
+    check_kernel(host_os)
+    
+    # Check DockerCE Installation & Configuration
+    check_docker(host_os)
 
     # Check if running on AWS
     running_on_aws=False
     aws_identity_file='/dev/shm/aws-identity.json'
-    run(f'curl -s http://169.254.169.254/latest/dynamic/instance-identity/document > {aws_identity_file}', shell=True)
+    ret, out, err = exec_cmd_with_ret_output('curl -s http://169.254.169.254/latest/dynamic/instance-identity/document > %s' % aws_identity_file)
     if os.path.exists(aws_identity_file):
         instancedef=yamlfile_to_dict(aws_identity_file)
         if instancedef:
@@ -517,16 +468,16 @@ def run_setup(skip, vendor, appname):
     else:
         lspci_boards=fpga_board_list()
     if not lspci_boards:
-        print(f" [ERROR] No FPGA Board Detected. you need at least one FPGA board to use this application.")
+        print(" [ERROR] No FPGA Board Detected. you need at least one FPGA board to use this application.")
         sys.exit(1)
     
     # Check Host Compatibility (OS, FPGA Boards)
     if not host_os_full in appdef['Supported']['os']:
-        print(f" [ERROR] Operating System [{host_os_full}] not supported")
+        print(" [ERROR] Operating System [%s] not supported" % host_os_full)
         sys.exit(1)
     print_status('OS Compatibility', 'OK')
     if not any(item in lspci_boards for item in appdef['Supported']['boards']):
-        print(f" [ERROR] Boards {lspci_boards} not supported by this application")
+        print(" [ERROR] Boards %s not supported by this application" % lspci_boards)
         sys.exit(1)
     print_status('FPGA Board Compatibility', 'OK')
     
@@ -534,11 +485,11 @@ def run_setup(skip, vendor, appname):
     board_model_idx=0
     lspci_boards = list(set(lspci_boards).intersection(appdef['Supported']['boards']))
     if len(lspci_boards) > 1:
-        print(f"\n > Found {len(lspci_boards)} board models")
+        print("\n > Found %s board models" % len(lspci_boards))
         for i in range(0,len(lspci_boards)):
-            print(f"\t[{i}]: {lspci_boards[i]}")
+            print("\t[%s]: %s" % (i, lspci_boards[i]))
         board_model_idx = int(input(" > Please select the model to use: "))
-    print_status('Selected board model', f'{lspci_boards[board_model_idx]}')
+    print_status('Selected board model', '%s'%lspci_boards[board_model_idx])
     
     # Find suitable configuration
     selected_conf=None
@@ -552,13 +503,11 @@ def run_setup(skip, vendor, appname):
         sys.exit(1)
         
     # Check Installed versions of XRT against selected_conf['xrt_package']
-    xrt_outdated = check_xrt(host_os, conf['xrt_package'])
+    check_xrt(host_os, conf['xrt_package'])
+    
+    # Check Installed versions of Host DSA against selected_conf['dsa_package']
     if not running_on_aws:
-        host_dsa_outdated = check_host_dsa(host_os, selected_conf['dsa_package'])
-    else:
-        host_dsa_outdated = False
-    if xrt_outdated or host_dsa_outdated:
-        update_fpga_env(host_os, selected_conf, xrt_outdated, host_dsa_outdated)
+        check_host_dsa(host_os, selected_conf['dsa_package'])
     
     # Detect FPGA environement
     boards, shells = get_fpga_env(host_os, running_on_aws)
@@ -566,17 +515,15 @@ def run_setup(skip, vendor, appname):
     # Board Selection
     board_idx=0
     if len(boards) > 1:
-        print(f"\n > Found {len(boards)} boards")
+        print("\n > Found %s boards" % len(boards))
         for i in range(0,len(boards)):
-            print(f"\t[{i}]: {boards[i]} ({shells[i]})")
+            print("\t[%s]: %s (%s)" % (i, boards[i], shells[i]))
         board_idx = int(input(" > Please select the one to use: "))
-    print_status('Selected board', f'{board_idx}: {boards[board_idx]} {shells[board_idx]}')
+    print_status('Selected board', '%s %s %s' % (board_idx, boards[board_idx], shells[board_idx]))
     
     # Check Board DSA
     if not running_on_aws:
-        board_dsa_outdated=check_board_shell(board_idx)
-        if board_dsa_outdated:
-            update_board_dsa(board_idx)
+        check_board_shell(board_idx)
                 
     # Check Access Key
     homedir = os.environ['HOME']
@@ -584,13 +531,13 @@ def run_setup(skip, vendor, appname):
         print_status('Access Key Check', 'OK')
     else:
         print_status('Access Key Check', 'Not Found')
-        print(f" [!] Please copy your access key in {os.path.join(homedir, 'cred.json')} and run this script again")
+        print(" [!] Please copy your access key in %s and run this script again" % os.path.join(homedir, 'cred.json'))
         return
         
     # FPGA Device Identification script
     if not os.path.exists('/opt/xilinx/appstore'):
-        run('sudo mkdir /opt/xilinx/appstore', shell=True)
-    run('sudo chmod -R 777 /opt/xilinx/appstore', shell=True)
+        exec_cmd_with_ret_output('sudo mkdir /opt/xilinx/appstore')
+    exec_cmd_with_ret_output('sudo chmod -R 777 /opt/xilinx/appstore')
     if(running_on_aws):
         shutil.copyfile(SETENV_SCRIPT_AWS, '/opt/xilinx/appstore/set_env_aws.sh')
     else:
@@ -603,7 +550,7 @@ def run_setup(skip, vendor, appname):
     runCmd=appdef['DockerCmds'][lspci_boards[board_model_idx]]['run'].replace('$USER', username)
     
     # Create runapp script
-    run_app_fname=f"runapp_{vendor.lower()}_{appname.lower()}.sh"
+    run_app_fname="runapp_%s_%s.sh" % (vendor.lower(), appname.lower())
     run_app_path=os.path.join('/opt', 'xilinx', 'appstore', run_app_fname)
     with open(run_app_path,"w+") as f:
         f.write('#!/bin/bash\n')
@@ -612,20 +559,20 @@ def run_setup(skip, vendor, appname):
             f.write('source /opt/xilinx/appstore/set_env_aws.sh\n')
         else:
             f.write('source /opt/xilinx/appstore/set_env.sh\n')
-        f.write(f"{pullCmd}\n")
-        f.write(f"{runCmd}\n")
-    run(f'sudo chmod +x {run_app_path}', shell=True)
+        f.write("%s\n"%pullCmd)
+        f.write("%s\n"%runCmd)
+    exec_cmd_with_ret_output('sudo chmod +x %s' % run_app_path)
     print_status('Run App Script', 'Created')
 
-    print(f"\n > Your host is configured correctly, you can run the application using the following commands:")
+    print("\n > Your host is configured correctly, you can run the application using the following commands:")
     if(running_on_aws):
-        print(f"\tsource /opt/xilinx/appstore/set_env_aws.sh")
+        print("\tsource /opt/xilinx/appstore/set_env_aws.sh")
     else:
-        print(f"\tsource /opt/xilinx/appstore/set_env.sh")
-    print(f"\t{pullCmd}")
-    print(f"\t{runCmd}")
-    print(f"\n > Note: You can also use the following convenient bash script to run these commands:")
-    print(f" > {run_app_path}\n\n")
+        print("\tsource /opt/xilinx/appstore/set_env.sh")
+    print("\t%s"%pullCmd)
+    print("\t%s"%runCmd)
+    print("\n > Note: You can also use the following convenient bash script to run these commands:")
+    print(" > %s\n\n"%run_app_path)
 
 
 
@@ -634,11 +581,11 @@ if __name__ == '__main__':
     if sys.version_info < MIN_PYTHON:
         sys.exit("Python %s.%s or later is required.\n" % MIN_PYTHON)
     
-    print(f"  -------------------------------------------")
-    print(f" | Xilinx Host Setup Script for Alveo Boards |")
-    print(f"  -------------------------------------------")
-    print(f" Welcome to the Xilinx Host Setup Script for Alveo Boards.\n")
-    print(f" This script will guide the setup of your host for running one of the Xilinx AppStore FPGA application\n")
+    print("  -------------------------------------------")
+    print(" | Xilinx Host Setup Script for Alveo Boards |")
+    print("  -------------------------------------------")
+    print(" Welcome to the Xilinx Host Setup Script for Alveo Boards.\n")
+    print(" This script will guide the setup of your host for running one of the Xilinx AppStore FPGA application\n")
     
     # Parse the arguments
     option = argparse.ArgumentParser()

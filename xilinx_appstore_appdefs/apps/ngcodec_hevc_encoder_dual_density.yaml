@@ -34,7 +34,7 @@ Instructions:
       Select the Application on the Nimbix Platform:
         URL: https://platform.jarvice.com/?page=compute&name=NGCodec%20H.265/HEVC%20encoder
         ButtonName: HEVC Batch Encoder
-        Asset: assets/ngcodec_hevc_encoder_dual_density/ngc01.png
+        Asset: assets/ngcodec_hevc_encoder_dual_density/ngcodec-hevc-encoder-dual-density_01.png
       Run the Application:
         MachineType: nx5u_xdma_201830_2
         MachineCores: 16
@@ -43,7 +43,7 @@ Instructions:
             file from Step 2.
           'FFMPEG arguments:': -i /samples/in.mp4 -c:v NGC265 -b:v 3M -g 0 -idr-period
             120 -y -f mp4 /data/out.mp4
-        Asset: assets/ngcodec_hevc_encoder_dual_density/ngc02.png
+        Asset: assets/ngcodec_hevc_encoder_dual_density/ngcodec-hevc-encoder-dual-density_02.png
       Results:
         Text: '
             Once your job is complete, an "out.mp4" HEVC encoded sample will be available on the Nimbix FTP.
@@ -52,7 +52,7 @@ Instructions:
                 + Uploading it on Nimbix FTP
                 + Replacing "-i /samples/in.mp4" with "-i /data/{YourFileName}" in the FFMPEG arguments
         '
-        Asset: assets/ngcodec_hevc_encoder_dual_density/ngc03.png
+        Asset: assets/ngcodec_hevc_encoder_dual_density/ngcodec-hevc-encoder-dual-density_03.png
   Alveo U200:
     Host Setup: '
       Install the Host Setup Script
@@ -78,7 +78,7 @@ Instructions:
             + Copying your file in "/dev/shm/{YourFileName}"
             + Replacing "-i /samples/in.mp4" with "-i /data/{YourFileName}" in the docker run command
         '
-      Asset: assets/ngcodec_hevc_encoder_dual_density/ngc03.png
+      Asset: assets/ngcodec_hevc_encoder_dual_density/ngcodec-hevc-encoder-dual-density_03.png
 
 ### Reserved for host_setup script #####################################
 Supported:

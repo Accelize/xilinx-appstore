@@ -32,7 +32,7 @@ Instructions:
       Select the Application on the Nimbix Platform:
         URL: https://platform.jarvice.com/?page=compute&name=Deepoly%20ThunderImage
         ButtonName: Run ThunderImage Processingr
-        Asset: assets/deepoly_thunderimage/dpy01.png
+        Asset: assets/deepoly_thunderimage/deepoly-thunderimage_01.png
       Run the Application:
         MachineType: nx5u_xdma_201830_2
         MachineCores: 16
@@ -41,7 +41,7 @@ Instructions:
             file from Step 2.
           'Input Folder:': /opt/samples
           'Output Folder:': .
-        Asset: assets/deepoly_thunderimage/dpy02.png
+        Asset: assets/deepoly_thunderimage/deepoly-thunderimage_02.png
       Results:
         Text: '
             Once your job is complete, a "case_ali.webp" WebP encoded sample file will be available in Nimbix FTP.
@@ -50,7 +50,7 @@ Instructions:
                 + Uploading them on Nimbix FTP
                 + Providing their paths in "Input Folder" and "Output Folder" arguments
         '
-        Asset: assets/deepoly_thunderimage/dpy03.png
+        Asset: assets/deepoly_thunderimage/deepoly-thunderimage_03.png
   Alveo U200:
     Host Setup: '
       Install the Host Setup Script
@@ -74,7 +74,7 @@ Instructions:
         You can now use your own input and output folders by using the following command:
         docker run -v /home/$USER/cred.json:/opt/ThunderImage-Premium/server/cred.json -v {YourInputFolder}:/opt/user_inputs -v {YourOutputFolder}:/opt/user_outputs $XILINX_FPGA_DEV_IDS --shm-size=64G hubxilinx/deepoly_thunderimage_alveo_u200:latest /opt/run.sh -i /opt/user_inputs -o /opt/user_outputs
         '
-      Asset: assets/deepoly_thunderimage/dpy03.png
+      Asset: assets/deepoly_thunderimage/deepoly-thunderimage_03.png
 
 
 ### Reserved for host_setup script #####################################

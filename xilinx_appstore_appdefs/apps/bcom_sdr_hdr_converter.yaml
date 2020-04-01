@@ -35,7 +35,7 @@ Instructions:
       Select the Application on the Nimbix Platform:
         URL: https://platform.jarvice.com/?page=compute&name=b<>com
         ButtonName: SDR to HDR Converter
-        Asset: assets/bcom_sdrtohdr/bcom01.png
+        Asset: assets/bcom_sdrtohdr/bcom-sdrtohdr_01.png
       Run the Application:
         MachineType: nx5u_xdma_201830_2
         MachineCores: 16
@@ -44,7 +44,7 @@ Instructions:
             file from Step 2.
           'Input File:': /samples/in.raw
           'Output File:': out.raw
-        Asset: assets/bcom_sdrtohdr/bcom02.png
+        Asset: assets/bcom_sdrtohdr/bcom-sdrtohdr_02.png
       Results:
         Text: '
         Once your job is complete, an \"out.raw" HD HDR sample will be available on the Nimbix FTP.
@@ -55,7 +55,7 @@ Instructions:
             + Uploading it on Nimbix FTP
             + Replacing "/samples/in.raw" with "/data/{YourFileName}" in File Input argument
         '
-        Asset: assets/bcom_sdrtohdr/bcom03.png
+        Asset: assets/bcom_sdrtohdr/bcom-sdrtohdr_03.png
   Alveo U200:
     Host Setup: '
       Install the Host Setup Script
@@ -74,7 +74,7 @@ Instructions:
         -v /dev/shm:/data $XILINX_FPGA_DEV_IDS hubxilinx/bcom_sdr2hdr_alveo_u200 /samples/in.raw
         /data/out.raw
     Results:
-      Asset: assets/bcom_sdrtohdr/bcom03.png
+      Asset: assets/bcom_sdrtohdr/bcom-sdrtohdr_03.png
       Text: '
           Once your job is complete, an "out.raw" HD HDR sample will be available in "/dev/shm".
           You can use Vooya video player to display it:

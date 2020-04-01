@@ -58,7 +58,7 @@ Instructions:
             + Copying your file in "/dev/shm/{YourFileName}"
             + Replacing "-i /samples/sample_3840x2160_8bit_P420.yuv" with "-i /data/{YourFileName}" in the docker run command
       '
-      Asset: assets/vnova_perseus_plus/vnova03.png
+      Asset: assets/vnova_perseus_plus/vnova-perseus-plus_03.png
 
 ### Reserved for host_setup script #####################################
 Supported:
