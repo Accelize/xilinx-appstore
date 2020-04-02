@@ -268,7 +268,7 @@ def host_pkg_install(host_os, packages):
     ret, out, err = exec_cmd_with_ret_output(cmd)
     if ret:
         print_status('Installing %s' % packages, 'Failed')
-        print_status('Check log file %s for details' % logfile)
+        print('Check log file %s for details' % logfile)
         sys.exit(1)
     print_status('Installing %s' % packages, 'OK')
 
@@ -462,7 +462,7 @@ def run_setup(skip, vendor, appname):
     # Check if running on AWS
     running_on_aws=False
     aws_identity_file='/dev/shm/aws-identity.json'
-    ret, out, err = exec_cmd_with_ret_output('curl -s http://169.254.169.254/latest/dynamic/instance-identity/document > %s' % aws_identity_file)
+    ret, out, err = exec_cmd_with_ret_output('curl -sm 10 http://169.254.169.254/latest/dynamic/instance-identity/document > %s' % aws_identity_file)
     if os.path.exists(aws_identity_file):
         instancedef=yamlfile_to_dict(aws_identity_file)
         if instancedef:
