@@ -8,6 +8,7 @@ from io import open
 from builtins import input
 
 MIN_PYTHON = (2, 7)
+REQUIRED_PYTHON_MODULES = ['future', 'ruamel.yaml', 'FAKE']
 SCRIPT_PATH=os.path.dirname(os.path.realpath(__file__))
 REPO_DIR='/tmp/xilinx-appstore'
 REPO_TARBALL_URL='https://api.github.com/repos/Accelize/xilinx-appstore/tarball'
@@ -411,6 +412,18 @@ def update_board_dsa(board_idx):
             sys.exit(0)
 
 
+def check_python_modules():
+    ret, out, err = exec_cmd_with_ret_output('%s -m pip --disable-pip-version-check freeze' % sys.executable)
+    installed_packages = [r.split('==')[0] for r in out.split()]
+    for m in REQUIRED_PYTHON_MODULES:
+        if m in installed_packages:
+            print_status('Python Module %s' % m, 'Installed')
+        else:
+            print_status('Python Module %s' % m, 'Not Found')
+            print('[ERROR] Please run "pip2/pip3 install --user %s" and relaunch this script' % m)
+            sys.exit(1)
+
+
 def run_setup(skip, vendor, appname):
 
     # Set environement variables
@@ -418,6 +431,10 @@ def run_setup(skip, vendor, appname):
     os.environ['LANGUAGE'] = "en_US.UTF-8"
     os.environ['LC_COLLATE'] = "C"
     os.environ['LC_CTYPE'] = "en_US.UTF-8"
+    
+    # Check Python Installation
+    print_status('Python Version', '%s.%s.%s'%(sys.version_info[0], sys.version_info[1], sys.version_info[2]))
+    check_python_modules()
     
     # Download or Update App Catalog
     print_status('Loading App Catalog', '')
@@ -469,6 +486,8 @@ def run_setup(skip, vendor, appname):
             print_status('Running on','AWS')
             print_status('FPGA Board', instancedef['instanceType'])
             running_on_aws=True
+    else:
+        print_status('Running on','On-Premise')
 
     # List FPGA Boards using lspci (XRT not needed)
     if running_on_aws:
@@ -594,7 +613,6 @@ if __name__ == '__main__':
     print("  -------------------------------------------")
     print(" Welcome to the Xilinx Host Setup Script for Alveo Boards.\n")
     print(" This script will guide the setup of your host for running one of the Xilinx AppStore FPGA application\n")
-    print_status('Python Version', '%s.%s.%s'%(sys.version_info[0], sys.version_info[1], sys.version_info[2]))
     
     # Parse the arguments
     option = argparse.ArgumentParser()
