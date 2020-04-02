@@ -2,7 +2,7 @@
 # coding=utf-8
 """
 """
-import os, sys, shutil, json, argparse
+import os, sys, shutil, json, argparse, getpass
 from subprocess import Popen, PIPE
 from io import open
 from builtins import input
@@ -63,6 +63,8 @@ def ask_user_update_permission():
         answer = input(" > Start process (y/n)? ").lower()
         if answer == 'y':
             return True
+        else:
+            print('\n')
     return False
     
 
@@ -124,8 +126,8 @@ def get_host_env():
                 break
     
     if  host_os not in ['ubuntu', 'centos'] or \
-        host_os is 'ubuntu' and host_os_version not in ['16.04','18.04'] or \
-        host_os is 'centos' and host_os_version not in ['7'] or \
+        host_os == 'ubuntu' and host_os_version not in ['16.04','18.04'] or \
+        host_os == 'centos' and host_os_version not in ['7'] or \
         host_os is None:
         print(" [ERROR] Your Operating System is not supported.\nSupported OS: CentOS 7, Ubuntu 16.04 and Ubuntu 18.04")
         sys.exit(1)
@@ -172,7 +174,7 @@ def dsa_format(dsa):
     return dsa
 
 
-def check_xrt(host_os, target_version):
+def check_xrt(host_os, target_version, selected_conf):
     if check_host_pkg_installed(host_os, 'xrt'):
         xrt_version = get_xrt_version(host_os)
         if xrt_version and  xrt_version in target_version :
@@ -189,17 +191,18 @@ def check_xrt(host_os, target_version):
         host_reboot(cold=False)
 
  
-def check_host_dsa(host_os, conf_pkg):
+def check_host_dsa(host_os, selected_conf):
+    conf_pkg=selected_conf['dsa_package']
     pkg_name=conf_pkg.split('-')[0]+'-'+conf_pkg.split('-')[1]+'-'+conf_pkg.split('-')[2]
     pkg_vers=conf_pkg.split('-')[3]
    
     if 'centos' in host_os: 
-        ret, out, err = exec_cmd_with_ret_output('sudo yum list installed | grep %s | grep %s > /dev/null 2>&1' % (pkg_name, pkg_name))
+        ret, out, err = exec_cmd_with_ret_output('sudo yum list installed | grep %s | grep %s > /dev/null 2>&1' % (pkg_name, pkg_vers))
     else:
-        ret, out, err = exec_cmd_with_ret_output('sudo apt list --installed 2>/dev/null | grep %s | grep %s > /dev/null 2>&1' % (pkg_name, pkg_name))
+        ret, out, err = exec_cmd_with_ret_output('sudo apt list --installed 2>/dev/null | grep %s | grep %s > /dev/null 2>&1' % (pkg_name, pkg_vers))
 
     if ret:
-        print_status('Board Shell [HOST] Version Check', 'Update Required (%s-%s)' % (pkg_name, pkg_name))
+        print_status('Board Shell [HOST] Version Check', 'Update Required (%s-%s)' % (pkg_name, pkg_vers))
         if ask_user_update_permission():
             print_status('Updating Board Shell [HOST] (may take several minutes)', '')
             pkg_path=host_pkg_download(selected_conf['dsa_package'])
@@ -207,7 +210,7 @@ def check_host_dsa(host_os, conf_pkg):
             print_status('Updating Board Shell [HOST]', 'Done')
             host_reboot(cold=False)
     else:
-        print_status('Board Shell [HOST] Version Check', 'OK (%s-%s)' % (pkg_name, pkg_name))
+        print_status('Board Shell [HOST] Version Check', 'OK (%s-%s)' % (pkg_name, pkg_vers))
 
 
 def check_kernel(host_os):
@@ -236,7 +239,7 @@ def check_board_shell(boardIdx):
     print_status('Board Shell Host vs. FPGA', 'Update Required')
     if ask_user_update_permission():
         print_status('Programming Board Shell [FPGA]', '')
-        board_shell_flash(board_idx)
+        board_shell_flash(boardIdx)
         print_status('Programming Board Shell [FPGA]', 'Done')
         host_reboot(cold=True)
 
@@ -503,11 +506,11 @@ def run_setup(skip, vendor, appname):
         sys.exit(1)
         
     # Check Installed versions of XRT against selected_conf['xrt_package']
-    check_xrt(host_os, conf['xrt_package'])
+    check_xrt(host_os, conf['xrt_package'], selected_conf)
     
     # Check Installed versions of Host DSA against selected_conf['dsa_package']
     if not running_on_aws:
-        check_host_dsa(host_os, selected_conf['dsa_package'])
+        check_host_dsa(host_os, selected_conf)
     
     # Detect FPGA environement
     boards, shells = get_fpga_env(host_os, running_on_aws)

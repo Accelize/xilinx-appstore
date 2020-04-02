@@ -32,4 +32,11 @@ python3.6 /opt/xilinx/appstore/host_setup.py -v {vendor_name} -a {app_name}
 yamllint -c .yamllint xilinx_appstore_appdefs/apps
 ````
 
+## Check python scripts syntax
+````bash
+pip install --upgrade pyflakes
+pip3 install --upgrade pyflakes
+pyflakes <SCRIPT>
+````
+
 
