@@ -5,9 +5,8 @@ if [ ! "$BASH_VERSION" ] ; then
     exit 1
 fi
 
-if [[ $UID != 0 ]]; then
-    echo "Please run this script with sudo:"
-    echo "sudo $0 $*"
+if [[ $UID == 0 ]]; then
+    echo "Please, do not run this script with sudo"
     exit 1
 fi
 
@@ -20,19 +19,18 @@ echo "Installing Host Setup Script (this may take a few minutes)..."
 source /etc/os-release
 case "$ID-$VERSION_ID" in
 
-  ubuntu-16.04) apt update -y ; apt install -y python-pip linux-headers-`uname -r`;;
+  ubuntu-16.04) sudo apt update -y ; sudo apt install -y python-pip linux-headers-`uname -r`;;
   
-  ubuntu-18.04) apt update -y ; apt install -y python-pip linux-headers-`uname -r`;;
+  ubuntu-18.04) sudo apt update -y ; sudo apt install -y python-pip linux-headers-`uname -r`;;
   
-  centos-7) yum install -y https://dl.fedoraproject.org/pub/epel/epel-release-latest-7.noarch.rpm ; yum install -y python-pip kernel-headers kernel-devel;;
+  centos-7) sudo yum install -y https://dl.fedoraproject.org/pub/epel/epel-release-latest-7.noarch.rpm ; sudo yum install -y python-pip kernel-headers kernel-devel;;
   
    *) echo -e '[ERROR] Your Operating System is not supported.\nSupported OS: CentOS 7, Ubuntu 16.04, Ubuntu 18.04'; exit 1;;
 esac
 
-#pip2 install future ruamel.yaml
-python2.7 -m pip --disable-pip-version-check install future ruamel.yaml
-rm -f /opt/xilinx/appstore/host_setup.py
-mkdir -p /opt/xilinx/appstore/ && sudo chmod -R 777 /opt/xilinx/appstore
+python2.7 -m pip --disable-pip-version-check install --user ruamel.yaml
+sudo rm -f /opt/xilinx/appstore/host_setup.py
+sudo mkdir -p /opt/xilinx/appstore/ && sudo chmod -R 777 /opt/xilinx/appstore
 curl -sL https://github.com/Accelize/xilinx-appstore/raw/master/host_setup_2.py > /opt/xilinx/appstore/host_setup.py
 sudo chmod 777 /opt/xilinx/appstore/host_setup.py
 echo "Installing Host Setup Script ... Success"

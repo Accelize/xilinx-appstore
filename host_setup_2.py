@@ -7,7 +7,7 @@ from subprocess import Popen, PIPE
 from io import open
 
 REQ_PYTHON = (2, 7)
-REQUIRED_PYTHON_MODULES = ['future', 'ruamel.yaml']
+REQUIRED_PYTHON_MODULES = ['ruamel.yaml']
 SCRIPT_PATH=os.path.dirname(os.path.realpath(__file__))
 REPO_DIR='/tmp/xilinx-appstore'
 REPO_TARBALL_URL='https://api.github.com/repos/Accelize/xilinx-appstore/tarball'
