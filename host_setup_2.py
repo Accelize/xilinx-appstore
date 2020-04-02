@@ -157,8 +157,9 @@ def get_fpga_env(host_os, onAWS):
                 shells.append(line.split(' ')[1])
     else:
         ret, out, err = exec_cmd_with_ret_output('sudo /opt/xilinx/xrt/bin/%s flash scan'%(XRT_BIN))
+        nlines = out.count('\n')
         for num, line in enumerate(out.splitlines()):
-            if line.startswith('Card ['):
+            if line.startswith('Card [') and (num+5) <= nlines:
                 boards.append(out.splitlines()[num+2].split(':')[1].strip())
                 shells.append(out.splitlines()[num+5].split(',')[0].strip())
     print_status('Detected Boards', ''%boards)
@@ -257,14 +258,16 @@ def check_host_pkg_installed(host_os, pkg):
 
 def host_pkg_install(host_os, packages):
     print_status('Installing %s' % packages, '') 
+    logfile='/tmp/xx_appstore_%s_pkg_install.log' % (os.path.basename(packages))
     if 'ubuntu' in host_os:
-        cmd = 'sudo apt-get install -y '+ packages + '> /dev/null 2>&1'
+        cmd = 'sudo apt-get install -y '+ packages + '> ' + logfile + ' 2>&1'
     elif 'centos' in host_os:
-        cmd = 'sudo yum install -y '+ packages + '> /dev/null 2>&1'
+        cmd = 'sudo yum install -y '+ packages + '> ' + logfile + ' 2>&1'
     ret, out, err = exec_cmd_with_ret_output(cmd)
     if ret:
         print_status('Installing %s' % packages, 'Failed')
-        raise
+        print_status('Check log file %s for details' % logfile)
+        sys.exit(1)
     print_status('Installing %s' % packages, 'OK')
 
  
@@ -281,7 +284,7 @@ def host_pkg_download(pkg):
     ret, out, err = exec_cmd_with_ret_output(cmd)
     if ret:
         print(" > Downloading %s ... Failed" % pkg)
-        raise
+        sys.exit(1)
     print_status('Downloading %s' % pkg, 'OK')
     return '/tmp/%s' % pkg
 
