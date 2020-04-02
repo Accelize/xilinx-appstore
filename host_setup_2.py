@@ -60,12 +60,11 @@ def dict_pretty_print(in_dict):
 def ask_user_update_permission():
     answer = None
     while answer not in ['y', 'n']:
-        answer = input(" > Start process (y/n)? ").lower()
+        answer = input(" > Start install/update process (y/n)? ").lower()
         if answer == 'y':
-            return True
-        else:
-            print('\n')
-    return False
+            break
+        if answer == 'y':
+            sys.exit(1)
     
 
 def exec_cmd_with_ret_output(cmd, path='.'): 
@@ -162,9 +161,12 @@ def get_fpga_env(host_os, onAWS):
             if line.startswith('Card [') and (num+5) <= nlines:
                 boards.append(out.splitlines()[num+2].split(':')[1].strip())
                 shells.append(out.splitlines()[num+5].split(',')[0].strip())
+    if not boards or not shells:
+        print(" [ERROR] Unable to get boards or shells details.")
+        sys.exit(1)
+        
     print_status('Detected Boards', ''%boards)
     print_status('Detected Shells', ''%shells)
-    
     return boards, shells
 
 
@@ -183,13 +185,13 @@ def check_xrt(host_os, target_version, selected_conf):
             return
 
     print_status('XRT Version Check', 'Update Required')
-    if ask_user_update_permission():
-        print_status('Updating XRT', '')
-        host_pkg_remove(host_os, 'xrt')
-        pkg_path=host_pkg_download(selected_conf['xrt_package'])
-        host_pkg_install(host_os, pkg_path)
-        print_status('Updating XRT', 'Done')
-        host_reboot(cold=False)
+    ask_user_update_permission()
+    print_status('Updating XRT', '')
+    host_pkg_remove(host_os, 'xrt')
+    pkg_path=host_pkg_download(selected_conf['xrt_package'])
+    host_pkg_install(host_os, pkg_path)
+    print_status('Updating XRT', 'Done')
+    host_reboot(cold=False)
 
  
 def check_host_dsa(host_os, selected_conf):
@@ -204,12 +206,12 @@ def check_host_dsa(host_os, selected_conf):
 
     if ret:
         print_status('Board Shell [HOST] Version Check', 'Update Required (%s-%s)' % (pkg_name, pkg_vers))
-        if ask_user_update_permission():
-            print_status('Updating Board Shell [HOST] (may take several minutes)', '')
-            pkg_path=host_pkg_download(selected_conf['dsa_package'])
-            host_pkg_install(host_os, pkg_path)
-            print_status('Updating Board Shell [HOST]', 'Done')
-            host_reboot(cold=False)
+        ask_user_update_permission()
+        print_status('Updating Board Shell [HOST] (may take several minutes)', '')
+        pkg_path=host_pkg_download(selected_conf['dsa_package'])
+        host_pkg_install(host_os, pkg_path)
+        print_status('Updating Board Shell [HOST]', 'Done')
+        host_reboot(cold=False)
     else:
         print_status('Board Shell [HOST] Version Check', 'OK (%s-%s)' % (pkg_name, pkg_vers))
 
@@ -219,11 +221,11 @@ def check_kernel(host_os):
         print_status('Kernel Version Check', 'OK')
     else:
         print_status('Kernel Version Check', 'Update Required')
-        if ask_user_update_permission():
-            print_status('Updating Kernel', '')
-            update_os_kernel(host_os)     
-            print_status('Updating Kernel', 'Done')
-            host_reboot(cold=False)
+        ask_user_update_permission()
+        print_status('Updating Kernel', '')
+        update_os_kernel(host_os)     
+        print_status('Updating Kernel', 'Done')
+        host_reboot(cold=False)
 
 
 def check_board_shell(boardIdx):
@@ -238,11 +240,11 @@ def check_board_shell(boardIdx):
         cnt+=1     
 
     print_status('Board Shell Host vs. FPGA', 'Update Required')
-    if ask_user_update_permission():
-        print_status('Programming Board Shell [FPGA]', '')
-        board_shell_flash(boardIdx)
-        print_status('Programming Board Shell [FPGA]', 'Done')
-        host_reboot(cold=True)
+    ask_user_update_permission()
+    print_status('Programming Board Shell [FPGA]', '')
+    board_shell_flash(boardIdx)
+    print_status('Programming Board Shell [FPGA]', 'Done')
+    host_reboot(cold=True)
 
 
 def check_host_pkg_installed(host_os, pkg):
