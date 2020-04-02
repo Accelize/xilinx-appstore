@@ -8,7 +8,7 @@ from io import open
 from builtins import input
 
 MIN_PYTHON = (2, 7)
-REQUIRED_PYTHON_MODULES = ['future', 'ruamel.yaml', 'FAKE']
+REQUIRED_PYTHON_MODULES = ['future', 'ruamel.yaml']
 SCRIPT_PATH=os.path.dirname(os.path.realpath(__file__))
 REPO_DIR='/tmp/xilinx-appstore'
 REPO_TARBALL_URL='https://api.github.com/repos/Accelize/xilinx-appstore/tarball'
