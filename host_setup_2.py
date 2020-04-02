@@ -5,9 +5,8 @@
 import os, sys, shutil, json, argparse, getpass
 from subprocess import Popen, PIPE
 from io import open
-from builtins import input
 
-MIN_PYTHON = (2, 7)
+REQ_PYTHON = (2, 7)
 REQUIRED_PYTHON_MODULES = ['future', 'ruamel.yaml']
 SCRIPT_PATH=os.path.dirname(os.path.realpath(__file__))
 REPO_DIR='/tmp/xilinx-appstore'
@@ -61,7 +60,7 @@ def dict_pretty_print(in_dict):
 def ask_user_update_permission():
     answer = None
     while answer not in ['y', 'n']:
-        answer = input(" > Start install/update process (y/n)? ").lower()
+        answer = raw_input(" > Start install/update process (y/n)? ").lower()
         if answer == 'y':
             break
         if answer == 'y':
@@ -336,7 +335,7 @@ def host_reboot(cold=False):
     print(txt)
     answer = None
     while answer not in ['y', 'n']:
-        answer = input(" > Do you want to %s now (y/n)? "%cmd).lower()
+        answer = raw_input(" > Do you want to %s now (y/n)? "%cmd).lower()
     if answer == 'y':
         exec_cmd_with_ret_output('sudo '+cmd)
     else:
@@ -362,37 +361,6 @@ def board_shell_flash(boardIdx):
     ret, out, err = exec_cmd_with_ret_output(cmd)
 
 
-def update_fpga_env(host_os, selected_conf, xrt_outdated, host_dsa_outdated):
-    print("")
-    print(" > Packages install/update:")
-    if xrt_outdated: print(" > \tXRT (%s)" % selected_conf['xrt_package'])
-    if host_dsa_outdated: print(" > \tBoard Shell [HOST] (%s)" % selected_conf['dsa_package'])
-
-    answer = None
-    while answer not in ['y', 'n']:
-        answer = input(" > Start update process (y/n)? ").lower()
-    if answer == 'y':
-        if xrt_outdated:
-            print_status('Updating XRT', '')
-            host_pkg_remove(host_os, 'xrt')
-            pkg_path=host_pkg_download(selected_conf['xrt_package'])
-            host_pkg_install(host_os, pkg_path)
-            print_status('Updating XRT', 'Done')
-
-        # Check Installed versions of Host DSA against selected_conf['dsa_package']
-        if host_dsa_outdated:
-            print_status('Updating Board Shell [HOST] (may take several minutes)', '')
-            pkg_path=host_pkg_download(selected_conf['dsa_package'])
-            host_pkg_install(host_os, pkg_path)
-            print_status('Updating Board Shell [HOST]', 'Done')
-            
-        # Reboot
-        print(" > Packages install/update completed, please reboot your server and relaunch this script.")
-        host_reboot(cold=False)
-    else:
-        sys.exit(0)  
-
-
 def update_board_dsa(board_idx):
     print("")
     print(" > Packages install/update:")
@@ -400,7 +368,7 @@ def update_board_dsa(board_idx):
     
     answer = None
     while answer not in ['y', 'n']:
-        answer = input(" > Start update process (y/n)? ").lower()
+        answer = raw_input(" > Start update process (y/n)? ").lower()
         if answer == 'y':
             print_status('Programming Board Shell [FPGA]', '')
             board_shell_flash(board_idx)
@@ -515,7 +483,7 @@ def run_setup(skip, vendor, appname):
         print("\n > Found %s board models" % len(lspci_boards))
         for i in range(0,len(lspci_boards)):
             print("\t[%s]: %s" % (i, lspci_boards[i]))
-        board_model_idx = int(input(" > Please select the model to use: "))
+        board_model_idx = int(raw_input(" > Please select the model to use: "))
     print_status('Selected board model', '%s'%lspci_boards[board_model_idx])
     
     # Find suitable configuration
@@ -545,7 +513,7 @@ def run_setup(skip, vendor, appname):
         print("\n > Found %s boards" % len(boards))
         for i in range(0,len(boards)):
             print("\t[%s]: %s (%s)" % (i, boards[i], shells[i]))
-        board_idx = int(input(" > Please select the one to use: "))
+        board_idx = int(raw_input(" > Please select the one to use: "))
     print_status('Selected board', '%s %s %s' % (board_idx, boards[board_idx], shells[board_idx]))
     
     # Check Board DSA
@@ -604,8 +572,8 @@ def run_setup(skip, vendor, appname):
 
 if __name__ == '__main__':
 
-    if sys.version_info < MIN_PYTHON:
-        sys.exit("Python %s.%s or later is required.\n" % MIN_PYTHON)
+    if sys.version_info != REQ_PYTHON:
+        sys.exit("Python %s.%s is required.\n" % REQ_PYTHON)
     
     print("  -------------------------------------------")
     print(" | Xilinx Host Setup Script for Alveo Boards |")
