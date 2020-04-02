@@ -296,9 +296,9 @@ def check_docker(host_os):
     # Check that DockerCE is Installed
     if  check_host_pkg_installed(host_os, 'docker-ce') and \
         check_host_pkg_installed(host_os, 'docker-ce-cli'):
-        print_status('DockerCE  Installation', 'OK')
+        print_status('DockerCE Installation', 'OK')
     else:
-        print_status('DockerCE  Installation', 'Update Required')        
+        print_status('DockerCE Installation', 'Update Required')        
         print(' > Please install DockerCE using the following documentation and relaunch the script:')
         print(' >   [CENTOS] https://docs.docker.com/install/linux/docker-ce/centos/')
         print(' >   [UBUNTU] https://docs.docker.com/install/linux/docker-ce/ubuntu/')
@@ -307,12 +307,12 @@ def check_docker(host_os):
     # Check that DockerCE is correctly configured
     ret, out, err = exec_cmd_with_ret_output('groups $USER | grep docker')
     if ret:
-        print_status('DockerCE  Configuration', 'Update Required')        
+        print_status('DockerCE Configuration', 'Update Required')        
         print(' > Please configure DockerCE using the following documentation and relaunch the script:')
         print(' >   https://docs.docker.com/install/linux/linux-postinstall/')
         sys.exit(1)
     else:
-        print_status('DockerCE  Configuration', 'OK')
+        print_status('DockerCE Configuration', 'OK')
 
 
 def update_os_kernel(host_os):
@@ -447,7 +447,7 @@ def run_setup(skip, vendor, appname):
         print(" > You must provide application vendor and name from following list:")
         for app in appcatalog['apps']:
             print_status("\t%s"%app['appvendor'].lower(), "%s"%app['appname'].lower(), 20)
-        print(" > e.g: python2 /opt/xilinx/appstore/host_setup.py -v ngcodec -a hevc_enc_dual\n")
+        print(" > e.g: python2.7 /opt/xilinx/appstore/host_setup.py -v ngcodec -a hevc_enc_dual\n")
         sys.exit(1)
     
     appdef_path=''
