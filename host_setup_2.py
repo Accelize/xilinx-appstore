@@ -572,7 +572,7 @@ def run_setup(skip, vendor, appname):
 
 if __name__ == '__main__':
 
-    if sys.version_info != REQ_PYTHON:
+    if (sys.version_info[0], sys.version_info[1]) != REQ_PYTHON:
         sys.exit("Python %s.%s is required.\n" % REQ_PYTHON)
     
     print("  -------------------------------------------")
