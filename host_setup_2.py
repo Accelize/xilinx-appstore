@@ -230,7 +230,7 @@ def check_kernel(host_os):
 
 
 def check_board_shell(boardIdx):
-    cmd='sudo /opt/xilinx/xrt/bin/ flash scan' % (XRT_BIN)
+    cmd='sudo /opt/xilinx/xrt/bin/%s flash scan' % (XRT_BIN)
     ret, out, err = exec_cmd_with_ret_output(cmd)
     cnt=0
     for l in out.splitlines():
@@ -579,15 +579,14 @@ def run_setup(skip, vendor, appname):
     # Create runapp script
     run_app_fname="runapp_%s_%s.sh" % (vendor.lower(), appname.lower())
     run_app_path=os.path.join('/opt', 'xilinx', 'appstore', run_app_fname)
+    txt= '#!/bin/bash\n' \
+    'if [ ! "$BASH_VERSION" ] ; then echo "Please do not use sh to run this script ($0), just execute it directly" 1>&2; exit 1; fi\n' \
+    'source /opt/xilinx/appstore/set_env%s.sh\n' \
+    '%s\n' \
+    '%s\n' % ('_aws' if running_on_aws else '', pullCmd, runCmd)
     with open(run_app_path,"w+") as f:
-        f.write('#!/bin/bash\n')
-        f.write('if [ ! "$BASH_VERSION" ] ; then echo "Please do not use sh to run this script ($0), just execute it directly" 1>&2; exit 1; fi\n')
-        if running_on_aws:
-            f.write('source /opt/xilinx/appstore/set_env_aws.sh\n')
-        else:
-            f.write('source /opt/xilinx/appstore/set_env.sh\n')
-        f.write("%s\n"%pullCmd)
-        f.write("%s\n"%runCmd)
+        f.write(u'%s' % txt)
+        
     exec_cmd_with_ret_output('sudo chmod +x %s' % run_app_path)
     print_status('Run App Script', 'Created')
 
