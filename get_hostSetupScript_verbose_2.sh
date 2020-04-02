@@ -29,7 +29,7 @@ case "$ID-$VERSION_ID" in
    *) echo -e '[ERROR] Your Operating System is not supported.\nSupported OS: CentOS 7, Ubuntu 16.04, Ubuntu 18.04'; exit 1;;
 esac
 
-pip install future ruamel.yaml 
+pip2 install future ruamel.yaml
 rm -f /opt/xilinx/appstore/host_setup.py
 mkdir -p /opt/xilinx/appstore/ && sudo chmod -R 777 /opt/xilinx/appstore
 curl -sL https://github.com/Accelize/xilinx-appstore/raw/master/host_setup_2.py > /opt/xilinx/appstore/host_setup.py

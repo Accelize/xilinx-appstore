@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python2
 # coding=utf-8
 """
 """
@@ -430,7 +430,7 @@ def run_setup(skip, vendor, appname):
         print(" > You must provide application vendor and name from following list:")
         for app in appcatalog['apps']:
             print_status("\t%s"%app['appvendor'].lower(), "%s"%app['appname'].lower(), 20)
-        print(" > e.g: python /opt/xilinx/appstore/host_setup.py -v ngcodec -a hevc_enc_dual\n")
+        print(" > e.g: python2 /opt/xilinx/appstore/host_setup.py -v ngcodec -a hevc_enc_dual\n")
         sys.exit(1)
     
     appdef_path=''
@@ -594,6 +594,7 @@ if __name__ == '__main__':
     print("  -------------------------------------------")
     print(" Welcome to the Xilinx Host Setup Script for Alveo Boards.\n")
     print(" This script will guide the setup of your host for running one of the Xilinx AppStore FPGA application\n")
+    print_status('Python Version', '%s.%s.%s'%(sys.version_info[0], sys.version_info[1], sys.version_info[2]))
     
     # Parse the arguments
     option = argparse.ArgumentParser()
