@@ -9,6 +9,7 @@ from io import open
 REQ_PYTHON = (2, 7)
 REQUIRED_PYTHON_MODULES = ['ruamel.yaml']
 SCRIPT_PATH=os.path.dirname(os.path.realpath(__file__))
+SCRIPT_VERSION='v0.1.1'
 REPO_DIR='/tmp/xilinx-appstore'
 REPO_TARBALL_URL='https://api.github.com/repos/Accelize/xilinx-appstore/tarball'
 APPDEFS_FOLDER=os.path.join(REPO_DIR, "xilinx_appstore_appdefs")
@@ -92,6 +93,7 @@ def fpga_board_list():
         if '5020' in line: fpga_boards.append('u50')  # XDMA
         if '5050' in line: fpga_boards.append('u25')  # XDMA
         if '0B03' in line: fpga_boards.append('u25')  # XDMA U25 (X2)
+        if 'D000' in line: fpga_boards.append('u200') # GOLDEN
     
     fpga_boards = list(dict.fromkeys(fpga_boards))
     return fpga_boards
@@ -580,6 +582,7 @@ if __name__ == '__main__':
     print("  -------------------------------------------")
     print(" Welcome to the Xilinx Host Setup Script for Alveo Boards.\n")
     print(" This script will guide the setup of your host for running one of the Xilinx AppStore FPGA application\n")
+    print_status('Host Setup Script Version', SCRIPT_VERSION)
     
     # Parse the arguments
     option = argparse.ArgumentParser()
