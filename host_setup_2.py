@@ -242,11 +242,10 @@ def check_board_shell(boardIdx):
         cnt+=1     
 
     print_status('Board Shell Host vs. FPGA', 'Update Required')
-    ask_user_update_permission()
-    print_status('Programming Board Shell [FPGA]', '')
-    board_shell_flash(boardIdx)
-    print_status('Programming Board Shell [FPGA]', 'Done')
-    host_reboot(cold=True)
+    cmd=get_board_shell_flash_cmd(boardIdx)
+    print(' > Update Board DSA using the following command, then do a cold reboot:'
+    print(cmd)
+    sys.exit(1)
 
 
 def check_host_pkg_installed(host_os, pkg):
@@ -344,7 +343,7 @@ def host_reboot(cold=False):
         sys.exit(1)
 
 
-def board_shell_flash(boardIdx):
+def get_board_shell_flash_cmd(boardIdx):
     cmd='sudo /opt/xilinx/xrt/bin/xbutil flash scan'
     ret, out, err = exec_cmd_with_ret_output(cmd)
     cnt=0
@@ -358,28 +357,7 @@ def board_shell_flash(boardIdx):
         
     prog_dsa=host_dsa_conf.split(',')[0]
     prog_tstamp=int(host_dsa_conf.split(',')[1][4:-1], 0)
-    cmd='sudo /opt/xilinx/xrt/bin/xbutil flash -d %s -a %s -t %s' % (boardIdx, prog_dsa, prog_tstamp)
-    print_status('New FPGA Shell', prog_dsa)
-    ret, out, err = exec_cmd_with_ret_output(cmd)
-
-
-def update_board_dsa(board_idx):
-    print("")
-    print(" > Packages install/update:")
-    print(" > \tBoard Shell [FPGA])")
-    
-    answer = None
-    while answer not in ['y', 'n']:
-        answer = raw_input(" > Start update process (y/n)? ").lower()
-        if answer == 'y':
-            print_status('Programming Board Shell [FPGA]', '')
-            board_shell_flash(board_idx)
-            print_status('Programming Board Shell [FPGA]', 'Done')
-            
-            print(" > Packages install/update completed, please do a cold reboot of your server and relaunch this script.")
-            host_reboot(cold=True)
-        else:
-            sys.exit(0)
+    cmd='sudo /opt/xilinx/xrt/bin/xbutil flash -d %s -a %s -t %s' % (boardIdx, prog_dsa, return cmd
 
 
 def check_python_modules():

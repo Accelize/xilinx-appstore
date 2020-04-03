@@ -23,7 +23,7 @@ case "$ID-$VERSION_ID" in
   
   ubuntu-18.04) sudo apt update -y ; sudo apt install -y python-pip linux-headers-`uname -r` sudo || exit 1;;
   
-  centos-7) sudo yum install -y https://dl.fedoraproject.org/pub/epel/epel-release-latest-7.noarch.rpm || exit 1; sudo yum install -y python-pip kernel-headers kernel-devel sudo || exit 1;;
+  centos-7) sudo yum install -y https://dl.fedoraproject.org/pub/epel/epel-release-latest-7.noarch.rpm; sudo yum install -y python-pip kernel-headers kernel-devel sudo || exit 1;;
   
    *) echo -e '[ERROR] Your Operating System is not supported.\nSupported OS: CentOS 7, Ubuntu 16.04, Ubuntu 18.04'; exit 1;;
 esac
