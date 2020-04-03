@@ -357,7 +357,8 @@ def get_board_shell_flash_cmd(boardIdx):
         
     prog_dsa=host_dsa_conf.split(',')[0]
     prog_tstamp=int(host_dsa_conf.split(',')[1][4:-1], 0)
-    cmd='sudo /opt/xilinx/xrt/bin/xbutil flash -d %s -a %s -t %s' % (boardIdx, prog_dsa, return cmd
+    cmd='sudo /opt/xilinx/xrt/bin/xbutil flash -d %s -a %s -t %s' % (boardIdx, prog_dsa, prog_tstamp) 
+    return cmd
 
 
 def check_python_modules():
