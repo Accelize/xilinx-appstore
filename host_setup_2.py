@@ -244,7 +244,7 @@ def check_board_shell(boardIdx):
     print_status('Board Shell Host vs. FPGA', 'Update Required')
     cmd=get_board_shell_flash_cmd(boardIdx)
     print(' > Update Board DSA using the following command, then do a cold reboot:')
-    print(cmd)
+    print(' > %s' % cmd)
     sys.exit(1)
 
 
