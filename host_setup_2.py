@@ -9,7 +9,7 @@ from io import open
 REQ_PYTHON = (2, 7)
 REQUIRED_PYTHON_MODULES = ['ruamel.yaml']
 SCRIPT_PATH=os.path.dirname(os.path.realpath(__file__))
-SCRIPT_VERSION='v0.1.6'
+SCRIPT_VERSION='v0.1.7'
 REPO_DIR='/tmp/xilinx-appstore'
 REPO_TARBALL_URL='https://api.github.com/repos/Accelize/xilinx-appstore/tarball'
 APPDEFS_FOLDER=os.path.join(REPO_DIR, "xilinx_appstore_appdefs")
@@ -100,17 +100,6 @@ def fpga_board_list():
     return fpga_boards
 
 
-def get_xrt_version(host_os):
-    xrt=None
-    if 'centos' in host_os.lower():
-        ret, out, err = exec_cmd_with_ret_output("sudo yum info xrt | grep Version | cut -d ':' -f2")
-        xrt=out.split('-')[0].strip()
-    if 'ubuntu' in host_os.lower():
-        ret, out, err = exec_cmd_with_ret_output("sudo apt-cache show xrt | grep Version | cut -d' ' -f2")
-        xrt=out.strip()
-    return xrt
-
-
 def get_host_env():
     # Get OS
     os_release_path = (
@@ -173,13 +162,6 @@ def get_fpga_env(host_os, onAWS):
     return boards, shells
 
 
-def dsa_format(dsa):
-    char_list=['-', ' ', '.']
-    for c in char_list:
-        dsa=dsa.replace(c,'_')
-    return dsa
-
-
 def get_host_pkg_cmds(host_os, packages, remotePkg):
     if 'ubuntu' in host_os:
         rmv_cmd = 'sudo apt-get remove -y '+ packages
@@ -189,7 +171,7 @@ def get_host_pkg_cmds(host_os, packages, remotePkg):
     dwl_cmd = 'curl -sL https://www.xilinx.com/bin/public/openDownload?filename=%s -o /tmp/%s'  % (remotePkg, remotePkg)
     
     if 'ubuntu' in host_os:
-        ins_cmd = 'sudo apt-get install -y '+ packages
+        ins_cmd = 'sudo apt-get install -y /tmp/'+ remotePkg
     elif 'centos' in host_os:
         ins_cmd = 'sudo yum install -y /tmp/'+ remotePkg
 
@@ -197,19 +179,20 @@ def get_host_pkg_cmds(host_os, packages, remotePkg):
 
 
 def check_xrt(host_os, target_version, selected_conf):
-    if check_host_pkg_installed(host_os, 'xrt'):
-        xrt_version = get_xrt_version(host_os)
-        if xrt_version and  xrt_version in target_version :
-            print_status('XRT Version Check', 'OK (%s)' % xrt_version)
-            return
+    xrt_version = check_host_pkg_installed(host_os, 'xrt')
+    if xrt_version and  xrt_version in target_version :
+        print_status('XRT Version Check', 'OK (%s)' % xrt_version)
+        return
 
-    print_status('XRT Version Check', 'Update Required (%s)' % xrt_version)
+    print_status('XRT Version Check', 'Found: xrt-%s' % xrt_version)
+    print_status('XRT Version Check', 'Needs: %s' % selected_conf['xrt_package'])
+    print_status('XRT Version Check', 'Update Required')
     rmv_cmd, dwl_cmd, ins_cmd = get_host_pkg_cmds(host_os, 'xrt', selected_conf['xrt_package'])
     txt = '\n > 1. Remove existing XRT package installed:' +\
           '\n > %s' % rmv_cmd +\
-          '\n > 2. Download required xrt package:' +\
+          '\n > 2. Download required XRT package:' +\
           '\n > %s' % dwl_cmd +\
-          '\n > 3. Install required XRT Package' +\
+          '\n > 3. Install required XRT Package:' +\
           '\n > %s' % ins_cmd +\
           '\n > 4. Reboot & Relaunch this script'
     print(txt)
@@ -219,23 +202,25 @@ def check_xrt(host_os, target_version, selected_conf):
 def check_host_dsa(host_os, selected_conf):
     conf_pkg=selected_conf['dsa_package']
     pkg_name=conf_pkg.split('-')[0]+'-'+conf_pkg.split('-')[1]+'-'+conf_pkg.split('-')[2]
-    pkg_vers=conf_pkg.split('-')[3]
-   
-    if 'centos' in host_os: 
-        ret, out, err = exec_cmd_with_ret_output('sudo yum list installed | grep %s | grep %s > /dev/null 2>&1' % (pkg_name, pkg_vers))
-    else:
-        ret, out, err = exec_cmd_with_ret_output('sudo apt list --installed 2>/dev/null | grep %s | grep %s > /dev/null 2>&1' % (pkg_name, pkg_vers))
-
-    if ret:
-        print_status('Board Shell [HOST] Version Check', 'Update Required (%s-%s)' % (pkg_name, pkg_vers))
-        ask_user_update_permission()
-        print_status('Updating Board Shell [HOST] (may take several minutes)', '')
-        pkg_path=host_pkg_download(selected_conf['dsa_package'])
-        host_pkg_install(host_os, pkg_path)
-        print_status('Updating Board Shell [HOST]', 'Done')
-        host_reboot(cold=False)
-    else:
-        print_status('Board Shell [HOST] Version Check', 'OK (%s-%s)' % (pkg_name, pkg_vers))
+    
+    host_dsa_version = check_host_pkg_installed(host_os, pkg_name)
+    if host_dsa_version in conf_pkg:
+        print_status('Board Shell [HOST] Version Check', 'OK (%s-%s)' % (pkg_name, host_dsa_version))
+        return
+        
+    print_status('Board Shell [HOST] Version Check', 'Found: %s' % host_dsa_version)
+    print_status('Board Shell [HOST] Version Check', 'Needs: %s' % selected_conf['dsa_package'])
+    print_status('Board Shell [HOST] Version Check', 'Update Required')
+    rmv_cmd, dwl_cmd, ins_cmd = get_host_pkg_cmds(host_os, pkg_name, selected_conf['dsa_package'])
+    txt = '\n > 1. Remove existing DSA package installed:' +\
+          '\n > %s' % rmv_cmd +\
+          '\n > 2. Download required DSA package:' +\
+          '\n > %s' % dwl_cmd +\
+          '\n > 3. Install required DSA Package:' +\
+          '\n > %s' % ins_cmd +\
+          '\n > 4. Reboot & Relaunch this script'
+    print(txt)
+    sys.exit(1)
 
 
 def check_kernel(host_os):
@@ -267,49 +252,16 @@ def check_board_shell(boardIdx):
     print(' > %s' % cmd)
     sys.exit(1)
 
-
+    
 def check_host_pkg_installed(host_os, pkg):
-    if 'ubuntu' in host_os:
-        cmd = 'sudo apt list --installed 2>/dev/null | grep '+ pkg
-    elif 'centos' in host_os:
-        cmd = 'sudo yum list installed | grep '+ pkg
-    ret, out, err = exec_cmd_with_ret_output(cmd)
-    if ret:
-        return False
-    return True
-
-
-def host_pkg_install(host_os, packages):
-    print_status('Installing %s' % packages, '') 
-    logfile='/tmp/xx_appstore_%s_pkg_install.log' % (os.path.basename(packages))
-    if 'ubuntu' in host_os:
-        cmd = 'sudo apt-get install -y '+ packages + '> ' + logfile + ' 2>&1'
-    elif 'centos' in host_os:
-        cmd = 'sudo yum install -y '+ packages + '> ' + logfile + ' 2>&1'
-    ret, out, err = exec_cmd_with_ret_output(cmd)
-    if ret:
-        print_status('Installing %s' % packages, 'Failed')
-        print('Check log file %s for details' % logfile)
-        sys.exit(1)
-    print_status('Installing %s' % packages, 'OK')
-
- 
-def host_pkg_remove(host_os, packages):
-    if 'ubuntu' in host_os:
-        cmd = 'sudo apt-get remove -y '+ packages + '> /dev/null 2>&1'
-    elif 'centos' in host_os:
-        cmd = 'sudo yum remove -y '+ packages + '> /dev/null 2>&1'
-    exec_cmd_with_ret_output(cmd)
-
-def host_pkg_download(pkg):
-    print_status('Downloading %s' % pkg, '')
-    cmd = 'curl -sL https://www.xilinx.com/bin/public/openDownload?filename=%s -o /tmp/%s'  % (pkg, pkg)
-    ret, out, err = exec_cmd_with_ret_output(cmd)
-    if ret:
-        print(" > Downloading %s ... Failed" % pkg)
-        sys.exit(1)
-    print_status('Downloading %s' % pkg, 'OK')
-    return '/tmp/%s' % pkg
+    pkg_version=None
+    if 'centos' in host_os.lower():
+        ret, out, err = exec_cmd_with_ret_output("sudo yum info %s | grep Version | cut -d ':' -f2" % pkg)
+        pkg_version=out.split('-')[0].strip()
+    if 'ubuntu' in host_os.lower():
+        ret, out, err = exec_cmd_with_ret_output("sudo apt-cache show %s | grep Version | cut -d' ' -f2" % pkg)
+        pkg_version=out.strip()
+    return pkg_version
 
 
 def check_docker(host_os):
