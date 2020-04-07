@@ -9,7 +9,7 @@ from io import open
 REQ_PYTHON = (2, 7)
 REQUIRED_PYTHON_MODULES = ['ruamel.yaml']
 SCRIPT_PATH=os.path.dirname(os.path.realpath(__file__))
-SCRIPT_VERSION='v0.1.5'
+SCRIPT_VERSION='v0.1.6'
 REPO_DIR='/tmp/xilinx-appstore'
 REPO_TARBALL_URL='https://api.github.com/repos/Accelize/xilinx-appstore/tarball'
 APPDEFS_FOLDER=os.path.join(REPO_DIR, "xilinx_appstore_appdefs")
@@ -191,7 +191,7 @@ def get_host_pkg_cmds(host_os, packages, remotePkg):
     if 'ubuntu' in host_os:
         ins_cmd = 'sudo apt-get install -y '+ packages
     elif 'centos' in host_os:
-        ins_cmd = 'sudo yum install -y '+ packages
+        ins_cmd = 'sudo yum install -y /tmp/'+ remotePkg
 
     return rmv_cmd, dwl_cmd, ins_cmd
 
@@ -205,14 +205,15 @@ def check_xrt(host_os, target_version, selected_conf):
 
     print_status('XRT Version Check', 'Update Required (%s)' % xrt_version)
     rmv_cmd, dwl_cmd, ins_cmd = get_host_pkg_cmds(host_os, 'xrt', selected_conf['xrt_package'])
-    txt = '> 1. Remove existing XRT package installed:' +\
-          '> %s' % rmv_cmd +\
-          '> 2. Download required xrt package:' +\
-          '> %s' % dwl_cmd +\
-          '> 3. Install required XRT Package' +\
-          '> %s' % ins_cmd +\
-          '> 4. Reboot & Relaunch this script'
+    txt = '\n > 1. Remove existing XRT package installed:' +\
+          '\n > %s' % rmv_cmd +\
+          '\n > 2. Download required xrt package:' +\
+          '\n > %s' % dwl_cmd +\
+          '\n > 3. Install required XRT Package' +\
+          '\n > %s' % ins_cmd +\
+          '\n > 4. Reboot & Relaunch this script'
     print(txt)
+    sys.exit(1)
 
  
 def check_host_dsa(host_os, selected_conf):
