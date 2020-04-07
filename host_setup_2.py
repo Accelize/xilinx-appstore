@@ -9,7 +9,7 @@ from io import open
 REQ_PYTHON = (2, 7)
 REQUIRED_PYTHON_MODULES = ['ruamel.yaml']
 SCRIPT_PATH=os.path.dirname(os.path.realpath(__file__))
-SCRIPT_VERSION='v0.1.4'
+SCRIPT_VERSION='v0.1.5'
 REPO_DIR='/tmp/xilinx-appstore'
 REPO_TARBALL_URL='https://api.github.com/repos/Accelize/xilinx-appstore/tarball'
 APPDEFS_FOLDER=os.path.join(REPO_DIR, "xilinx_appstore_appdefs")
@@ -204,7 +204,7 @@ def check_xrt(host_os, target_version, selected_conf):
             return
 
     print_status('XRT Version Check', 'Update Required (%s)' % xrt_version)
-    rmv_cmd, dwl_cmd, ins_cmd = get_host_pkg_cmds(host_os, packages, selected_conf['xrt_package'])
+    rmv_cmd, dwl_cmd, ins_cmd = get_host_pkg_cmds(host_os, 'xrt', selected_conf['xrt_package'])
     txt = '> 1. Remove existing XRT package installed:' +\
           '> %s' % rmv_cmd +\
           '> 2. Download required xrt package:' +\
