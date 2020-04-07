@@ -9,7 +9,7 @@ from io import open
 REQ_PYTHON = (2, 7)
 REQUIRED_PYTHON_MODULES = ['ruamel.yaml']
 SCRIPT_PATH=os.path.dirname(os.path.realpath(__file__))
-SCRIPT_VERSION='v0.1.3'
+SCRIPT_VERSION='v0.1.4'
 REPO_DIR='/tmp/xilinx-appstore'
 REPO_TARBALL_URL='https://api.github.com/repos/Accelize/xilinx-appstore/tarball'
 APPDEFS_FOLDER=os.path.join(REPO_DIR, "xilinx_appstore_appdefs")
@@ -18,6 +18,7 @@ SETENV_SCRIPT=os.path.join(REPO_DIR, 'xilinx_appstore_env.sh')
 SETENV_SCRIPT_AWS=os.path.join(REPO_DIR, 'xilinx_appstore_aws_env.sh')
 XRT_BIN='xbutil'
 AWS_BIN='awssak'
+
 
 def parse_value(key_value):
     return key_value.split('=')[1].rstrip().strip('""').lower()
@@ -64,9 +65,9 @@ def ask_user_update_permission():
         answer = raw_input(" > Start install/update process (y/n)? ").lower()
         if answer == 'y':
             break
-        if answer == 'y':
+        if answer == 'n':
             sys.exit(1)
-    
+
 
 def exec_cmd_with_ret_output(cmd, path='.'): 
     try:
@@ -179,6 +180,22 @@ def dsa_format(dsa):
     return dsa
 
 
+def get_host_pkg_cmds(host_os, packages, remotePkg):
+    if 'ubuntu' in host_os:
+        rmv_cmd = 'sudo apt-get remove -y '+ packages
+    elif 'centos' in host_os:
+        rmv_cmd = 'sudo yum remove -y '+ packages
+    
+    dwl_cmd = 'curl -sL https://www.xilinx.com/bin/public/openDownload?filename=%s -o /tmp/%s'  % (remotePkg, remotePkg)
+    
+    if 'ubuntu' in host_os:
+        ins_cmd = 'sudo apt-get install -y '+ packages
+    elif 'centos' in host_os:
+        ins_cmd = 'sudo yum install -y '+ packages
+
+    return rmv_cmd, dwl_cmd, ins_cmd
+
+
 def check_xrt(host_os, target_version, selected_conf):
     if check_host_pkg_installed(host_os, 'xrt'):
         xrt_version = get_xrt_version(host_os)
@@ -186,14 +203,16 @@ def check_xrt(host_os, target_version, selected_conf):
             print_status('XRT Version Check', 'OK (%s)' % xrt_version)
             return
 
-    print_status('XRT Version Check', 'Update Required')
-    ask_user_update_permission()
-    print_status('Updating XRT', '')
-    host_pkg_remove(host_os, 'xrt')
-    pkg_path=host_pkg_download(selected_conf['xrt_package'])
-    host_pkg_install(host_os, pkg_path)
-    print_status('Updating XRT', 'Done')
-    host_reboot(cold=False)
+    print_status('XRT Version Check', 'Update Required (%s)' % xrt_version)
+    rmv_cmd, dwl_cmd, ins_cmd = get_host_pkg_cmds(host_os, packages, selected_conf['xrt_package'])
+    txt = '> 1. Remove existing XRT package installed:' +\
+          '> %s' % rmv_cmd +\
+          '> 2. Download required xrt package:' +\
+          '> %s' % dwl_cmd +\
+          '> 3. Install required XRT Package' +\
+          '> %s' % ins_cmd +\
+          '> 4. Reboot & Relaunch this script'
+    print(txt)
 
  
 def check_host_dsa(host_os, selected_conf):
@@ -300,8 +319,10 @@ def check_docker(host_os):
     else:
         print_status('DockerCE Installation', 'Update Required')        
         print(' > Please install DockerCE using the following documentation and relaunch the script:')
-        print(' >   [CENTOS] https://docs.docker.com/install/linux/docker-ce/centos/')
-        print(' >   [UBUNTU] https://docs.docker.com/install/linux/docker-ce/ubuntu/')
+        if 'ubuntu' in host_os:
+            print(' > https://docs.docker.com/install/linux/docker-ce/ubuntu/')
+        elif 'centos' in host_os:
+            print(' > https://docs.docker.com/install/linux/docker-ce/centos/')
         sys.exit(1)
         
     # Check that DockerCE is correctly configured
