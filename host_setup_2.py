@@ -9,7 +9,7 @@ from io import open
 REQ_PYTHON = (2, 7)
 REQUIRED_PYTHON_MODULES = ['ruamel.yaml']
 SCRIPT_PATH=os.path.dirname(os.path.realpath(__file__))
-SCRIPT_VERSION='v0.1.2'
+SCRIPT_VERSION='v0.1.3'
 REPO_DIR='/tmp/xilinx-appstore'
 REPO_TARBALL_URL='https://api.github.com/repos/Accelize/xilinx-appstore/tarball'
 APPDEFS_FOLDER=os.path.join(REPO_DIR, "xilinx_appstore_appdefs")
@@ -84,16 +84,16 @@ def fpga_board_list():
     fpga_boards=[]
     ret, out, err = exec_cmd_with_ret_output('sudo lspci  -d 10ee: | grep " Processing accelerators" | grep "Xilinx" | cut -d" " -f7')
     for line in out.splitlines():
-        if '5000' in line: fpga_boards.append('u200') # XDMA
-        if '5004' in line: fpga_boards.append('u250') # XDMA
-        if '5008' in line: fpga_boards.append('u280') # ES1-XDMA
-        if '500c' in line: fpga_boards.append('u280') # XDMA
-        if '5010' in line: fpga_boards.append('u200') # QDMA
-        if '5014' in line: fpga_boards.append('u250') # QDMA
-        if '5020' in line: fpga_boards.append('u50')  # XDMA
-        if '5050' in line: fpga_boards.append('u25')  # XDMA
-        if '0B03' in line: fpga_boards.append('u25')  # XDMA U25 (X2)
-        if 'D000' in line: fpga_boards.append('u200') # GOLDEN
+        if '5000' in line.lower(): fpga_boards.append('u200') # XDMA
+        if '5004' in line.lower(): fpga_boards.append('u250') # XDMA
+        if '5008' in line.lower(): fpga_boards.append('u280') # ES1-XDMA
+        if '500c' in line.lower(): fpga_boards.append('u280') # XDMA
+        if '5010' in line.lower(): fpga_boards.append('u200') # QDMA
+        if '5014' in line.lower(): fpga_boards.append('u250') # QDMA
+        if '5020' in line.lower(): fpga_boards.append('u50')  # XDMA
+        if '5050' in line.lower(): fpga_boards.append('u25')  # XDMA
+        if '0b03' in line.lower(): fpga_boards.append('u25')  # XDMA U25 (X2)
+        if 'd000' in line.lower(): fpga_boards.append('u200') # GOLDEN
     
     fpga_boards = list(dict.fromkeys(fpga_boards))
     return fpga_boards
@@ -435,7 +435,7 @@ def run_setup(skip, vendor, appname):
             print_status('Running on','AWS')
             print_status('FPGA Board', instancedef['instanceType'])
             running_on_aws=True
-    else:
+    if not running_on_aws:
         print_status('Running on','On-Premise')
 
     # List FPGA Boards using lspci (XRT not needed)
