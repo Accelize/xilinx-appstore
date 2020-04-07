@@ -204,7 +204,7 @@ def check_host_dsa(host_os, selected_conf):
     pkg_name=conf_pkg.split('-')[0]+'-'+conf_pkg.split('-')[1]+'-'+conf_pkg.split('-')[2]
     
     host_dsa_version = check_host_pkg_installed(host_os, pkg_name)
-    if host_dsa_version in conf_pkg:
+    if host_dsa_version and host_dsa_version in conf_pkg:
         print_status('Board Shell [HOST] Version Check', 'OK (%s-%s)' % (pkg_name, host_dsa_version))
         return
         
@@ -256,11 +256,11 @@ def check_board_shell(boardIdx):
 def check_host_pkg_installed(host_os, pkg):
     pkg_version=None
     if 'centos' in host_os.lower():
-        ret, out, err = exec_cmd_with_ret_output("sudo yum info %s | grep Version | cut -d ':' -f2" % pkg)
-        pkg_version=out.split('-')[0].strip()
+        ret, out, err = exec_cmd_with_ret_output("sudo yum info %s 2> /dev/null | grep Version | cut -d ':' -f2" % pkg)
+        pkg_version=out.split('-')[0].strip() if ret==0 else None
     if 'ubuntu' in host_os.lower():
-        ret, out, err = exec_cmd_with_ret_output("sudo apt-cache show %s | grep Version | cut -d' ' -f2" % pkg)
-        pkg_version=out.strip()
+        ret, out, err = exec_cmd_with_ret_output("sudo apt-cache show %s 2> /dev/null  | grep Version | cut -d' ' -f2" % pkg)
+        pkg_version=out.strip() if ret==0 else None
     return pkg_version
 
 
@@ -321,13 +321,17 @@ def get_board_shell_flash_cmd(boardIdx):
     cmd='sudo /opt/xilinx/xrt/bin/xbutil flash scan'
     ret, out, err = exec_cmd_with_ret_output(cmd)
     cnt=0
-    host_dsa_conf=''
-    host_dsa_conf=''
-    for l in out.splitlines():
-        if 'Card [%s]'%boardIdx in l:
+    host_dsa_conf=None
+    nlines = out.count('\n')
+    for num, l in enumerate(out.splitlines()):
+        if 'Card [%s]'%boardIdx in l and (num+7) <= nlines:
             host_dsa_conf=out.splitlines()[cnt+7].strip()
             break
-        cnt+=1
+        cnt+=1    
+        
+    if host_dsa_conf is None:
+        print('[ERROR] Unable to detect board DSA.\nIf you\'ve just installed XRT please reboot and retry' % m)
+        sys.exit(1) 
         
     prog_dsa=host_dsa_conf.split(',')[0]
     prog_tstamp=int(host_dsa_conf.split(',')[1][4:-1], 0)
