@@ -1,15 +1,12 @@
 #!/bin/bash
-# exit when any command fails
-set -e
 
 if [ ! "$BASH_VERSION" ] ; then
     echo "Please do not use sh to run this script ($0), just execute it directly" 1>&2
     exit 1
 fi
 
-if [[ $UID != 0 ]]; then
-    echo "Please run this script with sudo:"
-    echo "sudo $0 $*"
+if [[ $UID == 0 ]]; then
+    echo "Please, do not run this script with sudo"
     exit 1
 fi
 
@@ -22,18 +19,19 @@ echo "Installing Host Setup Script (this may take a few minutes)..."
 source /etc/os-release
 case "$ID-$VERSION_ID" in
 
-  ubuntu-16.04) apt -qq install -y apt-transport-https software-properties-common lsb-release gnupg curl > /dev/null 2>&1 ; add-apt-repository -y ppa:deadsnakes/ppa > /dev/null 2>&1 ; apt update -y > /dev/null 2>&1 ; apt -qq install -y python3.6 python3-pip > /dev/null 2>&1 ;;
+  ubuntu-16.04) sudo apt update -y ; sudo apt install -y python-pip linux-headers-`uname -r` sudo || exit 1;;
   
-  ubuntu-18.04) apt update -y > /dev/null 2>&1 ; apt -qq install -y python3-pip curl python3.6 > /dev/null 2>&1 ;;
+  ubuntu-18.04) sudo apt update -y ; sudo apt install -y python-pip linux-headers-`uname -r` sudo || exit 1;;
   
-  centos-7) yum install -y https://dl.fedoraproject.org/pub/epel/epel-release-latest-7.noarch.rpm > /dev/null 2>&1 ; yum install -y python3-pip curl > /dev/null 2>&1;;
+  centos-7) sudo yum install -y https://dl.fedoraproject.org/pub/epel/epel-release-latest-7.noarch.rpm; sudo yum install -y python-pip kernel-headers kernel-devel sudo || exit 1;;
   
    *) echo -e '[ERROR] Your Operating System is not supported.\nSupported OS: CentOS 7, Ubuntu 16.04, Ubuntu 18.04'; exit 1;;
 esac
 
-rm -f /opt/xilinx/appstore/host_setup.py
-mkdir -p /opt/xilinx/appstore/
-curl -sL https://github.com/Accelize/xilinx-appstore/raw/master/host_setup.py > /opt/xilinx/appstore/host_setup.py
+python2.7 -m pip --disable-pip-version-check install --user ruamel.yaml || exit 1
+sudo rm -f /opt/xilinx/appstore/host_setup.py
+sudo mkdir -p /opt/xilinx/appstore/ && sudo chmod -R 777 /opt/xilinx/appstore
+curl -L https://github.com/Accelize/xilinx-appstore/raw/master/host_setup_2.py > /opt/xilinx/appstore/host_setup.py || exit 1
 sudo chmod 777 /opt/xilinx/appstore/host_setup.py
 echo "Installing Host Setup Script ... Success"
 echo "> Host Setup Script Installed in /opt/xilinx/appstore/host_setup.py"

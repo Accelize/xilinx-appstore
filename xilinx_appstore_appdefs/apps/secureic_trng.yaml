@@ -11,7 +11,7 @@ summary: Secure-IC offers both True Random Number Generator (TRNG) resilient to 
   are compliant with commonly used statistical tests suites.
 Publisher: Secure-IC
 Published By: Accelize
-Modified: January 23, 2020
+Modified: April 10, 2020
 Size: 285.49 MB
 
 ### Deployment Options
@@ -27,10 +27,10 @@ DeploymentOptions:
 DockerCmds:
   u200:
     pull: docker pull hubxilinx/secureic_trng_alveo_u200
-    run: docker run -p 8080:8080 -v /home/$USER/cred.json:/home/appuser/cred.json -v /dev/shm:/data $XILINX_FPGA_DEV_IDS hubxilinx/secureic_trng_alveo_u200
+    run: docker run -v /home/$USER/cred.json:/home/appuser/cred.json -v /dev/shm:/data $XILINX_FPGA_DEV_IDS hubxilinx/secureic_trng_alveo_u200
   f1.2xlarge:
     pull: docker pull hubxilinx/secureic_trng_aws_f1
-    run: docker run -p 8080:8080 -v /home/$USER/cred.json:/root/cred.json -v /dev/shm:/data $XILINX_FPGA_DEV_IDS hubxilinx/secureic_trng_aws_f1
+    run: docker run -v /home/$USER/cred.json:/root/cred.json -v /dev/shm:/data $XILINX_FPGA_DEV_IDS hubxilinx/secureic_trng_aws_f1
 
 ### Running the Application
 Instructions:
@@ -44,16 +44,12 @@ Instructions:
         MachineType: nx5u_xdma_201830_2
         MachineCores: 16
         Parameters:
-          'Accelize credentials:': Browse FTP to select your "cred.json" Access Key
+          'Access Key:': Browse your computer to select the "cred.json" file
             file from Step 2.
         Asset: assets/secureic_trng/secureic-trng_02.png
       Results:
         Text: '
-          It will start a webservice that generates random numbers "on-demand".
-          Generate 256 bytes of true random data using the following command:
-            curl http://{nimbix_instance_address}:8080?size=256 | hexdump
-          Note: The Nimbix Instance Address is displayed when running the application
-          (e.g: "NAE-165-254-189-68.jarvice.com")
+          Once your job is complete, a 1MB "random.dat" file will be available on the Nimbix FTP.
         '
         Asset: assets/secureic_trng/secureic-trng_03.png
   Alveo U200:
@@ -70,17 +66,14 @@ Instructions:
     Run the Application:
       Setup Environment Variables: source /opt/xilinx/appstore/set_env.sh
       Pull the Docker Image: docker pull hubxilinx/secureic_trng_alveo_u200
-      Run the Docker Image: docker run -p 8080:8080 -v /home/$USER/cred.json:/home/appuser/cred.json -v /dev/shm:/data $XILINX_FPGA_DEV_IDS hubxilinx/secureic_trng_alveo_u200
+      Run the Docker Image: docker run -v /home/$USER/cred.json:/home/appuser/cred.json -v /dev/shm:/data $XILINX_FPGA_DEV_IDS hubxilinx/secureic_trng_alveo_u200
     Results:
-      Text: '
-        It will start a webservice that generates random numbers "on-demand".
-        Generate 256 bytes of true random data using the following command:
-            curl http://{host_ip}:8080?size=256 | hexdump'
+      Text: 'It will generate a 1MB random dta file "random.dat"'
       Asset: assets/secureic_trng/secureic-trng_03.png
   AWS:
     1. Sign-up for Amazon Web Services:
       URL: 'https://portal.aws.amazon.com/billing/signup#/start'
-    2. Start FPGA Developer AMI 1.7.0:
+    2. Start FPGA Developer AMI 1.8.1:
       Instance Type: f1.2xlarge
       Asset: assets/AWS/AWS01.png
     3. Upload Access Key:
@@ -89,14 +82,9 @@ Instructions:
     4. Application Execution:
       Setup Environment Variables: source /opt/xilinx/appstore/set_env_aws.sh
       Pull the Docker Image: docker pull hubxilinx/secureic_trng_aws_f1
-      Run the Docker Image: docker run -p 8080:8080 -v /home/$USER/cred.json:/root/cred.json -v /dev/shm:/data $XILINX_FPGA_DEV_IDS hubxilinx/secureic_trng_aws_f1
+      Run the Docker Image: docker run -v /home/$USER/cred.json:/root/cred.json -v /dev/shm:/data $XILINX_FPGA_DEV_IDS hubxilinx/secureic_trng_aws_f1
     5. Results:
-      Text: '
-          It will start a webservice that generates random numbers "on-demand".
-          Generate 256 bytes of true random data using the following command:
-            curl http://{AmiPublicIP}:8080?size=256 | hexdump
-          Note: The AWS AMI Public IP is displayed in the AWS console
-        '
+      Text: 'It will generate a 1MB random dta file "random.dat"'
       Asset: assets/secureic_trng/secureic-trng_03.png
 
 ### Reserved for host_setup script #####################################
@@ -124,4 +112,5 @@ HostSetupConfiguration:
     xrt_package: xrt_201910.2.2.2250_7.4.1708-xrt.rpm
   - board: f1.2xlarge
     os: centos-7
-    xrt_package: xrt-aws-2.2.0-1
+    xrt_package: xrt_201920.2.3.0_7.7.1908-xrt.rpm
+    xrt-aws_package: xrt_201920.2.3.0_7.7.1908-aws.rpm

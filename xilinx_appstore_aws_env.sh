@@ -31,3 +31,4 @@ echo "> Found following FPGA Devices: $XILINX_FPGA_DEV_IDS"
 echo "> Set XILINX_FPGA_DEV_IDS environment variable"
 unset board_idx
 unset XOCLDEV
+sudo systemctl start mpd
