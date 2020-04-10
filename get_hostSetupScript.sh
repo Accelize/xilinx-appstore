@@ -31,7 +31,7 @@ esac
 python2.7 -m pip --disable-pip-version-check install --user ruamel.yaml || exit 1
 sudo rm -f /opt/xilinx/appstore/host_setup.py
 sudo mkdir -p /opt/xilinx/appstore/ && sudo chmod -R 777 /opt/xilinx/appstore
-curl -L https://github.com/Accelize/xilinx-appstore/raw/master/host_setup_2.py > /opt/xilinx/appstore/host_setup.py || exit 1
+curl -L https://github.com/Accelize/xilinx-appstore/raw/master/host_setup.py > /opt/xilinx/appstore/host_setup.py || exit 1
 sudo chmod 777 /opt/xilinx/appstore/host_setup.py
 echo "Installing Host Setup Script ... Success"
 echo "> Host Setup Script Installed in /opt/xilinx/appstore/host_setup.py"
