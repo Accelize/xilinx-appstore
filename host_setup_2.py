@@ -456,11 +456,11 @@ def run_setup(skip, vendor, appname):
         print_status('Suitable App Configuration', 'Not Found')
         sys.exit(1)
         
-    # Check Installed versions of XRT against selected_conf['xrt_package']
-    check_xrt(host_os, conf['xrt_package'], selected_conf)
-    
-    # Check Installed versions of Host DSA against selected_conf['dsa_package']
     if not running_on_aws:
+        # Check Installed versions of XRT against selected_conf['xrt_package']
+        check_xrt(host_os, conf['xrt_package'], selected_conf)
+        
+        # Check Installed versions of Host DSA against selected_conf['dsa_package']
         check_host_dsa(host_os, selected_conf)
     
     # Detect FPGA environement
