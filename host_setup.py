@@ -287,6 +287,16 @@ def check_docker(host_os):
         sys.exit(1)
     else:
         print_status('DockerCE Configuration', 'OK')
+        
+    # Check that DockerCE daemon is started
+    ret, out, err = exec_cmd_with_ret_output('docker info')
+    if ret:
+        print_status('DockerCE Daemon', 'Not Started')        
+        print(' > Please start DockerCE daemon using the following documentation and relaunch the script:')
+        print(' >   https://docs.docker.com/install/linux/linux-postinstall/')
+        sys.exit(1)
+    else:
+        print_status('DockerCE Daemon', 'OK')
 
 
 def update_os_kernel(host_os):
