@@ -55,7 +55,7 @@ Instructions:
   Alveo U200:
     Host Setup: '
       Install the Host Setup Script
-        curl -sL https://tinyurl.com/getHostSetup | sudo bash
+        curl -sL https://tinyurl.com/getHostSetup | bash
       Run the Host Setup Script
         python2.7 /opt/xilinx/appstore/host_setup.py -v secure-ic -a trng
 
@@ -81,7 +81,7 @@ Instructions:
       Cmd: scp -i {YourAccessKey} cred.json centos@{AmiPublicIP}:.
     4. Host Setup:
       - Install the Host Setup Script
-        curl -sL https://tinyurl.com/getHostSetup | sudo bash
+        curl -sL https://tinyurl.com/getHostSetup | bash
       - Run the Host Setup Script
         python2.7 /opt/xilinx/appstore/host_setup.py -v secure-ic -a trng
 
