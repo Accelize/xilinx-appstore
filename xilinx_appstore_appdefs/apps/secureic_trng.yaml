@@ -27,10 +27,10 @@ DeploymentOptions:
 DockerCmds:
   u200:
     pull: docker pull hubxilinx/secureic_trng_alveo_u200
-    run: docker run -v /home/$USER/cred.json:/home/appuser/cred.json -v /dev/shm:/data $XILINX_FPGA_DEV_IDS hubxilinx/secureic_trng_alveo_u200
+    run: docker run -v /opt/xilinx/appstore/cred.json:/home/appuser/cred.json -v /dev/shm:/data $XILINX_FPGA_DEV_IDS hubxilinx/secureic_trng_alveo_u200
   f1.2xlarge:
     pull: docker pull hubxilinx/secureic_trng_aws_f1
-    run: docker run -v /home/$USER/cred.json:/root/cred.json -v /dev/shm:/data $XILINX_FPGA_DEV_IDS hubxilinx/secureic_trng_aws_f1
+    run: docker run -v /opt/xilinx/appstore/cred.json:/root/cred.json -v /dev/shm:/data $XILINX_FPGA_DEV_IDS hubxilinx/secureic_trng_aws_f1
 
 ### Running the Application
 Instructions:
@@ -66,9 +66,9 @@ Instructions:
     Run the Application:
       Setup Environment Variables: source /opt/xilinx/appstore/set_env.sh
       Pull the Docker Image: docker pull hubxilinx/secureic_trng_alveo_u200
-      Run the Docker Image: docker run -v /home/$USER/cred.json:/home/appuser/cred.json -v /dev/shm:/data $XILINX_FPGA_DEV_IDS hubxilinx/secureic_trng_alveo_u200
+      Run the Docker Image: docker run -v /opt/xilinx/appstore/cred.json:/home/appuser/cred.json -v /dev/shm:/data $XILINX_FPGA_DEV_IDS hubxilinx/secureic_trng_alveo_u200
     Results:
-      Text: 'It will generate a 1MB random dta file "random.dat"'
+      Text: 'It will generate a 1MB random data file "/dev/shm/random.dat"'
       Asset: assets/secureic_trng/secureic-trng_04.png
   AWS:
     1. Sign-up for Amazon Web Services:
@@ -91,9 +91,9 @@ Instructions:
     5. Application Execution:
       Setup Environment Variables: source /opt/xilinx/appstore/set_env_aws.sh
       Pull the Docker Image: docker pull hubxilinx/secureic_trng_aws_f1
-      Run the Docker Image: docker run -v /home/$USER/cred.json:/root/cred.json -v /dev/shm:/data $XILINX_FPGA_DEV_IDS hubxilinx/secureic_trng_aws_f1
+      Run the Docker Image: docker run -v /opt/xilinx/appstore/cred.json:/root/cred.json -v /dev/shm:/data $XILINX_FPGA_DEV_IDS hubxilinx/secureic_trng_aws_f1
     6. Results:
-      Text: 'It will generate a 1MB random dta file "random.dat"'
+      Text: 'It will generate a 1MB random data file "/dev/shm/random.dat"'
       Asset: assets/secureic_trng/secureic-trng_04.png
 
 ### Reserved for host_setup script #####################################
