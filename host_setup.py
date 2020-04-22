@@ -491,11 +491,11 @@ def run_setup(skip, vendor, appname):
                 
     # Check Access Key
     homedir = os.environ['HOME']
-    if os.path.exists(os.path.join(homedir, 'cred.json')):
+    if os.path.exists('/opt/xilinx/appstore/cred.json'):
         print_status('Access Key Check', 'OK')
     else:
         print_status('Access Key Check', 'Not Found')
-        print(" [!] Please copy your access key in %s and run this script again" % os.path.join(homedir, 'cred.json'))
+        print(" [!] Please copy your access key in /opt/xilinx/appstore/cred.json and run this script again")
         return
         
     # FPGA Device Identification script
