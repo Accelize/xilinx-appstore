@@ -466,7 +466,13 @@ def run_setup(skip, vendor, appname):
         print_status('Suitable App Configuration', 'Not Found')
         sys.exit(1)
         
-    if not running_on_aws:
+    if running_on_aws:
+        # Check AMI ID against
+        print_status('AWS - AMI ID', instancedef['imageId'])
+        if(instancedef['imageId'] != selected_conf['ami_id']):
+            print(" [ERROR] Incorrect AWS AMI ID. Please use AMI ID [%s]" % selected_conf['ami_id'])
+            sys.exit(1)
+    else:
         # Check Installed versions of XRT against selected_conf['xrt_package']
         check_xrt(host_os, conf['xrt_package'], selected_conf)
         

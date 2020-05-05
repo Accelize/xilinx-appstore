@@ -3,22 +3,16 @@
 
 ## Install the Host Setup Script
 ````bash
-curl -sL https://tinyurl.com/getHostSetup | sudo bash
+curl -sL https://tinyurl.com/getHostSetup | bash
 ````
-
-*Note*: Verbose version:
-````bash
-curl -sL https://tinyurl.com/getHostSetupVerbose | sudo bash
-````
-
 
 ## Run the Host Setup Script
 Run the host setup script with **vendor_name** and **app_name** arguments
 ````bash
-python3.6 /opt/xilinx/appstore/host_setup.py -v {vendor_name} -a {app_name}
+python2.7 /opt/xilinx/appstore/host_setup.py -v {vendor_name} -a {app_name}
 ````
 
-*e.g: python3.6 /opt/xilinx/appstore/host_setup.py -v ngcodec -a hevc_enc_dual*
+*e.g: python2.7 /opt/xilinx/appstore/host_setup.py -v ngcodec -a hevc_enc_dual*
 
 **Note:** Run the host setup script without arguments to get the list of available applications
 

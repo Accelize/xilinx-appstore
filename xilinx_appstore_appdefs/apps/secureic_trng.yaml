@@ -121,5 +121,6 @@ HostSetupConfiguration:
     xrt_package: xrt_201910.2.2.2250_7.4.1708-xrt.rpm
   - board: f1.2xlarge
     os: centos-7
+    ami_id: ami-093aa119cfaa56149
     xrt_package: xrt_201920.2.3.0_7.7.1908-xrt.rpm
     xrt-aws_package: xrt_201920.2.3.0_7.7.1908-aws.rpm
