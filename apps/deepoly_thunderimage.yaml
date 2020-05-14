@@ -19,12 +19,6 @@ DeploymentOptions:
     Alveo U200: xdma-201830.2
   PortalURL: https://deepoly.accelize.com/front/customer/listpurchase?name=Xilinx%20AppStore%20Free%20Eval%20Plan
 
-### Docker Commands
-DockerCmds:
-  u200:
-    pull: docker pull hubxilinx/deepoly_thunderimage_alveo_u200
-    run: docker run -v /opt/xilinx/appstore/cred.json:/opt/ThunderImage-Premium/server/cred.json -v /dev/shm:/opt/user_outputs $XILINX_FPGA_DEV_IDS --shm-size=64G hubxilinx/deepoly_thunderimage_alveo_u200:latest /opt/run.sh
-
 ### Running the Application
 Instructions:
   Nimbix:
@@ -75,26 +69,3 @@ Instructions:
         docker run -v /opt/xilinx/appstore/cred.json:/opt/ThunderImage-Premium/server/cred.json -v {YourInputFolder}:/opt/user_inputs -v {YourOutputFolder}:/opt/user_outputs $XILINX_FPGA_DEV_IDS --shm-size=64G hubxilinx/deepoly_thunderimage_alveo_u200:latest /opt/run.sh -i /opt/user_inputs -o /opt/user_outputs
         '
       Asset: assets/deepoly_thunderimage/deepoly-thunderimage_03.png
-
-
-### Reserved for host_setup script #####################################
-Supported:
-  boards:
-    - u200
-  os:
-    - ubuntu-16.04
-    - ubuntu-18.04
-    - centos-7
-HostSetupConfiguration:
-  - board: xilinx-u200
-    dsa_package: xilinx-u200-xdma-201830.2-2580015_16.04.deb
-    os: ubuntu-16.04
-    xrt_package: xrt_201910.2.2.2250_16.04-xrt.deb
-  - board: xilinx-u200
-    dsa_package: xilinx-u200-xdma-201830.2-2580015_18.04.deb
-    os: ubuntu-18.04
-    xrt_package: xrt_201910.2.2.2250_18.04-xrt.deb
-  - board: xilinx-u200
-    dsa_package: xilinx-u200-xdma-201830.2-2580015.x86_64.rpm
-    os: centos-7
-    xrt_package: xrt_201910.2.2.2250_7.4.1708-xrt.rpm
