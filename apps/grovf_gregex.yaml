@@ -5,10 +5,10 @@
 appvendor: grovf
 appname: gregex
 short_desc: [GRegex]
-summary: GRegeX is an implementation of PCRE compatible regular expression algorithm on FPGA chip achieving 12.8 GB/s throughput with a single IP core.
+summary: GRegeX is an implementation of PCRE compatible regular expression algorithm on FPGA chip running at 100Gbps throughput regardless of rule set complexity.
 Publisher: Grovf
 Published By: Accelize
-Modified: May 13, 2020
+Modified: May 14, 2020
 Size: 219.49 MB
 
 ### Deployment Options
@@ -17,34 +17,49 @@ DeploymentOptions:
     Alveo U200: xdma 2018.3
   PortalURL: https://grovf.accelize.com/front/customer/listpurchase?name=Xilinx%20AppStore%20Free%20Eval%20Plan
 
+### Collaterals
+Collaterals:
+  - GRegeX Documentation: collaterals/grovf-gregex/regexp-pcie_project_description_v10.pdf
+  - GRegeX U200 FPGA Binary: collaterals/grovf-gregex/regexp_unlim_drm_final_bitstream.bit
 
 ### Running the Application
 Instructions:
   Alveo U200:
     Host Setup: '
-      Install the Host Setup Script
-        curl -sL https://tinyurl.com/getHostSetup | bash
-      Run the Host Setup Script
-        python3.6 /opt/xilinx/appstore/host_setup.py -v bcom -a sdr_hdr_converter
-
-        Note:
-          + Run the host setup script without arguments to get the list of available applications
-          + The setup script might require to reboot the host. In this case, please reboot the host and launch the script again until setup is complete.
+      Note: This application support sonly Ubuntu 18.04
+      1. Install Docker-CE:
+        https://docs.docker.com/engine/install/
+      2. Configure Docker-CE to run as non-root user:
+        https://docs.docker.com/engine/install/linux-postinstall/#manage-docker-as-a-non-root-user
+      3. Install Xilinx XDMA Driver:
+        git clone https://github.com/Xilinx/dma_ip_drivers -b 2018.3 --depth=1
+        cd dma_ip_drivers/XDMA/linux-kernel/xdma
+        make
+        sudo insmod xdma.ko
+      4. Program FPGA Bitstream
+        Download FPGA Bitsream:
+          <DOWNLOAD_URL>
+        Reboot the host server
     '
-    Run the Application:
-      Setup Environment Variables: source /opt/xilinx/appstore/set_env.sh
-      Pull the Docker Image: docker pull hubxilinx/bcom_sdr2hdr_alveo_u200
-      Run the Docker Image: docker run -v /opt/xilinx/appstore/cred.json:/home/appuser/cred.json
-        -v /dev/shm:/data $XILINX_FPGA_DEV_IDS hubxilinx/bcom_sdr2hdr_alveo_u200 /samples/in.raw
-        /data/out.raw
+    Run the Application: '
+      1. Pull the Docker Image:
+        docker pull hubxilinx/grovf_gregex_alveo_u200
+      2. Run the Docker Image:
+        Simple Regex:
+            docker run --privileged --rm -it --user=root -v /home/$USER/cred.json:/root/cred.json hubxilinx/grovf_gregex_alveo_u200 regexp-simple -T /sample/text.txt -R /sample/regexp.txt --show --ip 1
+        Bandwidth Test:
+            dd if=/dev/urandom of=/dev/shm/4GB.txt bs=1M count=4096
+            docker run --privileged --rm -it --user=root -v /home/$USER/cred.json:/root/cred.json  -v /dev/shm/4GB.txt:/dev/shm/4GB.txt hubxilinx/grovf_gregex_alveo_u200 regexp-bw -T /dev/shm/4GB.txt -R /sample/regexp.txt --show
+    '
     Results:
-      Asset: assets/bcom_sdrtohdr/bcom-sdrtohdr_03.png
+      Asset:
+        Simple Regex: assets/grovf-gregex/grovf-gregex_03.png
       Text: '
-          Once your job is complete, an "out.raw" HD HDR sample will be available in "/dev/shm".
-          You can use Vooya video player to display it:
-            + Download Vooya video player: https://www.offminor.de/downloads.html
-            + Play the output file: vooya -p -w 1920 -h 1080 -r 60 --packing R210 --color rgb -b 10 out.raw
-          You can now use your own input video file by:
-            + Copying your file in "/dev/shm/{YourFileName}"
-            + Replacing "-i /samples/in.raw" with "-i /data/{YourFileName}" in the docker run command
-        '
+          Simple Regex:
+            Once execution complete, you should see the result reporte don the screenshot
+          Bandwidth Test:
+            Once execution complete, you should get a procesing speed of approx. 100 Gbits/sec
+
+          You can use your own text file and regex expression.
+          Please refer to the GRegeX documentation
+      '
