@@ -32,6 +32,7 @@ Instructions:
       2. Configure Docker-CE to run as non-root user:
         https://docs.docker.com/engine/install/linux-postinstall/#manage-docker-as-a-non-root-user
       3. Install Xilinx XDMA Driver:
+        sudo apt install -y build-essential
         git clone https://github.com/Xilinx/dma_ip_drivers -b 2018.3 --depth=1
         cd dma_ip_drivers/XDMA/linux-kernel/xdma
         make
