@@ -18,7 +18,7 @@ DeploymentOptions:
   CloudServices: N/A
   OnPremises:
     Alveo U200: xdma-201830.2
-  PortalURL: https://v-nova.accelize.com/front/customer/listpurchase?name=Xilinx%20AppStore%20Free%20Eval%20Plan
+  PortalURL: https://fpga.v-nova.com/front/customer/listpurchase?name=Xilinx%20AppStore%20Free%20Eval%20Plan
 
 ### Running the Application
 Instructions:
