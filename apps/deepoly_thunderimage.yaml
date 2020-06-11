@@ -59,13 +59,13 @@ Instructions:
     Application Execution:
       Setup Environment Variables: source /opt/xilinx/appstore/set_env.sh
       Pull the Docker Image: docker pull hubxilinx/deepoly_thunderimage_alveo_u200
-      Run the Docker Image (Outside Mainland China): docker run -v /opt/xilinx/appstore/cred.json:/opt/ThunderImage-Premium/server/cred.json -v /dev/shm:/opt/user_outputs $XILINX_FPGA_DEV_IDS --shm-size=64G hubxilinx/deepoly_thunderimage_alveo_u200:latest /opt/run.sh
-      Run the Docker Image (Mainland China): docker run -v /opt/xilinx/appstore/cred.json:/opt/ThunderImage-Premium/server/cred.json -v /dev/shm:/opt/user_outputs $XILINX_FPGA_DEV_IDS --shm-size=64G hubxilinx/deepoly_thunderimage_alveo_u200:latest /opt/run.sh -r cn
+      Run the Docker Image (Outside Mainland China): docker run -v /opt/xilinx/appstore/cred.json:/opt/ThunderImage-Premium/server/cred.json -v /dev/shm:/opt/user_outputs $XILINX_DOCKER_DEVICES --shm-size=64G hubxilinx/deepoly_thunderimage_alveo_u200:latest /opt/run.sh
+      Run the Docker Image (Mainland China): docker run -v /opt/xilinx/appstore/cred.json:/opt/ThunderImage-Premium/server/cred.json -v /dev/shm:/opt/user_outputs $XILINX_DOCKER_DEVICES --shm-size=64G hubxilinx/deepoly_thunderimage_alveo_u200:latest /opt/run.sh -r cn
     Results:
       Text: '
         Once your job is complete, a "case_ali.webp" WebP encoded sample file will be available in "/dev/shm".
         You can use your internet browser to display it.
         You can now use your own input and output folders by using the following command:
-        docker run -v /opt/xilinx/appstore/cred.json:/opt/ThunderImage-Premium/server/cred.json -v {YourInputFolder}:/opt/user_inputs -v {YourOutputFolder}:/opt/user_outputs $XILINX_FPGA_DEV_IDS --shm-size=64G hubxilinx/deepoly_thunderimage_alveo_u200:latest /opt/run.sh -i /opt/user_inputs -o /opt/user_outputs
+        docker run -v /opt/xilinx/appstore/cred.json:/opt/ThunderImage-Premium/server/cred.json -v {YourInputFolder}:/opt/user_inputs -v {YourOutputFolder}:/opt/user_outputs $XILINX_DOCKER_DEVICES --shm-size=64G hubxilinx/deepoly_thunderimage_alveo_u200:latest /opt/run.sh -i /opt/user_inputs -o /opt/user_outputs
         '
       Asset: assets/deepoly_thunderimage/deepoly-thunderimage_03.png

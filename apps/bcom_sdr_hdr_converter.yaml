@@ -65,7 +65,7 @@ Instructions:
       Setup Environment Variables: source /opt/xilinx/appstore/set_env.sh
       Pull the Docker Image: docker pull hubxilinx/bcom_sdr2hdr_alveo_u200
       Run the Docker Image: docker run -v /opt/xilinx/appstore/cred.json:/home/appuser/cred.json
-        -v /dev/shm:/data $XILINX_FPGA_DEV_IDS hubxilinx/bcom_sdr2hdr_alveo_u200 /samples/in.raw
+        -v /dev/shm:/data $XILINX_DOCKER_DEVICES hubxilinx/bcom_sdr2hdr_alveo_u200 /samples/in.raw
         /data/out.raw
     Results:
       Asset: assets/bcom_sdrtohdr/bcom-sdrtohdr_03.png

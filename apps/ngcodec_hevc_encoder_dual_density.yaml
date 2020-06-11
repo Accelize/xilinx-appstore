@@ -62,7 +62,7 @@ Instructions:
       Setup Environment Variables: source /opt/xilinx/appstore/set_env.sh
       Pull the Docker Image: docker pull hubxilinx/ngcodec_hevc_alveo_u200
       Run the Docker Image: docker run -v /opt/xilinx/appstore/cred.json:/home/appuser/cred.json
-        -v /dev/shm:/data $XILINX_FPGA_DEV_IDS hubxilinx/ngcodec_hevc_alveo_u200 -i
+        -v /dev/shm:/data $XILINX_DOCKER_DEVICES hubxilinx/ngcodec_hevc_alveo_u200 -i
         /samples/in.mp4 -c:v NGC265 -b:v 3M -g 0 -idr-period 120 -y -f mp4 /data/out.mp4
     Results:
       Text: '
